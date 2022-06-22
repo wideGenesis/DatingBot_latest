@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "fastapi_msbot"
+version = "0.1.0"
+description = ""
+authors = ["widegenesis <widegenesis@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.78.0"
+botbuilder-core = "^4.14.2"
+botbuilder-schema = "^4.14.2"
+botbuilder-dialogs = "^4.14.2"
+psycopg2-binary = "^2.9.3"
+uvloop = "^0.16.0"
+jsonpickle = "*"
+botbuilder-azure = "^4.14.2"
+uvicorn = "^0.17.6"
+aiohttp = "^3.8.1"
+aiosmtplib = "^1.1.6"
+geopy = "^2.2.0"
+sqlacodegen = "^2.3.0"
+alembic = "^1.7.7"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-multipart = "^0.0.5"
+pydantic = {extras = ["email"], version = "^1.9.1"}
+ormar = {extras = ["postgresql"], version = "^0.11.0"}
+redis = "^4.3.1"
+fastapi-crudrouter = "^0.8.5"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

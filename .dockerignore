@@ -1,0 +1,14 @@
+/archive
+/dockerfiles
+/envs
+/funcs_in_dev
+/logs
+/my_tests
+/workers
+/venv
+*.env
+/.git
+/.idea
+/__pycache__
+Dockerfile
+docker-compose_postgresql.yml

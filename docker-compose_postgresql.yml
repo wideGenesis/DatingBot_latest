@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  postgres-server:
+    image: postgres:14.3-bullseye
+    restart: always
+    env_file:
+      - envs/prod.env
+    volumes:
+          - ../postgres-db:/var/lib/postgresql/data
+    ports:
+        - "5432:5432"
+    networks:
+        - default
+
+  django-bot-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./envs/prod.env
+    command: gunicorn mlnw.wsgi:application --bind 0.0.0.0:8000 --workers=3 --timeout 800
+    volumes:
+      - static_volume:/home/app/mlnw/staticfiles
+      - media_volume:/home/app/mlnw/mediafiles
+    expose:
+      - 8000
+      - 3978
+
+    depends_on:
+      - postgres-server
+      - redis-server
+    restart: on-failure
+#
+#  adminer:
+#    image: adminer
+#    restart: always
+#    depends_on:
+#      - postgres-server
+#    ports:
+#      - "8080:8080"
+
+  redis-server:
+    image: redis:7.0
+    restart: always
+    command:
+      - 'redis-server'
+      - '--loglevel warning'
+      - '--appendonly yes'
+      - '--requirepass General_2035_'
+      - '--maxmemory-policy noeviction'
+    volumes:
+      - ../redis:/var/lib/redis
+    env_file:
+      - envs/prod.env
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/mlnw/staticfiles
+      - media_volume:/home/app/mlnw/mediafiles
+    ports:
+      - "3978:80"
+    depends_on:
+      - django-bot-backend
+    restart: on-failure
+
+#  wotkers:
+#      build: ./workers
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  postgres-db:
+  static_volume:
+  media_volume:
+  redis:
+
