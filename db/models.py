@@ -3,6 +3,9 @@ import datetime
 import ormar
 
 from typing import Optional, Union, Dict, List
+
+from sqlalchemy import text
+
 from db.engine import METADATA, DATABASE
 
 

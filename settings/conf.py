@@ -29,51 +29,51 @@ class DatabaseConfig(BaseSettings):
     DB_DRIVER: str = os.environ.get('DB_DRIVER', '')
     DB_URL: str = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-    if DB_DRIVER in ['postgresql+asyncpg', 'postgresql']:
-        import psycopg2
-
-        DJANGO_DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': DB_NAME,
-                'HOST': DB_HOST,
-                'PORT': DB_PORT,
-                'USER': DB_USER,
-                'PASSWORD': DB_PASSWORD,
-            },
-        }
-        CONNECTION_STRING = config = {
-            'user': DB_USER,
-            'password': DB_PASSWORD,
-            'host': DB_HOST,
-            'database': DB_NAME,
-        }
-        CONNECTOR = psycopg2.connect(**CONNECTION_STRING)
-    else:
-        import mysql.connector
-
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': DB_NAME,
-                'HOST': DB_HOST,
-                'PORT': DB_PORT,
-                'USER': DB_USER,
-                'PASSWORD': DB_PASSWORD,
-                'OPTIONS': {
-                    'init_command': 'SET default_storage_engine=INNODB',
-                }
-            },
-        }
-
-        CONNECTION_STRING = config = {
-            'user': DB_USER,
-            'password': DB_PASSWORD,
-            'host': DB_HOST,
-            'database': DB_NAME,
-            'raise_on_warnings': True
-        }
-        CONNECTOR = mysql.connector.connect(**CONNECTION_STRING)
+    # if DB_DRIVER in ['postgresql+asyncpg', 'postgresql']:
+    #     import psycopg2
+    #
+    #     DJANGO_DATABASES = {
+    #         'default': {
+    #             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #             'NAME': DB_NAME,
+    #             'HOST': DB_HOST,
+    #             'PORT': DB_PORT,
+    #             'USER': DB_USER,
+    #             'PASSWORD': DB_PASSWORD,
+    #         },
+    #     }
+    #     CONNECTION_STRING = config = {
+    #         'user': DB_USER,
+    #         'password': DB_PASSWORD,
+    #         'host': DB_HOST,
+    #         'database': DB_NAME,
+    #     }
+    #     CONNECTOR = psycopg2.connect(**CONNECTION_STRING)
+    # else:
+    #     import mysql.connector
+    #
+    #     DATABASES = {
+    #         'default': {
+    #             'ENGINE': 'django.db.backends.mysql',
+    #             'NAME': DB_NAME,
+    #             'HOST': DB_HOST,
+    #             'PORT': DB_PORT,
+    #             'USER': DB_USER,
+    #             'PASSWORD': DB_PASSWORD,
+    #             'OPTIONS': {
+    #                 'init_command': 'SET default_storage_engine=INNODB',
+    #             }
+    #         },
+    #     }
+    #
+    #     CONNECTION_STRING = config = {
+    #         'user': DB_USER,
+    #         'password': DB_PASSWORD,
+    #         'host': DB_HOST,
+    #         'database': DB_NAME,
+    #         'raise_on_warnings': True
+    #     }
+    #     CONNECTOR = mysql.connector.connect(**CONNECTION_STRING)
 
 
 DATABASE_CONF = DatabaseConfig()

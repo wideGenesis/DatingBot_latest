@@ -21,7 +21,7 @@ from db import models
 import schemas
 
 from db.engine import get_session
-from config.conf import FAST_API_CONF
+from settings.conf import FAST_API_CONF
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
