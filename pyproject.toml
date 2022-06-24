@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fastapi_msbot"
+name = "MLNW_fastApi_poetry"
 version = "0.1.0"
 description = ""
 authors = ["widegenesis <widegenesis@gmail.com>"]
