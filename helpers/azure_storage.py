@@ -1,11 +1,11 @@
 from azure.storage.blob import BlobServiceClient
-from config.conf import AZURE_CONF
-from setup.logger import CustomLogger
+from settings.conf import AZURE_STORAGE_CONF
+from settings.logger import CustomLogger
 
 logger = CustomLogger.get_logger('bot')
 
-service_client = BlobServiceClient.from_connection_string(AZURE_CONF.STORAGE_CONNECTION_STRING)
-client = service_client.get_container_client(AZURE_CONF.BLOB_CONTAINER_NAME)
+service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONF.STORAGE_CONNECTION_STRING)
+client = service_client.get_container_client(AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME)
 
 
 def rm_blobs():
@@ -25,8 +25,8 @@ def rm_blobs():
     logger.info(
         '%s blobs has been removed from container: %s, account: %s',
         len(count_blobs),
-        AZURE_CONF.BLOB_CONTAINER_NAME,
-        AZURE_CONF.STORAGE_ACCOUNT_NAME
+        AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME,
+        AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME
     )
     return
 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
-from config.conf import PROJECT_CONF
+from settings.conf import PROJECT_CONF
 
 METADATA = MetaData()
 DATABASE = Database(PROJECT_CONF.DB_URL)

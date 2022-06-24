@@ -1,8 +1,8 @@
 import json
 import logging
-import config.conf as conf
+import configuration
 
-from ..lib.email_helpers import build_email_message
+from lib.email_helpers import build_email_message
 from setup.redis_client import redis_client
 
 logger = logging.getLogger('bot')
@@ -16,7 +16,7 @@ def otp_send_to_email(recipients: list, otp: str):
         'otp'
     )
     try:
-        redis_client.rpush(conf.REDIS_ADMIN_MAIL_QUEUE_KEY, json.dumps(email_message_data))
+        redis_client.rpush(configuration.REDIS_ADMIN_MAIL_QUEUE_KEY, json.dumps(email_message_data))
     except Exception:
         print('Push to Redis error for otp email %s' % recipients)
 

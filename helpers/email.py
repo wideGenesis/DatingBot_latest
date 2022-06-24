@@ -1,10 +1,10 @@
-import config.conf as conf
+from settings.conf import EMAIL_CONF
 import asyncio
 import aiosmtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from setup.logger import CustomLogger
-from ms_bot.lib.messages import MAILS_MAPPING
+from settings.logger import CustomLogger
+from helpers.copyright import MAILS_MAPPING
 from email.mime.base import MIMEBase
 from email import encoders
 logger = CustomLogger.get_logger('bot')
@@ -13,7 +13,7 @@ logger = CustomLogger.get_logger('bot')
 async def send_mail(message_data: dict, attach=None):
     try:
         message = MIMEMultipart('alternative')
-        message['From'] = conf.MAIL_FROM
+        message['From'] = EMAIL_CONF.MAIL_USER
         message['To'] = message_data['recipients'][0]
         message['Subject'] = message_data['subject']
         plain_text_message = MIMEText(message_data['body'], 'plain', 'utf-8')
@@ -30,11 +30,11 @@ async def send_mail(message_data: dict, attach=None):
         asyncio.create_task(aiosmtplib.send(
             message,
             recipients=message_data['recipients'],
-            hostname=conf.MAIL_SERVER,
-            port=conf.MAIL_PORT,
-            username=conf.MAIL_USER,
-            password=conf.MAIL_PASSWORD,
-            # start_tls=True,
+            hostname=EMAIL_CONF.MAIL_SERVER,
+            port=587,
+            username=EMAIL_CONF.MAIL_FROM,
+            password=EMAIL_CONF.MAIL_PASSWORD,
+            start_tls=True,
             timeout=10,
         ))
 
@@ -53,7 +53,7 @@ def build_email_message(
     mail_data = MAILS_MAPPING[message_type]
 
     return dict(
-        email_from=configuration.MAIL_FROM,
+        email_from=EMAIL_CONF.MAIL_FROM,
         recipients=recipients,
         subject=mail_data['subject'],
         body=mail_data['text'].format(message),

@@ -20,7 +20,6 @@ from ms_bot.helpers.telegram_helper import rm_tg_message
 
 from db.models import Area
 from db.models import Customer
-from db.models import PremiumTier
 
 logger = CustomLogger.get_logger('bot')
 

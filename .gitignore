@@ -1,11 +1,11 @@
 .idea/
 data/
-*.env
-*.sqlite3
-*.sqlite
+local.env
+prod.env
+**/*.sqlite3
 static/
+static
 # Byte-compiled / optimized / DLL files
-
 __pycache__/
 *.py[cod]
 *$py.class

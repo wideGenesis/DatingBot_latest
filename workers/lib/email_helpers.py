@@ -4,7 +4,7 @@ import aiosmtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from setup.logger import CustomLogger
-from lib.messages import MAILS_MAPPING
+from helpers.copyright import MAILS_MAPPING
 from email.mime.base import MIMEBase
 from email import encoders
 logger = CustomLogger.get_logger('bot')

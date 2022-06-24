@@ -8,7 +8,7 @@ from setup.logger import CustomLogger
 from ms_bot.bots_models.models import CustomerProfile
 
 from db.models import Customer
-from db.models import CustomerMediaFile
+from db.models import UserMediaFile
 
 logger = CustomLogger.get_logger('bot')
 
@@ -89,7 +89,7 @@ class AuthDialog(ComponentDialog):
         files_in_storage = []
 
         try:
-            user_files = await CustomerMediaFile.objects.filter(publisher__member_id=member_id).values()
+            user_files = await UserMediaFile.objects.filter(publisher__member_id=member_id).values()
             """
             QS <QuerySet [
             {'id': 10, 'publisher_id': 12, 'member_id': 1887695430, 'file': 'tg_1887695430/tmp42r1rz2e.jpg', 

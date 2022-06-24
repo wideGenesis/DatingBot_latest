@@ -1,22 +1,27 @@
-from typing import List
-
 from fastapi_crudrouter import SQLAlchemyCRUDRouter
 from fastapi_crudrouter import OrmarCRUDRouter
-
-import schemas
-from crud.auth import AuthService
 from db import models
-from db.models import Area
 from schemas import area
-from fastapi import Request, Response, HTTPException, status, Depends
-from starlette.status import HTTP_415_UNSUPPORTED_MEDIA_TYPE, HTTP_201_CREATED
-
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
-security = HTTPBasic()
 
 
 # https://fastapi-crudrouter.awtkns.com/
+
+
+# router = SQLAlchemyCRUDRouter(
+#     schema=models.Area,
+#     create_schema=area.BaseArea,
+#     db_model=models.Area,
+#     db=get_session,
+#     prefix='area'
+# )
+# @router.get('')
+# def overloaded_get_all():
+#     return 'My overloaded route that returns all the items'
+#
+# @router.get('/{item_id}')
+# def overloaded_get_one():
+#     return 'My overloaded route that returns one item'
+# Async session and CRUDRouter + override methods "Authorization"
 
 area_router = OrmarCRUDRouter(
     schema=models.Area,
@@ -24,18 +29,20 @@ area_router = OrmarCRUDRouter(
     update_schema=area.BaseArea,
     delete_all_route=False
 )
-
-
-@area_router.get('', response_model=List[area.Area])
-async def get_all(
-        credentials: HTTPBasicCredentials = Depends(security),
-        auth_service: AuthService = Depends(),
-):
-    auth = await auth_service.authenticate_service(credentials)
-    if auth:
-        return await Area.objects.all()
-
-
+# async def messages(request: Request):
+#     # Main bot message handler.
+#
+#     if "application/json" in request.headers["Content-Type"]:
+#         body = await request.json()
+#     else:
+#         return Response(status_code=HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+#
+#     activity = Activity().deserialize(body)
+#     auth_header = (
+#         request.headers["Authorization"] if "Authorization" in request.headers else ""
+#     )
+#
+#     try:
 redis_channel_router = OrmarCRUDRouter(
     schema=models.RedisChannel,
 )
@@ -48,3 +55,4 @@ advertisement_router = OrmarCRUDRouter(
 blacklist_router = OrmarCRUDRouter(
     schema=models.Blacklist,
 )
+

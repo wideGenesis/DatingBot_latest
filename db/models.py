@@ -3,9 +3,6 @@ import datetime
 import ormar
 
 from typing import Optional, Union, Dict, List
-
-from sqlalchemy import text
-
 from db.engine import METADATA, DATABASE
 
 
@@ -39,9 +36,9 @@ class Area(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     area: str = ormar.String(max_length=200, nullable=False, unique=True)
-    city: str = ormar.String(max_length=50, nullable=False)
-    state: str = ormar.String(max_length=50, nullable=False)
-    country: str = ormar.String(max_length=50, nullable=False)
+    city: str = ormar.String(max_length=30, nullable=False)
+    state: str = ormar.String(max_length=30, nullable=False)
+    country: str = ormar.String(max_length=30, nullable=False)
     is_administrative_center: bool = ormar.Boolean(nullable=False)
 
 
@@ -50,7 +47,7 @@ class PremiumTier(ormar.Model):
         tablename: str = 'premium_tiers'
 
     id: int = ormar.BigInteger(primary_key=True)
-    tier: str = ormar.String(max_length=200, nullable=False, unique=True)
+    tier: str = ormar.Integer(unique=True)
 
 
 class RedisChannel(ormar.Model):
@@ -58,7 +55,7 @@ class RedisChannel(ormar.Model):
         tablename: str = 'redis_channels'
 
     id: int = ormar.BigInteger(primary_key=True)
-    redis_channel: str = ormar.String(max_length=500, nullable=False, unique=True)
+    redis_channel: str = ormar.String(max_length=200, nullable=False, unique=True)
 
 
 class Customer(ormar.Model):
@@ -118,9 +115,9 @@ class Blacklist(ormar.Model):
     customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
 
 
-class CustomerMediaFile(ormar.Model):
+class UserMediaFile(ormar.Model):
     class Meta(ForOrmarMeta):
-        tablename: str = 'customer_media_files'
+        tablename: str = 'user_media_files'
 
     id: int = ormar.BigInteger(primary_key=True)
     member_id: int = ormar.BigInteger(index=True)
