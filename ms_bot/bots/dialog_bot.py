@@ -6,10 +6,10 @@ from botbuilder.core import ConversationState, UserState, TurnContext, ActivityH
     NullTelemetryClient
 from botbuilder.dialogs import Dialog
 
-from config.conf import AZURE_CONF
-from ms_bot.lib.storage_blob_helper import rm_user_blobs
-from ms_bot.helpers.dialog_helper import DialogHelper
-from setup.logger import CustomLogger
+from settings.conf import AZURE_BOT_CONF
+from helpers.azure_storage import rm_user_blobs
+from ms_bot.bot_helpers.dialog_helper import DialogHelper
+from settings.logger import CustomLogger
 
 
 logger = CustomLogger.get_logger('bot')
@@ -66,7 +66,7 @@ class ConversationBot(ActivityHandler):
             rm_user_blobs(member_id)
             return
 
-        if AZURE_CONF.MAINTENANCE:
+        if AZURE_BOT_CONF.MAINTENANCE:
             await turn_context.send_activity('⚠️ Сервіс тимчасово недоступний  \n \n🔄 Відбувається процес оновлення')
             return
 

@@ -1,10 +1,10 @@
 import api
 import uvicorn
 
-from config.conf import FAST_API_CONF, TAGS_META
+from settings.conf import FAST_API_CONF
 from db.engine import DATABASE
 from fastapi import FastAPI
-from setup.logger import CustomLogger
+from settings.logger import CustomLogger
 
 logger = CustomLogger.get_logger('bot')
 
@@ -13,7 +13,7 @@ app = FastAPI(
     title='FastApi Microsoft Bot Framework',
     description='Microsoft Bot Implementation',
     version='1.0.0',
-    openapi_tags=TAGS_META,
+    openapi_tags=FAST_API_CONF.TAGS_META,
 )
 
 app.include_router(api.router)

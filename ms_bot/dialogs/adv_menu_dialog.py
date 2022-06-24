@@ -12,17 +12,17 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from setup.logger import CustomLogger
-from ..lib.messages import ADV_MENU_KB
-from ..dialogs.auth_reload_dialog import AuthReloadDialog
+from settings.logger import CustomLogger
+from helpers.copyright import ADV_MENU_KB
+from ms_bot.dialogs.auth_reload_dialog import AuthReloadDialog
 
-from ..dialogs.adv_show_dialog import MyAdvDialog
-from ..dialogs.adv_create_dialog import CreateAdvDialog
-from ..dialogs.my_photo_dialog import MyPhotoDialog
-from ..dialogs.my_profile_dialog import MyProfileDialog
-from ..dialogs.my_settings_dialog import MySettingsDialog
+from ms_bot.dialogs.adv_show_dialog import MyAdvDialog
+from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
+from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
+from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
+from ms_bot.dialogs.my_settings_dialog import MySettingsDialog
 
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

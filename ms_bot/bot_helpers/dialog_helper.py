@@ -7,7 +7,7 @@ from botbuilder.core import StatePropertyAccessor, TurnContext
 from botbuilder.dialogs import Dialog, DialogSet, DialogTurnStatus
 from botbuilder.schema import ErrorResponseException
 
-from setup.logger import CustomLogger
+from settings.logger import CustomLogger
 
 
 logger = CustomLogger.get_logger('bot')

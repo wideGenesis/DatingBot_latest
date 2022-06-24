@@ -12,15 +12,15 @@ import json
 # from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
-from setup.logger import CustomLogger
-from ..lib.messages import BOT_MESSAGES, GENDER_KB, LOOKING_GENDER_KB, MY_AGE_KB, PREFER_AGE_KB, \
+from settings.logger import CustomLogger
+from helpers.copyright import BOT_MESSAGES, GENDER_KB, LOOKING_GENDER_KB, MY_AGE_KB, PREFER_AGE_KB, \
     CREATE_AREA_KB
 
-from ..bots_models.models import CustomerProfile
-from ..dialogs.adv_create_goals_dialog import CreateAdvGoalsDialog
-from ..dialogs.location_dialog import RequestLocationDialog
-from ..dialogs.phone_dialog import RequestPhoneDialog
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bots_models.models import CustomerProfile
+from ms_bot.dialogs.adv_create_goals_dialog import CreateAdvGoalsDialog
+from ms_bot.dialogs.location_dialog import RequestLocationDialog
+from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

@@ -3,12 +3,12 @@ import datetime
 from botbuilder.core import ConversationState, UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import ComponentDialog, WaterfallDialog, WaterfallStepContext, DialogTurnResult
 
-from setup.logger import CustomLogger
-from ..dialogs.main_menu_dialog import MenuDialog
-from ..dialogs.utils_dialog import UtilsDialog
-from ..dialogs.auth_dialog import AuthDialog
-from ..dialogs.telegram_registration_dialog import TelegramRegistrationDialog
-from ..bots_models.models import CustomerProfile
+from settings.logger import CustomLogger
+from ms_bot.dialogs.main_menu_dialog import MenuDialog
+from ms_bot.dialogs.utils_dialog import UtilsDialog
+from ms_bot.dialogs.auth_dialog import AuthDialog
+from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
+from ms_bot.bots_models.models import CustomerProfile
 
 logger = CustomLogger.get_logger('bot')
 

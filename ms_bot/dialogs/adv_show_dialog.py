@@ -14,13 +14,10 @@ from botbuilder.dialogs import (
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
-from ..bots_models.models import CustomerProfile
-
-from setup.logger import CustomLogger
-from ..lib.messages import send_photo_kb, send_video_kb, SEND_MEDIA_KB
-
-
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bots_models.models import CustomerProfile
+from settings.logger import CustomLogger
+from helpers.copyright import send_photo_kb, send_video_kb, SEND_MEDIA_KB
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 
 logger = CustomLogger.get_logger('bot')

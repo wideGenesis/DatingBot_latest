@@ -1,9 +1,9 @@
 from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog
 
-from ..dialogs.telegram_registration_dialog import TelegramRegistrationDialog
-from setup.logger import CustomLogger
-from ..bots_models.models import CustomerProfile
+from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
+from settings.logger import CustomLogger
+from ms_bot.bots_models.models import CustomerProfile
 
 logger = CustomLogger.get_logger('bot')
 

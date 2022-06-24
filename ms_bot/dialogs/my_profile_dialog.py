@@ -11,14 +11,14 @@ from botbuilder.dialogs import (
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
-from ..bots_models.models import CustomerProfile
+from ms_bot.bots_models.models import CustomerProfile
 
-from setup.logger import CustomLogger
-from ..lib.messages import profile_kb, LANG_CHOICE, GENDER_CHOICE, LOOKING_GENDER_CHOICE, \
+from settings.logger import CustomLogger
+from helpers.copyright import profile_kb, LANG_CHOICE, GENDER_CHOICE, LOOKING_GENDER_CHOICE, \
     LOOKING_FOR_CHOICE
-from ..dialogs.telegram_registration_dialog import TelegramRegistrationDialog
+from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

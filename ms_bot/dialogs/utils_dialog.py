@@ -10,7 +10,7 @@ from botbuilder.dialogs import (
 from botbuilder.schema import HeroCard, CardAction, ActionTypes, InputHints
 from ms_bot.bots_models.models import CustomerProfile
 
-from setup.logger import CustomLogger
+from settings.logger import CustomLogger
 
 
 logger = CustomLogger.get_logger('bot')

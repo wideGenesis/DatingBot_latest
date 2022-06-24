@@ -12,13 +12,13 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from setup.logger import CustomLogger
-from ..lib.messages import USER_FILES_KB
-from ..dialogs.file_access_dialog import FileAccessDialog
-from ..dialogs.telegram_registration_dialog import TelegramRegistrationDialog
-from ..dialogs.upload_dialog import UploadDialog
+from settings.logger import CustomLogger
+from helpers.copyright import USER_FILES_KB
+from ms_bot.dialogs.file_access_dialog import FileAccessDialog
+from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
+from ms_bot.dialogs.upload_dialog import UploadDialog
 
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

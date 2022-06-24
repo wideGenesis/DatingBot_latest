@@ -8,11 +8,11 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, Attachment
 
 from sqlalchemy.exc import IntegrityError
-from setup.logger import CustomLogger
-from ..lib.messages import BOT_MESSAGES, UPLOAD_FILE_KB
+from settings.logger import CustomLogger
+from helpers.copyright import BOT_MESSAGES, UPLOAD_FILE_KB
 
-from ..bots_models.models import CustomerProfile
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bots_models.models import CustomerProfile
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

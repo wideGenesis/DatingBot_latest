@@ -9,14 +9,14 @@ from botbuilder.schema import Activity, ActivityTypes
 import json
 
 from sqlalchemy.exc import IntegrityError
-from setup.logger import CustomLogger
-from ms_bot.lib.messages import WITHOUT_LANG_WELCOME_KB
+from settings.logger import CustomLogger
+from helpers.copyright import WITHOUT_LANG_WELCOME_KB
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
-from ms_bot.helpers.telegram_helper import rm_tg_message
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 from db.models import Area
 from db.models import Customer

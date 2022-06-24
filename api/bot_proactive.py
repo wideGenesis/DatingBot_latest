@@ -1,17 +1,16 @@
 from fastapi import (
     APIRouter,
-    Depends,
     Request,
     Response,
     status,
 )
 from typing import Dict
 
-from botbuilder.schema import Activity, ConversationReference
+from botbuilder.schema import ConversationReference
 from starlette.status import HTTP_201_CREATED
 
 from ms_bot.adapter.standalone_bot_adapter import APP_ID
-from ms_bot.bot_init import ADAPTER
+from ms_bot.setup.bot_init import ADAPTER
 
 
 # Create a shared dictionary.  The Bot will add conversation references when users

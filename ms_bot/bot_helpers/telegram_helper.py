@@ -3,8 +3,8 @@ import json
 from botbuilder.core import TurnContext
 from botbuilder.schema import Activity, ActivityTypes
 from geopy.geocoders import Nominatim, GoogleV3
-from setup.logger import CustomLogger
-from config.conf import PROJECT_CONF
+from settings.logger import CustomLogger
+from settings.conf import GOOGLE_CONF
 
 
 logger = CustomLogger.get_logger('bot')
@@ -27,7 +27,7 @@ async def reverse_geocode(coordinates: str):
         )
 
     except Exception:
-        locator = GoogleV3(api_key=PROJECT_CONF.GOOGLE_API_KEY, user_agent='myGeocoder')
+        locator = GoogleV3(api_key=GOOGLE_CONF.GOOGLE_API_KEY, user_agent='myGeocoder')
         location = locator.reverse(coordinates)
         # print(location.raw['address_components'][3]['long_name'])
         # print(location.raw['address_components'][5]['long_name'])

@@ -8,15 +8,15 @@ from botbuilder.core import (
 
 )
 
-from config.conf import AZURE_CONF
-from setup.logger import CustomLogger
+from settings.conf import AZURE_BOT_CONF
+from settings.logger import CustomLogger
 
 
 logger = CustomLogger.get_logger('bot')
 
 SETTINGS = BotFrameworkAdapterSettings(
-    AZURE_CONF.BOTAPPID,
-    AZURE_CONF.BOTAPPPASSWORD)
+    AZURE_BOT_CONF.BOT_APP_ID,
+    AZURE_BOT_CONF.BOT_APP_PASSWORD)
 ADAPTER = BotFrameworkAdapter(SETTINGS)
 memory = MemoryStorage()
 user_state = UserState(memory)

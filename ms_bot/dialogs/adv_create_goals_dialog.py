@@ -8,11 +8,11 @@ import json
 
 # from profanity_filter import ProfanityFilter
 
-from setup.logger import CustomLogger
-from ..lib.messages import LOOKING_FOR_KB, all_in_one_buttons, sex_buttons, relationships_buttons, friends_buttons, goals_kb
+from settings.logger import CustomLogger
+from helpers.copyright import LOOKING_FOR_KB, all_in_one_buttons, sex_buttons, relationships_buttons, friends_buttons, goals_kb
 
-from ..bots_models.models import CustomerProfile
-from ..helpers.telegram_helper import rm_tg_message
+from ms_bot.bots_models.models import CustomerProfile
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 

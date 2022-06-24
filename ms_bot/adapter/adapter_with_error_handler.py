@@ -7,8 +7,8 @@ from botbuilder.core import (
     TurnContext,
 )
 
-from ms_bot.lib.messages import BOT_MESSAGES
-from setup.logger import CustomLogger
+from helpers.copyright import BOT_MESSAGES
+from settings.logger import CustomLogger
 
 
 logger = CustomLogger.get_logger('bot')

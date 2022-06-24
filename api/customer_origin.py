@@ -8,7 +8,7 @@ from fastapi import (
 )
 
 import schemas
-from crud.auth import get_current_userz
+from crud.auth import get_current_user
 from crud.customer import CustomerService
 
 

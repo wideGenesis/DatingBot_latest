@@ -1,4 +1,4 @@
-import configuration
+from settings.conf import AZURE_STORAGE_CONF
 
 LANG_CHOICE = {
     0: 'Українська',
@@ -98,7 +98,7 @@ WITHOUT_LANG_WELCOME_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['welcome_without_lang']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/0_online-dating.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/0_online-dating.jpg",
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -116,7 +116,7 @@ WELCOME_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['welcome']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/0_online-dating.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/0_online-dating.jpg",
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -138,7 +138,7 @@ GENDER_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['gender']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/1_gender_a.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/1_gender_a.jpg",
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -160,7 +160,7 @@ LOOKING_GENDER_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['looking_gender']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/1_gender.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/1_gender.jpg",
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -196,7 +196,7 @@ MY_AGE_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['age']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/2_age.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/2_age.jpg",
         'reply_markup': {
             'force_reply': True
         }
@@ -207,7 +207,7 @@ PREFER_AGE_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['prefer_age']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/3_prefer_age.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
         'reply_markup': {
             'force_reply': True
         }
@@ -218,7 +218,7 @@ LOOKING_FOR_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['looking_for']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/4_looking_for_a.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/4_looking_for_a.jpg",
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -254,7 +254,7 @@ UPLOAD_FILE_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['upload_file']}",
-        'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/6_upload.png",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/6_upload.png",
         'reply_markup': {
             'force_reply': True
         }
@@ -363,7 +363,7 @@ def send_photo_kb(file: str, privacy_type: int) -> dict:
         'parameters': {
             'protect_content': True,
             'caption': f'{msg}',
-            'photo': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/{file}",
+            'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{file}",
         }
     }
 
@@ -378,7 +378,7 @@ def send_video_kb(file: str, privacy_type: int) -> dict:
         'parameters': {
             'protect_content': True,
             'caption': f'{msg}',
-            'video': f"https://{configuration.AZURE_STORAGE_HOST}.blob.core.windows.net/media/{file}",
+            'video': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{file}",
         }
     }
 

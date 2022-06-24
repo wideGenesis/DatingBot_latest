@@ -11,10 +11,10 @@ from botbuilder.dialogs import (
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
-from ..bots_models.models import CustomerProfile
+from ms_bot.bots_models.models import CustomerProfile
 
-from setup.logger import CustomLogger
-from ..lib.messages import BOT_MESSAGES
+from settings.logger import CustomLogger
+from helpers.copyright import BOT_MESSAGES
 
 logger = CustomLogger.get_logger('bot')
 

@@ -29,6 +29,52 @@ class DatabaseConfig(BaseSettings):
     DB_DRIVER: str = os.environ.get('DB_DRIVER', '')
     DB_URL: str = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+    if DB_DRIVER in ['postgresql+asyncpg', 'postgresql']:
+        import psycopg2
+
+        DJANGO_DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': DB_NAME,
+                'HOST': DB_HOST,
+                'PORT': DB_PORT,
+                'USER': DB_USER,
+                'PASSWORD': DB_PASSWORD,
+            },
+        }
+        CONNECTION_STRING = config = {
+            'user': DB_USER,
+            'password': DB_PASSWORD,
+            'host': DB_HOST,
+            'database': DB_NAME,
+        }
+        CONNECTOR = psycopg2.connect(**CONNECTION_STRING)
+    else:
+        import mysql.connector
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': DB_NAME,
+                'HOST': DB_HOST,
+                'PORT': DB_PORT,
+                'USER': DB_USER,
+                'PASSWORD': DB_PASSWORD,
+                'OPTIONS': {
+                    'init_command': 'SET default_storage_engine=INNODB',
+                }
+            },
+        }
+
+        CONNECTION_STRING = config = {
+            'user': DB_USER,
+            'password': DB_PASSWORD,
+            'host': DB_HOST,
+            'database': DB_NAME,
+            'raise_on_warnings': True
+        }
+        CONNECTOR = mysql.connector.connect(**CONNECTION_STRING)
+
 
 DATABASE_CONF = DatabaseConfig()
 
@@ -103,13 +149,13 @@ AZURE_APP_CONF = AzureAppConfig()
 
 class AzureBotConfig(BaseSettings):
     # ########## Azure Bot settings ########## #
-    BOT_APP_ID: str = os.environ.get('BOT_APPID', '')
+    BOT_APP_ID: str = os.environ.get('BOT_APP_ID', '')
     BOT_APP_PASSWORD: str = os.environ.get('BOT_APP_PASSWORD', '')
     PORT: int = 3978
     MAINTENANCE: int = int(os.environ.get('MAINTENANCE', '0'))
 
     # ########## Azure App Insights settings ########## #
-    APP_INSIGHTS_INSTRUMENTATION_KEY: str = os.environ.get('AppInsightsInstrumentationKey', '')
+    APP_INSIGHTS_INSTRUMENTATION_KEY: str = os.environ.get('APP_INSIGHTS_INSTRUMENTAL_KEY', '')
 
 
 AZURE_BOT_CONF = AzureBotConfig()
@@ -173,3 +219,10 @@ class RegionApiConfig(BaseSettings):
 
 
 REGION_API_CONF = RegionApiConfig()
+
+
+class GoogleApisConfig(BaseSettings):
+    GOOGLE_API_KEY: str = os.environ.get('GOOGLE_API_KEY', '')
+
+
+GOOGLE_CONF = GoogleApisConfig()
