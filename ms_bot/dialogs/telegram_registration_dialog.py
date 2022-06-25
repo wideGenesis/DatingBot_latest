@@ -10,7 +10,7 @@ import json
 
 from sqlalchemy.exc import IntegrityError
 from settings.logger import CustomLogger
-from helpers.copyright import WITHOUT_LANG_WELCOME_KB
+from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
@@ -48,8 +48,10 @@ class TelegramRegistrationDialog(ComponentDialog):
             WaterfallDialog(
                 "TelegramRegistrationDialog",
                 [
-                    self.welcome_step,
+                    self.choose_lang_step,
                     self.member_step,
+                    self.choose_sex_step,
+
                     self.request_phone_step,
                     self.save_new_customer,
                     self.back_to_parent
@@ -61,16 +63,15 @@ class TelegramRegistrationDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "TelegramRegistrationDialog"
 
-    async def welcome_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('welcome_step %s', TelegramRegistrationDialog.__name__)
-
+    async def choose_lang_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug('choose_lang_step %s', TelegramRegistrationDialog.__name__)
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(WITHOUT_LANG_WELCOME_KB),
+                    channel_data=json.dumps(CHOOSE_LANG),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
+                retry_prompt=MessageFactory.text('Make your choice by clicking on the appropriate button above'),
             )
         )
 
@@ -95,11 +96,33 @@ class TelegramRegistrationDialog(ComponentDialog):
         user_data.member_id = member_id
         user_data.lang = lang[1]
         user_data.is_active = 1
-
+        await step_context.context.send_activity('Мова встановлена')
         return await step_context.next([])
+
+    async def choose_sex_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug('gender_step %s', TelegramRegistrationDialog.__name__)
+
+        return await step_context.prompt(
+            TextPrompt.__name__, PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(CHOOSE_SEX_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
+            )
+        )
 
     async def request_phone_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('request_phone_step %s', TelegramRegistrationDialog.__name__)
+        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
+        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
+        await rm_tg_message(step_context.context, chat_id, message_id)
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
+
+        result_from_previous_step = str(step_context.result).split(':')
+        user_data.temp = result_from_previous_step[1]
+
         return await step_context.begin_dialog(RequestPhoneDialog.__name__)
 
     # async def request_location_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
@@ -206,7 +229,7 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     @classmethod
     async def _save_customer(cls, user_data):
-        customer = await Customer(
+        customer = Customer(
             nickname=user_data.nickname,
             phone=int(user_data.phone),
             premium_tier_id=1,
@@ -217,7 +240,7 @@ class TelegramRegistrationDialog(ComponentDialog):
         )
 
         try:
-            customer.save()
+            await customer.save()
 
         except IntegrityError:
             await Customer.objects.filter(member_id=user_data.member_id).update(
@@ -234,85 +257,3 @@ class TelegramRegistrationDialog(ComponentDialog):
             logger.exception('Save customer to db error %s', user_data.member_id)
 
         return
-
-#
-# class ObjectDoesNotExist(ValueError):
-#     pass
-
-    # async def send_otp_to_tg_user(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-    #     logger.debug('send_otp_to_tg_user %s',
-    #                  TelegramRegistrationDialog.__name__)
-    #
-    #     user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-    #
-    #     if user_data.authorised == 'verified':
-    #         return await step_context.next([])
-    #
-    #     otp = generate_otp()
-    #     user_data.otp = otp
-    #     # await self.user_profile_accessor.set(step_context.context, user_data)
-    #
-    #     # logger.debug('sms will sent to: %s', user_data.mobilePhones)
-    #     if project_settings.KS_ON_PROD and len(user_data.mobilePhones) > 0:
-    #         # logger.debug('>>> IF %s', project_settings.KS_ON_PROD and len(user_data.mobilePhones) > 0)
-    #
-    #         for item in user_data.mobilePhones:
-    #             try:
-    #                 # result = send_sms_via_middleware(item.replace('+', ''), str(otp))
-    #                 result = send_sms(item.replace('+', ''), str(otp))
-    #                 logger.info('>>> Sending sms, Mobile is: %s, result is: %s', item, result)
-    #             except Exception:
-    #                 logger.exception('Send sms error')
-    #                 return await step_context.replace_dialog(EmployeeIdAuthDialog.__name__)
-    #
-    #         # logger.debug('OTP SMS to: %s sent!', user_data.employeeId)
-    #
-    #     recipients = [user_data.userPrincipalName]
-    #     if user_data.mail and user_data.mail != user_data.userPrincipalName:
-    #         recipients.append(user_data.mail)
-    #     logger.debug('recipients %s', recipients)
-    #
-    #     if not project_settings.IS_LOCAL_ENV:
-    #         try:
-    #             result = otp_send_to_email(recipients, str(otp))
-    #         except Exception:
-    #             logger.exception('Send otp email error')
-    #             return await step_context.replace_dialog(EmployeeIdAuthDialog.__name__)
-    #         logger.info('Email: %s, %s sent to: ', result, user_data.employeeId)
-    #
-    #     user_data.otp = str(otp)
-    #     logger.debug('>>> OTP IS: %s', user_data.otp)
-    #
-    #     # redis_client.set(project_settings.REDIS_OTP_TMPL.format(otp), otp, ex=60 * 60 * 12)
-    #
-    #     return await step_context.next(user_data)
-    #
-    # async def prompt_otp(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-    #     logger.debug('prompt_otp %s', TelegramRegistrationDialog.__name__)
-    #     user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-    #
-    #     if user_data.authorised == 'verified':
-    #         return await step_context.next([])
-    #
-    #     prompt_options = PromptOptions(
-    #         prompt=MessageFactory.text(BOT_MESSAGES['prompt_otp'])
-    #     )
-    #     return await step_context.prompt(TextPrompt.__name__, prompt_options)
-    #
-    # async def check_otp(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-    #     logger.debug('check_otp for dialog')
-    #
-    #
-    #     user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-    #
-    #     if user_data.authorised == 'verified':
-    #         return await step_context.next([])
-    #
-    #
-    #     if not user_data.otp or step_context.result != user_data.otp:
-    #         await step_context.context.send_activity(BOT_MESSAGES['otp_failed'])
-    #         return await step_context.replace_dialog(TelegramRegistrationDialog.__name__)
-    #
-    #     user_data.authorised = 'verified'
-    #     return await step_context.next([])
-    #

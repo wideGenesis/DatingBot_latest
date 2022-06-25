@@ -32,8 +32,8 @@ class AuthDialog(ComponentDialog):
             WaterfallDialog(
                 "AuthDialog",
                 [
-                    self.user_exists_in_blob,
-                    self.user_exists_in_db,
+                    self.is_user_exists_in_blob,
+                    self.is_user_exists_in_db,
                 ]
             )
         )
@@ -43,7 +43,7 @@ class AuthDialog(ComponentDialog):
         self.customer_exists = None
         self.customer_instance = None
 
-    async def user_exists_in_blob(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def is_user_exists_in_blob(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         print('updated_at >>> ', user_data.updated_at)
         member_id = step_context.context.activity.from_property.id
@@ -59,7 +59,6 @@ class AuthDialog(ComponentDialog):
         try:
             timer = time_now - user_data.updated_at
         except Exception:
-            # logger.exception('Calc for timer error')
             logger.warning('USER (%s) DOESN\'T EXISTS IN CACHE', member_id)
             return await step_context.next([])
 
@@ -68,7 +67,7 @@ class AuthDialog(ComponentDialog):
             self.customer_exists = True
             return await step_context.end_dialog(self.customer_exists)
 
-    async def user_exists_in_db(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def is_user_exists_in_db(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('user_exists_in_db %s', AuthDialog.__name__)
         member_id = step_context.context.activity.from_property.id
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)

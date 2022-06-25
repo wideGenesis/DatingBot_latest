@@ -57,7 +57,6 @@ class MainDialog(ComponentDialog):
         if step_context.context.activity.channel_id != 'telegram':
             await step_context.context.send_activity('Channel not supported')
             return await step_context.end_dialog()
-
         return await step_context.next([])
 
     async def is_auth_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:

@@ -5,16 +5,17 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from contextlib import contextmanager
 from settings.conf import DATABASE_CONF
 
-
 METADATA = MetaData()
 DATABASE = Database(DATABASE_CONF.DB_URL)
 
 if DATABASE_CONF.DB_DRIVER != 'postgresql':
+    print('ASYNC', DATABASE_CONF.DB_URL)
     ENGINE = create_async_engine(DATABASE_CONF.DB_URL, future=True, echo=True)
     SESSION = sessionmaker(bind=ENGINE, expire_on_commit=False, class_=AsyncSession)
 else:
+    print('SYNC', DATABASE_CONF.DB_URL)
     ENGINE = create_engine(DATABASE_CONF.DB_URL)
-    SYNC_SESSION = sessionmaker(ENGINE)
+    SESSION = sessionmaker(ENGINE)
 
 BASE = declarative_base()
 
@@ -22,9 +23,6 @@ BASE = declarative_base()
 async def get_session() -> AsyncSession:
     async with SESSION() as session:
         yield session
-
-# BASE.metadata.create_all(bind=ASYNC_ENGINE)
-
 
 # @contextmanager
 # async def get_async_db_cursor(commit=True, loop=None):

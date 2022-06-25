@@ -31,5 +31,5 @@
 
 ## 𝗦𝘁𝗮𝘁𝘀
 
-![DJWOMS github stats](https://github-readme-stats.vercel.app/api?username=wideGenesis&show_icons=true&theme=dracula&include_all_commits=true&count_private=true)
-![DJWOMS Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=wideGenesis&layout=compact&count_private=true&theme=gruvbox)
+![wideGenesis github stats](https://github-readme-stats.vercel.app/api?username=wideGenesis&show_icons=true&theme=dracula&include_all_commits=true&count_private=true)
+![wideGenesis Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=wideGenesis&layout=compact&count_private=true&theme=gruvbox)

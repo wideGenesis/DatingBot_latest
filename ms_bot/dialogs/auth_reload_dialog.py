@@ -5,6 +5,10 @@ from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDial
 from settings.logger import CustomLogger
 from ms_bot.bots_models.models import CustomerProfile
 
+from db.models import Customer
+from db.models import UserMediaFile
+
+
 logger = CustomLogger.get_logger('bot')
 
 
@@ -39,9 +43,6 @@ class AuthReloadDialog(ComponentDialog):
 
     async def user_exists_in_db(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('user_exists_in_db %s', AuthReloadDialog.__name__)
-        from . import Customer
-        from . import UserMediaFiles
-
         member_id = step_context.context.activity.from_property.id
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         try:
@@ -60,7 +61,7 @@ class AuthReloadDialog(ComponentDialog):
         files_in_storage = []
 
         try:
-            user_files = UserMediaFiles.objects.filter(publisher__member_id=member_id).values()
+            user_files = UserMediaFile.objects.filter(publisher__member_id=member_id).values()
             """
             QS <QuerySet [
             {'id': 10, 'publisher_id': 12, 'member_id': 1887695430, 'file': 'tg_1887695430/tmp42r1rz2e.jpg', 

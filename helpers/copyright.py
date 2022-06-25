@@ -40,11 +40,13 @@ PHOTO_TYPE_CHOICE = {
 }
 
 BOT_MESSAGES = {
-    'welcome_without_lang': 'Вітаю!',
-    'welcome': 'Вітаю! Оберіть мову спілкування з ботом: ',
+    'choose_language': 'Choose language: ',
+    # 'welcome_without_lang': 'Вітаю!',
+    # 'welcome': 'Вітаю! Оберіть мову спілкування з ботом: ',
     'next': 'далі',
-    'gender': 'Вкажіть вашу стать: ',
-    'looking_gender': 'Кого шукаємо? (Ця інформація буде прихованою і не буде відображатися у вашому профілі) ',
+    'choose_sex': 'Вкажіть вашу стать: ',
+    'looking_for_sex': 'Кого шукаємо? (Ця інформація буде прихованою і не буде відображатися у вашому профілі) ',
+
     'age': 'Надрукуйте цифрами свій вік (у діапазоні 18 - 69) ',
     'age_reprompt': 'Ваш фактичний вік має бути в діапазоні 18 - 69 ',
     'prefer_age': 'Надрукуйте цифрами вік партнера (в діапазоні 18 - 69) \n  \nНаприклад: 20 - 45 ',
@@ -94,39 +96,31 @@ BOT_MESSAGES = {
 
 }
 
-WITHOUT_LANG_WELCOME_KB = {
+CHOOSE_LANG = {
     'method': 'sendPhoto',
     'parameters': {
-        'caption': f"{BOT_MESSAGES['welcome_without_lang']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/0_online-dating.jpg",
+        'caption': f"{BOT_MESSAGES['choose_language']}",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/logo.jpg",
+        'protect_content': True,
+        'disable_notification': True,
         'reply_markup': {
             'inline_keyboard': [
                 [
                     {
-                        'text': '➡️ далі',
+                        'text': 'English',
                         'callback_data': 'KEY_CALLBACK:0'
                     },
-                ],
-            ]
-        }
-    }
-}
-
-WELCOME_KB = {
-    'method': 'sendPhoto',
-    'parameters': {
-        'caption': f"{BOT_MESSAGES['welcome']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/0_online-dating.jpg",
-        'reply_markup': {
-            'inline_keyboard': [
-                [
                     {
                         'text': 'Українська',
-                        'callback_data': 'KEY_CALLBACK:0'
+                        'callback_data': 'KEY_CALLBACK:1'
+                    },
+                    {
+                        'text': 'Español',
+                        'callback_data': 'KEY_CALLBACK:2'
                     },
                     {
                         'text': 'російська',
-                        'callback_data': 'KEY_CALLBACK:1'
+                        'callback_data': 'KEY_CALLBACK:3'
                     }
                 ],
             ]
@@ -134,11 +128,13 @@ WELCOME_KB = {
     }
 }
 
-GENDER_KB = {
+CHOOSE_SEX_KB = {
     'method': 'sendPhoto',
     'parameters': {
-        'caption': f"{BOT_MESSAGES['gender']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/1_gender_a.jpg",
+        'caption': f"{BOT_MESSAGES['choose_sex']}",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/f9.jpg",
+        'protect_content': True,
+        'disable_notification': True,
         'reply_markup': {
             'inline_keyboard': [
                 [
@@ -156,11 +152,13 @@ GENDER_KB = {
     }
 }
 
-LOOKING_GENDER_KB = {
+LOOKING_FOR_SEX_KB = {
     'method': 'sendPhoto',
     'parameters': {
-        'caption': f"{BOT_MESSAGES['looking_gender']}",
+        'caption': f"{BOT_MESSAGES['looking_for_sex']}",
         'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/1_gender.jpg",
+        'protect_content': True,
+        'disable_notification': True,
         'reply_markup': {
             'inline_keyboard': [
                 [

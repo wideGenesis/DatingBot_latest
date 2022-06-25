@@ -11,4 +11,4 @@
 /.idea
 /__pycache__
 Dockerfile
-docker_compose_files/docker-compose_postgresql.yml
+docker-compose.yml

@@ -46,11 +46,14 @@ class Area(ormar.Model):
 
 
 class PremiumTier(ormar.Model):
+    """
+    free, advanced_1m, advanced_12m, premium_1m, premium_12m
+    """
     class Meta(ForOrmarMeta):
         tablename: str = 'premium_tiers'
 
     id: int = ormar.BigInteger(primary_key=True)
-    tier: str = ormar.Integer(unique=True)
+    tier: str = ormar.String(unique=True, max_length=100, nullable=False)
 
 
 class RedisChannel(ormar.Model):
@@ -68,13 +71,13 @@ class Customer(ormar.Model):
     id: int = ormar.BigInteger(primary_key=True)
     nickname: Optional[str] = ormar.String(max_length=50, nullable=False, unique=True)
     phone: int = ormar.BigInteger(unique=True)
-    email: Optional[str] = ormar.String(max_length=100, unique=True)
+    email: Optional[str] = ormar.String(max_length=100, unique=True, nullable=True)
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
     lang: Optional[int] = ormar.Integer(index=True)
-    post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000)
+    post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     is_active: bool = ormar.Boolean(nullable=False)
-    passcode: Optional[str] = ormar.String(max_length=50)
+    passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(PremiumTier)

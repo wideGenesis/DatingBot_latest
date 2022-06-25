@@ -13,7 +13,7 @@ import json
 from sqlalchemy.exc import IntegrityError
 
 from settings.logger import CustomLogger
-from helpers.copyright import BOT_MESSAGES, GENDER_KB, LOOKING_GENDER_KB, MY_AGE_KB, PREFER_AGE_KB, \
+from helpers.copyright import BOT_MESSAGES, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, MY_AGE_KB, PREFER_AGE_KB, \
     CREATE_AREA_KB
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -77,7 +77,7 @@ class CreateAdvDialog(ComponentDialog):
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(GENDER_KB),
+                    channel_data=json.dumps(CHOOSE_SEX_KB),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
@@ -98,7 +98,7 @@ class CreateAdvDialog(ComponentDialog):
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(LOOKING_GENDER_KB),
+                    channel_data=json.dumps(LOOKING_FOR_SEX_KB),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
