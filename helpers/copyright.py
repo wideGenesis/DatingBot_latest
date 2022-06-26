@@ -1,3 +1,5 @@
+import random
+
 from settings.conf import AZURE_STORAGE_CONF
 
 LANG_CHOICE = {
@@ -41,8 +43,7 @@ PHOTO_TYPE_CHOICE = {
 
 BOT_MESSAGES = {
     'choose_language': 'Choose language: ',
-    # 'welcome_without_lang': 'Вітаю!',
-    # 'welcome': 'Вітаю! Оберіть мову спілкування з ботом: ',
+    'reprompt': 'Зробіть вибір, натиснувши на відповідну кнопку вище',
     'next': 'далі',
     'choose_sex': 'Вкажіть вашу стать: ',
     'looking_for_sex': 'Кого шукаємо? (Ця інформація буде прихованою і не буде відображатися у вашому профілі) ',
@@ -96,6 +97,29 @@ BOT_MESSAGES = {
 
 }
 
+LOCALES = {
+    'en': {},
+    'ua': {},
+    'es': {},
+    'ru': {}
+}
+
+
+def image_rotation(category: str) -> list:
+    if category == 'straight':
+        c_list = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10']
+    elif category == 'gay':
+        c_list = ['g1', 'g2', 'g3', 'g4', 'g5', 'g6,' 'g7', 'g8', 'g9', 'g10']
+    elif category == 'friends':
+        c_list = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10']
+    elif category == 'lesbian':
+        c_list = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9', 'l10']
+    else:
+        raise ValueError('Category not found')
+    random.shuffle(c_list)
+    return c_list
+
+
 CHOOSE_LANG = {
     'method': 'sendPhoto',
     'parameters': {
@@ -132,7 +156,8 @@ CHOOSE_SEX_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['choose_sex']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/f9.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[0]}.jpg",
         'protect_content': True,
         'disable_notification': True,
         'reply_markup': {
@@ -152,11 +177,47 @@ CHOOSE_SEX_KB = {
     }
 }
 
+MY_AGE_KB = {
+    'method': 'sendPhoto',
+    'parameters': {
+        'caption': f"{BOT_MESSAGES['age']}",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[1]}.jpg",
+        'protect_content': True,
+        'disable_notification': True,
+        'reply_markup': {
+            'force_reply': True
+        }
+    }
+}
+
+UPLOAD_FILE_KB = {
+    'method': 'sendPhoto',
+    'parameters': {
+        'caption': f"{BOT_MESSAGES['upload_file']}",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/upload.png",
+        'reply_markup': {
+            'force_reply': True
+        }
+    }
+}
+PREFER_AGE_KB = {
+    'method': 'sendPhoto',
+    'parameters': {
+        'caption': f"{BOT_MESSAGES['prefer_age']}",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
+        'reply_markup': {
+            'force_reply': True
+        }
+    }
+}
+
 LOOKING_FOR_SEX_KB = {
     'method': 'sendPhoto',
     'parameters': {
         'caption': f"{BOT_MESSAGES['looking_for_sex']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/1_gender.jpg",
+        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')}.jpg",
         'protect_content': True,
         'disable_notification': True,
         'reply_markup': {
@@ -186,28 +247,6 @@ LOOKING_FOR_SEX_KB = {
                     }
                 ]
             ]
-        }
-    }
-}
-
-MY_AGE_KB = {
-    'method': 'sendPhoto',
-    'parameters': {
-        'caption': f"{BOT_MESSAGES['age']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/2_age.jpg",
-        'reply_markup': {
-            'force_reply': True
-        }
-    }
-}
-
-PREFER_AGE_KB = {
-    'method': 'sendPhoto',
-    'parameters': {
-        'caption': f"{BOT_MESSAGES['prefer_age']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
-        'reply_markup': {
-            'force_reply': True
         }
     }
 }
@@ -244,17 +283,6 @@ LOOKING_FOR_KB = {
                     }
                 ]
             ]
-        }
-    }
-}
-
-UPLOAD_FILE_KB = {
-    'method': 'sendPhoto',
-    'parameters': {
-        'caption': f"{BOT_MESSAGES['upload_file']}",
-        'photo': f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/6_upload.png",
-        'reply_markup': {
-            'force_reply': True
         }
     }
 }

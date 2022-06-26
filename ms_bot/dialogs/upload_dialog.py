@@ -8,6 +8,8 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, Attachment
 
 from sqlalchemy.exc import IntegrityError
+
+from db.models import Customer, UserMediaFile
 from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES, UPLOAD_FILE_KB
 
@@ -90,7 +92,6 @@ class UploadDialog(ComponentDialog):
 
             user_data.photo_main = attachment.content_url
             await step_context.context.send_activity(save_result)
-
         return await step_context.end_dialog('need_replace_parent')
 
     @staticmethod
@@ -116,9 +117,7 @@ class UploadDialog(ComponentDialog):
         return len(valid_files) > 0
 
     @classmethod
-    async def _save_file(cls, member_id, file_url, content_type, user_data: CustomerProfile) -> str:
-        from . import UserMediaFiles
-        from . import Customer
+    async def _save_file(cls, member_id: int, file_url: str, content_type: str, user_data: CustomerProfile) -> str:
 
         if user_data.files_dict is not None and len(user_data.files_dict) >= 4:
             logger.warning('Maximum files qty exceeded %s', len(user_data.files_dict))
@@ -132,24 +131,20 @@ class UploadDialog(ComponentDialog):
             _file_type = 2
         else:
             return BOT_MESSAGES['file_bad_format']
+        member_id = int(member_id)
+        customer_id = await Customer.objects.get(member_id=member_id)
 
-        customer_photo = UserMediaFiles(
-            publisher=Customer.objects.get(member_id=member_id),
+        customer_photo = UserMediaFile(
+            customer_id=customer_id.id,
             member_id=member_id,
             file_temp_url=file_url,
             file_type=_file_type,
-            privacy_type=1
+            privacy_type=1,
+            is_archived=False
         )
 
         try:
-            customer_photo.save()
-
-        except IntegrityError:
-            UserMediaFiles.objects.filter(publisher__member_id=member_id).update(
-                file_temp_url=file_url,
-                file_type=_file_type,
-                privacy_type=1
-            )
+            await customer_photo.save()
         except Exception:
             logger.exception('Save customer_photo to db error %s', member_id)
 

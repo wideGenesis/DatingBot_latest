@@ -1,7 +1,7 @@
 import api
 import uvicorn
 
-from settings.conf import FAST_API_CONF
+from settings.conf import FAST_API_CONF, EMAIL_CONF
 from db.engine import DATABASE, ENGINE
 from fastapi import FastAPI
 from settings.logger import CustomLogger

@@ -127,7 +127,7 @@ class UserMediaFile(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     member_id: int = ormar.BigInteger(index=True)
-    file: str = ormar.String(max_length=100, nullable=False)
+    file: Optional[str] = ormar.String(max_length=100, nullable=True)
     file_type: int = ormar.Integer()
     privacy_type: int = ormar.Integer()
     file_temp_url: Optional[str] = ormar.String(max_length=200)

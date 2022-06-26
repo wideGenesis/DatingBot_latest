@@ -46,11 +46,10 @@ class AuthReloadDialog(ComponentDialog):
         member_id = step_context.context.activity.from_property.id
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         try:
-            customer = Customer.objects.get(member_id=member_id)
+            customer = await Customer.objects.get(member_id=member_id)
+            logger.debug('USER (%s) FOUND IN DB', member_id)
             self.customer_exists = True
             self.customer_instance = customer
-            # await self._reload_cache(user_data, customer)
-            logger.debug('USER (%s) FOUND IN DB', member_id)
 
         except Exception:
             logger.warning('USER (%s) DOESN\'T EXIST IN DB', member_id)
@@ -58,10 +57,12 @@ class AuthReloadDialog(ComponentDialog):
 
         if self.customer_exists is None:
             return await step_context.end_dialog()
+
         files_in_storage = []
 
         try:
-            user_files = UserMediaFile.objects.filter(publisher__member_id=member_id).values()
+            user_files = UserMediaFile.objects.filter(customer_id__member_id=member_id).values()
+            print('<<<<<', user_files)
             """
             QS <QuerySet [
             {'id': 10, 'publisher_id': 12, 'member_id': 1887695430, 'file': 'tg_1887695430/tmp42r1rz2e.jpg', 

@@ -1,5 +1,6 @@
 import pickle
 
+from asyncpg import UniqueViolationError
 from botbuilder.core import MessageFactory, UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog, \
     PromptValidatorContext, NumberPrompt
@@ -8,9 +9,8 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes
 import json
 
-from sqlalchemy.exc import IntegrityError
 from settings.logger import CustomLogger
-from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB
+from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, MY_AGE_KB, BOT_MESSAGES
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
@@ -51,9 +51,10 @@ class TelegramRegistrationDialog(ComponentDialog):
                     self.choose_lang_step,
                     self.member_step,
                     self.choose_sex_step,
-
+                    self.age_step,
                     self.request_phone_step,
                     self.save_new_customer,
+                    self.upload_media_step,
                     self.back_to_parent
                 ]
             )
@@ -77,12 +78,12 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     async def member_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('member_step %s', TelegramRegistrationDialog.__name__)
+
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-
         lang = str(step_context.result).split(':')
         member_id = step_context.context.activity.from_property.id
         conversation_reference = pickle.dumps(
@@ -96,11 +97,10 @@ class TelegramRegistrationDialog(ComponentDialog):
         user_data.member_id = member_id
         user_data.lang = lang[1]
         user_data.is_active = 1
-        await step_context.context.send_activity('Мова встановлена')
         return await step_context.next([])
 
     async def choose_sex_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('gender_step %s', TelegramRegistrationDialog.__name__)
+        logger.debug('choose_sex_step %s', TelegramRegistrationDialog.__name__)
 
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
@@ -108,41 +108,48 @@ class TelegramRegistrationDialog(ComponentDialog):
                     channel_data=json.dumps(CHOOSE_SEX_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
+                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['reprompt']}"),
             )
         )
 
-    async def request_phone_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('request_phone_step %s', TelegramRegistrationDialog.__name__)
+    async def age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug('age_step %s', TelegramRegistrationDialog.__name__)
+
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-
         result_from_previous_step = str(step_context.result).split(':')
-        user_data.temp = result_from_previous_step[1]
+        user_data.self_sex = result_from_previous_step
+
+        return await step_context.prompt(
+            NumberPrompt.__name__, PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(MY_AGE_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
+            )
+        )
+
+    async def request_phone_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug('request_phone_step %s', TelegramRegistrationDialog.__name__)
+
+        chat_id = f"{step_context.context.activity.channel_data['message']['chat']['id']}"
+        message_id = f"{step_context.context.activity.channel_data['message']['message_id']}"
+        await rm_tg_message(step_context.context, chat_id, message_id)
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
+        result_from_previous_step = str(step_context.result).split(':')
+        user_data.age = result_from_previous_step
 
         return await step_context.begin_dialog(RequestPhoneDialog.__name__)
-
-    # async def request_location_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-    #     logger.debug('request_location_step %s', RequestLocationDialog.__name__)
-    #     return await step_context.begin_dialog(RequestLocationDialog.__name__)
 
     async def save_new_customer(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('save_new_customer %s', TelegramRegistrationDialog.__name__)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-
-        # try:
-        #     area = await self._save_area(
-        #         user_data,
-        #     )
-        #     logger.info('_save_area for %s was successful', user_data.member_id)
-        # except Exception:
-        #     logger.exception('_save_area for %s was Unsuccessful', user_data.member_id)
-        #     await step_context.context.send_activity('exceptions_occurs')
-        #     return await step_context.replace_dialog(TelegramRegistrationDialog.__name__)
 
         try:
             await self._save_customer(
@@ -179,8 +186,6 @@ class TelegramRegistrationDialog(ComponentDialog):
             condition = 18 <= int(_value[0]) <= 69
         else:
             condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
-
         return (
                 prompt_context.recognized.succeeded
                 and condition
@@ -195,60 +200,42 @@ class TelegramRegistrationDialog(ComponentDialog):
             'KEY_CALLBACK:1',
             'KEY_CALLBACK:2',
             'KEY_CALLBACK:3',
-            'KEY_CALLBACK:4',
-            'KEY_CALLBACK:5',
-            'KEY_CALLBACK:6',
+            'KEY_CALLBACK:Man',
+            'KEY_CALLBACK:Woman',
         ]:
             condition = True
         else:
             condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
-
         return (
                 prompt_context.recognized.succeeded
                 and condition
         )
 
     @classmethod
-    async def _save_area(cls, user_data):
-        area = await Area(
-            area=user_data.area_id
-        )
-        try:
-            area.save()
-            return area
-
-        except IntegrityError:
-            area = await Area.objects.get(area=user_data.area_id)
-            return area
-
-        except Exception:
-            logger.exception('Save area to db error %s', user_data.area_id)
-
-        return
-
-    @classmethod
     async def _save_customer(cls, user_data):
+
         customer = Customer(
             nickname=user_data.nickname,
             phone=int(user_data.phone),
             premium_tier_id=1,
             conversation_reference=user_data.conversation_reference,
-            member_id=user_data.member_id,
+            member_id=int(user_data.member_id),
             lang=int(user_data.lang),
             is_active=int(user_data.is_active)
         )
 
         try:
             await customer.save()
+            print('>>>1 ')
 
-        except IntegrityError:
-            await Customer.objects.filter(member_id=user_data.member_id).update(
+        except UniqueViolationError:
+            print('<<<<2 ')
+            await Customer.objects.filter(member_id=int(user_data.member_id)).update(
                 nickname=user_data.nickname,
                 phone=int(user_data.phone),
                 premium_tier_id=1,
                 conversation_reference=user_data.conversation_reference,
-                member_id=user_data.member_id,
+                member_id=int(user_data.member_id),
                 lang=int(user_data.lang),
                 is_active=int(user_data.is_active)
 

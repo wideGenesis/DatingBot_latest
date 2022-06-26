@@ -105,13 +105,13 @@ class CustomLogger:
                 cls.logger.addHandler(file_handler)
                 file_handler.setFormatter(formatter)
 
-                cls.logger.addHandler(smtpHandler)
-                smtpHandler.setFormatter(formatter)
-                smtpHandler.setLevel(logging.ERROR)
+                # cls.logger.addHandler(smtpHandler)
+                # smtpHandler.setFormatter(formatter)
+                # smtpHandler.setLevel(logging.ERROR)
             elif LOGGER_CONF.LOG_TO == 2:
-                cls.logger.addHandler(smtpHandler)
-                smtpHandler.setFormatter(formatter)
-                smtpHandler.setLevel(logging.ERROR)
+                # cls.logger.addHandler(smtpHandler)
+                # smtpHandler.setFormatter(formatter)
+                # smtpHandler.setLevel(logging.ERROR)
 
                 cls.logger.addHandler(stdout_handler)
                 stdout_handler.setFormatter(formatter)

@@ -15,6 +15,9 @@ class CustomerProfile:
             conversation_reference=None,
             member_id=None,
             lang=None,
+            self_sex=None,
+            age=None,
+
             post_header=None,
             is_active=None,
             created_at=None,
@@ -28,7 +31,6 @@ class CustomerProfile:
             
             adv_pk=None,
             who_for_whom=None,
-            age=None,
             prefer_age=None,
             has_place=None,
             dating_time=None,
@@ -80,6 +82,7 @@ class CustomerProfile:
         self.created_at: datetime = created_at
         self.is_active: int = is_active
         self.post_header: str = post_header
+        self.self_sex: int = self_sex
         self.lang: int = lang
         self.member_id: int = member_id
         self.conversation_reference = conversation_reference

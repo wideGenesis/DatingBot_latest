@@ -1,6 +1,7 @@
 import datetime
 import pickle
 
+from asyncpg import UniqueViolationError
 from botbuilder.core import MessageFactory, UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog, \
     PromptValidatorContext, NumberPrompt
@@ -12,6 +13,7 @@ import json
 # from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
+from db.models import Area, Customer, PremiumTier
 from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, MY_AGE_KB, PREFER_AGE_KB, \
     CREATE_AREA_KB
@@ -51,7 +53,6 @@ class CreateAdvDialog(ComponentDialog):
                 [
                     self.gender_step,
                     self.looking_gender_step,
-                    self.age_step,
                     self.prefer_age_step,
                     self.goals_routing,
                     self.area_step,
@@ -105,28 +106,6 @@ class CreateAdvDialog(ComponentDialog):
             )
         )
 
-    async def age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('age_step %s', CreateAdvDialog.__name__)
-
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-
-        result_from_previous_step = str(step_context.result).split(':')
-        result = await self._who_for_whom(user_data.temp, result_from_previous_step[1])
-        user_data.who_for_whom = result
-
-        return await step_context.prompt(
-            NumberPrompt.__name__, PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(MY_AGE_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
-            )
-        )
 
     async def prefer_age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('prefer_age_step %s', CreateAdvDialog.__name__)
@@ -301,16 +280,15 @@ class CreateAdvDialog(ComponentDialog):
 
     @classmethod
     async def _save_area(cls, user_data):
-        from ms_bot import Area
-        area = Area(
+        area = await Area(
             area=user_data.area_id
         )
         try:
             area.save()
             return area
 
-        except IntegrityError:
-            area = Area.objects.get(area=user_data.area_id)
+        except UniqueViolationError:
+            area = await Area.objects.get(area=user_data.area_id)
             return area
 
         except Exception:
@@ -320,9 +298,6 @@ class CreateAdvDialog(ComponentDialog):
 
     @classmethod
     async def _save_customer(cls, user_data, area):
-        from ms_bot import Customer
-        from ms_bot import PremiumTier
-
         customer = Customer(
             nickname=user_data.nickname,
             lang=int(user_data.lang),
@@ -342,7 +317,7 @@ class CreateAdvDialog(ComponentDialog):
         )
 
         try:
-            customer.save()
+            await customer.save()
 
         except IntegrityError:
             Customer.objects.filter(member_id=user_data.member_id).update(
