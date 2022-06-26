@@ -8,6 +8,8 @@ from botbuilder.dialogs import (
     TextPrompt, ChoicePrompt
 )
 from botbuilder.schema import HeroCard, CardAction, ActionTypes, InputHints
+
+from db.models import Customer
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger
@@ -281,8 +283,8 @@ async def _self_delete(
         conversation_state,
         step_context: WaterfallStepContext
 ) -> bool:
-    from . import Customer
-    member_id = step_context.context.activity.from_property.id
+
+    member_id = int(step_context.context.activity.from_property.id)
     result = None
     select_result = None
     conversation_state_result = None

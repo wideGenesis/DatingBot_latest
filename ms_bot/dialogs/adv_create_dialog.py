@@ -179,7 +179,7 @@ class CreateAdvDialog(ComponentDialog):
 
         result_from_previous_step = str(step_context.result).split(':')
 
-        member_id = step_context.context.activity.from_property.id
+        member_id = int(step_context.context.activity.from_property.id)
         conversation_reference = pickle.dumps(
             step_context.context.get_conversation_reference(step_context.context.activity)
         )

@@ -14,6 +14,8 @@ from botbuilder.dialogs import (
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
+
+from db.models import Advertisement
 from ms_bot.bots_models.models import CustomerProfile
 from settings.logger import CustomLogger
 from helpers.copyright import send_photo_kb, send_video_kb, SEND_MEDIA_KB
@@ -62,8 +64,8 @@ class MyAdvDialog(ComponentDialog):
 
         # passcode = user_data.passcode
         # change + worker + email
-        from . import Advertisement
-        member_id = step_context.context.activity.from_property.id
+
+        member_id = int(step_context.context.activity.from_property.id)
         adv_in_storage = {}
         try:
             user_adv = Advertisement.objects.filter(publisher__member_id=member_id).values()

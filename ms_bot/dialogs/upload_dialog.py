@@ -79,7 +79,7 @@ class UploadDialog(ComponentDialog):
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         result_from_previous_step = step_context.result
-        member_id = step_context.context.activity.from_property.id
+        member_id = int(step_context.context.activity.from_property.id)
 
         if result_from_previous_step[0] is None:
             return await step_context.end_dialog(user_data)

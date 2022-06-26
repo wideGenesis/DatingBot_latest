@@ -49,6 +49,7 @@ class TelegramRegistrationDialog(ComponentDialog):
                 "TelegramRegistrationDialog",
                 [
                     self.choose_lang_step,
+                    self.agreement_step,
                     self.member_step,
                     self.choose_sex_step,
                     self.age_step,
@@ -76,6 +77,12 @@ class TelegramRegistrationDialog(ComponentDialog):
             )
         )
 
+    async def agreement_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug('agreement_step %s', TelegramRegistrationDialog.__name__)
+        await step_context.context.send_activity('Продовжуючи, ви погоджуєтесь з політикою конфіденційності '
+                                                 'https://zodier.com/policy.html')
+        return await step_context.next([])
+
     async def member_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('member_step %s', TelegramRegistrationDialog.__name__)
 
@@ -85,7 +92,7 @@ class TelegramRegistrationDialog(ComponentDialog):
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         lang = str(step_context.result).split(':')
-        member_id = step_context.context.activity.from_property.id
+        member_id = int(step_context.context.activity.from_property.id)
         conversation_reference = pickle.dumps(
             step_context.context.get_conversation_reference(step_context.context.activity)
         )

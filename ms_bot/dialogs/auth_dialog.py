@@ -46,7 +46,7 @@ class AuthDialog(ComponentDialog):
     async def is_user_exists_in_blob(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         print('updated_at >>> ', user_data.updated_at)
-        member_id = step_context.context.activity.from_property.id
+        member_id = int(step_context.context.activity.from_property.id)
 
         h, m, s = '0:01:00'.split(':')
         threshold = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
@@ -69,34 +69,36 @@ class AuthDialog(ComponentDialog):
 
     async def is_user_exists_in_db(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('user_exists_in_db %s', AuthDialog.__name__)
-        member_id = step_context.context.activity.from_property.id
+        member_id = int(step_context.context.activity.from_property.id)
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         try:
             customer = await Customer.objects.get(member_id=member_id)
-            logger.debug('customer %s', customer)
             self.customer_exists = True
             self.customer_instance = customer
-            # await self._reload_cache(user_data, customer)
             logger.debug('USER (%s) FOUND IN DB', member_id)
 
         except Exception:
-            logger.warning('USER (%s) DOESN\'T EXIST IN DB', member_id)
+            logger.exception('USER (%s) DOESN\'T EXIST IN DB', member_id)
             self.customer_exists = None
 
         if self.customer_exists is None:
             return await step_context.end_dialog(self.customer_exists)
+
         files_in_storage = []
 
         try:
-            user_files = await UserMediaFile.objects.filter(publisher__member_id=member_id).values()
-            """
-            QS <QuerySet [
-            {'id': 10, 'publisher_id': 12, 'member_id': 1887695430, 'file': 'tg_1887695430/tmp42r1rz2e.jpg', 
-            'file_type': 1, 'privacy_type': 1, 'file_temp_url': None, 'is_archived': False}, 
-            {'id': 11, 'publisher_id': 12, 'member_id': 1887695430, 'file': 'tg_1887695430/tmp2jw61plb.jpg', 
-            'file_type': 1, 'privacy_type': 1, 'file_temp_url': None, 'is_archived': False}]>    
-            """
+            user_files = await UserMediaFile.objects.filter(member_id=member_id).fields(
+                ['member_id',
+                 'file',
+                 'file_type',
+                 'privacy_type',
+                 'is_archived',
+                 'file_temp_url',
+                 'created_at']).all()
+
             for item in user_files:
+                item = dict(item)
+
                 if item['is_archived']:
                     continue
                 files_in_storage.append(
@@ -112,8 +114,9 @@ class AuthDialog(ComponentDialog):
         except Exception:
             logger.exception('USER FILES (%s) NOT FOUND IN DB', member_id)
 
-        await self._reload_cache(user_data, self.customer_instance, files_in_storage)
 
+        await self._reload_cache(user_data, self.customer_instance, files_in_storage)
+        print('<<<<<<', user_data.member_id)
         return await step_context.end_dialog(self.customer_exists)
 
     @classmethod
@@ -124,8 +127,11 @@ class AuthDialog(ComponentDialog):
         user_data.nickname = customer_instance.nickname
         user_data.conversation_reference = customer_instance.conversation_reference
         user_data.member_id = customer_instance.member_id
-        user_data.premium_tier = customer_instance.premium_tier
+        user_data.premium_tier = customer_instance.premium_tier_id
         user_data.is_active = customer_instance.is_active
         user_data.files_dict = user_files
         user_data.updated_at = customer_instance.updated_at
+        user_data.updated_at = customer_instance.id
+        user_data.updated_at = customer_instance.post_header
+        user_data.updated_at = customer_instance.passcode
 
