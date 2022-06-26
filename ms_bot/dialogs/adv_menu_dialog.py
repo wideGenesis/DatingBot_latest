@@ -14,7 +14,7 @@ from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
 from helpers.copyright import ADV_MENU_KB
-from ms_bot.dialogs.auth_reload_dialog import AuthReloadDialog
+from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 from ms_bot.dialogs.adv_show_dialog import MyAdvDialog
 from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
@@ -46,7 +46,7 @@ class AdvMenuDialog(ComponentDialog):
         self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
         self.add_dialog(MyAdvDialog(user_state, MyAdvDialog.__name__))
         self.add_dialog(MySettingsDialog(user_state, MySettingsDialog.__name__))
-        self.add_dialog(AuthReloadDialog(user_state, AuthReloadDialog.__name__))
+        self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(

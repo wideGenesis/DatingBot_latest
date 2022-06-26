@@ -14,7 +14,7 @@ from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB
-from ms_bot.dialogs.auth_reload_dialog import AuthReloadDialog
+from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 from ms_bot.dialogs.adv_menu_dialog import AdvMenuDialog
 from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
@@ -44,7 +44,7 @@ class MenuDialog(ComponentDialog):
         self.add_dialog(MyPhotoDialog(user_state, MyPhotoDialog.__name__))
         self.add_dialog(AdvMenuDialog(user_state, AdvMenuDialog.__name__))
         self.add_dialog(MySettingsDialog(user_state, MySettingsDialog.__name__))
-        self.add_dialog(AuthReloadDialog(user_state, AuthReloadDialog.__name__))
+        self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -63,7 +63,7 @@ class MenuDialog(ComponentDialog):
 
     async def reload_cache_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('reload_cache_step %s', MenuDialog.__name__)
-        return await step_context.begin_dialog(AuthReloadDialog.__name__)
+        return await step_context.begin_dialog(ReloadCacheDialog.__name__)
 
     async def show_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('show_menu_step %s', MenuDialog.__name__)

@@ -76,7 +76,7 @@ class MainDialog(ComponentDialog):
             return await step_context.begin_dialog(TelegramRegistrationDialog.__name__)
 
     async def menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('routing_step %s', MainDialog.__name__)
+        logger.debug('menu_step %s', MainDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         user_data.updated_at = datetime.datetime.utcnow()
         member_id = int(step_context.context.activity.from_property.id)

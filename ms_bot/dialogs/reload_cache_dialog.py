@@ -1,3 +1,5 @@
+import datetime
+
 from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog
 
@@ -12,7 +14,7 @@ from db.models import UserMediaFile
 logger = CustomLogger.get_logger('bot')
 
 
-class AuthReloadDialog(ComponentDialog):
+class ReloadCacheDialog(ComponentDialog):
 
     def __init__(
             self,
@@ -21,7 +23,7 @@ class AuthReloadDialog(ComponentDialog):
             telemetry_client: BotTelemetryClient = NullTelemetryClient(),
 
     ):
-        super(AuthReloadDialog, self).__init__(dialog_id or AuthReloadDialog.__name__)
+        super(ReloadCacheDialog, self).__init__(dialog_id or ReloadCacheDialog.__name__)
         self.telemetry_client = telemetry_client
         self.user_state = user_state
         self.user_profile_accessor = self.user_state.create_property("CustomerProfile")
@@ -29,20 +31,49 @@ class AuthReloadDialog(ComponentDialog):
         self.add_dialog(TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__))
         self.add_dialog(
             WaterfallDialog(
-                "AuthReloadDialog",
+                "ReloadCacheDialog",
                 [
+                    self.is_user_exists_in_blob,
                     self.user_exists_in_db,
                 ]
             )
         )
         TelegramRegistrationDialog.telemetry_client = self.telemetry_client
 
-        self.initial_dialog_id = "AuthReloadDialog"
+        self.initial_dialog_id = "ReloadCacheDialog"
         self.customer_exists = None
         self.customer_instance = None
 
+    async def is_user_exists_in_blob(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
+        print('updated_at >>> ', user_data.updated_at)
+        member_id = int(step_context.context.activity.from_property.id)
+
+        h, m, s = '0:01:00'.split(':')
+        threshold = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+        time_now = datetime.datetime.utcnow()
+
+        try:
+            timer = time_now - user_data.updated_at
+            print('timer', timer, time_now, user_data.updated_at)
+        except Exception:
+            logger.exception('USER (%s) DOESN\'T EXISTS IN CACHE', member_id)
+            return await step_context.next([])
+
+        if user_data.updated_at is None:
+            logger.debug('USER (%s) DOESN\'T EXISTS IN CACHE', member_id)
+            return await step_context.next([])
+
+        if timer < threshold and user_data.is_active:
+            logger.debug('USER (%s) STATE LOADED SUCCESSFULLY', member_id)
+            self.customer_exists = True
+            return await step_context.end_dialog(self.customer_exists)
+
+        return await step_context.next([])
+
     async def user_exists_in_db(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('user_exists_in_db %s', AuthReloadDialog.__name__)
+        logger.debug('user_exists_in_db %s', ReloadCacheDialog.__name__)
+
         member_id = int(step_context.context.activity.from_property.id)
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         try:
@@ -104,6 +135,7 @@ class AuthReloadDialog(ComponentDialog):
         user_data.is_active = customer_instance.is_active
         user_data.files_dict = user_files
         user_data.updated_at = customer_instance.updated_at
-        user_data.updated_at = customer_instance.id
-        user_data.updated_at = customer_instance.post_header
-        user_data.updated_at = customer_instance.passcode
+        user_data.pk = customer_instance.id
+        user_data.post_header = customer_instance.post_header
+        user_data.passcode = customer_instance.passcode
+        logger.debug('Cache for %s reloaded successfully!', customer_instance.member_id)
