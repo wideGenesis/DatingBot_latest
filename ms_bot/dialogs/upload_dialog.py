@@ -1,15 +1,29 @@
 import json
+import os
+import uuid
+from tempfile import NamedTemporaryFile
+from typing import Union
+
+from django.core.files import File
+
+import requests
+
 
 from botbuilder.core import MessageFactory, UserState, BotTelemetryClient, NullTelemetryClient
-from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog, \
-    PromptValidatorContext, AttachmentPrompt
+from botbuilder.dialogs import (
+    WaterfallDialog,
+    DialogTurnResult,
+    WaterfallStepContext,
+    ComponentDialog,
+    PromptValidatorContext,
+    AttachmentPrompt
+)
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, Attachment
 
-from starlette.responses import FileResponse
-
 from db.models import Customer, UserMediaFile
+from helpers.azure_storage import upload_blob
 from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES, UPLOAD_FILE_KB
 
@@ -125,8 +139,8 @@ class UploadDialog(ComponentDialog):
             member_id: int,
             file_url: str,
             content_type: str,
-            file_name: str,
-            user_data: CustomerProfile) -> str:
+            step_context: WaterfallStepContext,
+            user_data: CustomerProfile) -> Union[None, DialogTurnResult]:
 
         if user_data.files_dict is not None and len(user_data.files_dict) >= 4:
             logger.warning('Maximum files qty exceeded %s', len(user_data.files_dict))
@@ -134,22 +148,39 @@ class UploadDialog(ComponentDialog):
 
         if content_type == 'video/mp4':
             _file_type = 0
+            suffix = '.mp4'
         elif content_type == 'image/jpeg':
             _file_type = 1
+            suffix = '.jpg'
         elif content_type == 'image/png':
             _file_type = 2
+            suffix = '.png'
         else:
             return BOT_MESSAGES['file_bad_format']
 
-        FileResponse(file_url, media_type='application/octet-stream', filename=file_name)
+        _file_name = str(uuid.uuid4()).replace('-', '') + suffix
+        file = os.path.join('ms_bot/temp_media', _file_name)
+        result = requests.get(file_url)
+
+        if result.status_code == 200:
+            with open(file, 'wb') as f:
+                f.write(result.content)
+            size = os.path.getsize(file)
+            if size > 4194304:
+                await step_context.context.send_activity('File > 4Mb')
+                return await step_context.replace_dialog(UploadDialog.__name__)
+
+        upload_result = await upload_blob(suffix.replace('.', ''), _file_name, str(member_id))
+        if upload_result:
+            os.remove(file)
 
         member_id = int(member_id)
         customer_id = await Customer.objects.get(member_id=member_id)
 
         customer_photo = UserMediaFile(
             customer_id=customer_id.id,
+            file=_file_name,
             member_id=member_id,
-            file_temp_url=file_url,
             file_type=_file_type,
             privacy_type=1,
             is_archived=False
@@ -162,40 +193,21 @@ class UploadDialog(ComponentDialog):
 
         return BOT_MESSAGES['file_uploaded']
 
-def photo_path(instance, filename):
-    return 'tg_{}/image_{}'.format(instance.member_id, filename)
 
-
-def video_path(instance, filename):
-    return 'tg_{}/video_{}'.format(instance.member_id, filename)
-    container_name = str(uuid.uuid4())
-
-    def save(self, *args, **kwargs):
-        if self.file_temp_url and not self.file:
-            if self.file_type == 0:
-                suffix = '.mp4'
-            elif self.file_type == 1:
-                suffix = '.jpg'
-            elif self.file_type == 2:
-                suffix = '.png'
-            else:
-                return
-
-            file_tmp = NamedTemporaryFile(delete=True)
-
-            _file_name = file_tmp.name.split('/')
-            _file_name = str(_file_name[2]) + suffix
-
-            result = requests.get(self.file_temp_url)
-            if result.status_code == 200:
-                file_tmp.write(result.content)
-                file_tmp.flush()
-                _f = File(file_tmp, name=_file_name)
-                if _f.size > 4194304:
-                    logger.warning('UserMediaFiles has not been saved. File size: %s', _f.size)
-                    return
-
-                self.file = _f
-                self.file_temp_url = None
-
-        super(UserMediaFiles, self).save(*args, **kwargs)
+# def save(self, *args, **kwargs):
+#     file_tmp = NamedTemporaryFile(delete=True)
+#
+#     _file_name = file_tmp.name.split('/')
+#     _file_name = str(uuid.uuid4()).replace('-', '') + suffix
+#
+#     result = requests.get(self.file_temp_url)
+#     if result.status_code == 200:
+#         file_tmp.write(result.content)
+#         file_tmp.flush()
+#         _f = File(file_tmp, name=_file_name)
+#         if _f.size > 4194304:
+#             logger.warning('UserMediaFiles has not been saved. File size: %s', _f.size)
+#             return
+#
+#         self.file = _f
+#         self.file_temp_url = None

@@ -48,17 +48,19 @@ def rm_user_blobs(member_id: str):
 # https://docs.microsoft.com/ru-ru/azure/storage/blobs/storage-quickstart-blobs-python?tabs=environment-variable-windows
 # ----------------------------------------------------------------------------------------------------------
 
-async def upload_blob(filename: str, member_id: str) -> bool:
+async def upload_blob(file_type: str, filename: str, member_id: str):
     local_file_path = os.path.join('ms_bot', 'temp_media', filename)
-    blob = 'video_{}'.format(filename)
-    container = 'media/tg_{}/'.format(member_id, filename)
+    blob = '{}_{}'.format(file_type, filename)
+    container = 'media/{}'.format(member_id)
 
     # Create a blob client using the local file name as the name for the blob
     blob_client = service_client.get_blob_client(container=container, blob=blob)
 
     # Upload the created file
     with open(local_file_path, "rb") as data:
-        blob_client.upload_blob(data)
-    logger.debug("\nUpload to Azure Storage as blob has been successful:\n\t" + blob)
-
+        try:
+            blob_client.upload_blob(data)
+            logger.debug("\nUpload to Azure Storage as blob has been successful:\n\t" + blob)
+        except Exception:
+            return False
     return True

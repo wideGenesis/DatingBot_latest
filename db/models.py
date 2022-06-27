@@ -128,10 +128,9 @@ class UserMediaFile(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     member_id: int = ormar.BigInteger(index=True)
-    file: Optional[str] = ormar.String(max_length=100, nullable=True)
+    file: str = ormar.String(max_length=200, nullable=False)
     file_type: int = ormar.Integer()
     privacy_type: int = ormar.Integer()
-    file_temp_url: Optional[str] = ormar.String(max_length=200)
     is_archived: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
