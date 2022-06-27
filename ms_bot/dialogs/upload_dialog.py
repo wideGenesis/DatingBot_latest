@@ -161,3 +161,41 @@ class UploadDialog(ComponentDialog):
             logger.exception('Save customer_photo to db error %s', member_id)
 
         return BOT_MESSAGES['file_uploaded']
+
+def photo_path(instance, filename):
+    return 'tg_{}/image_{}'.format(instance.member_id, filename)
+
+
+def video_path(instance, filename):
+    return 'tg_{}/video_{}'.format(instance.member_id, filename)
+    container_name = str(uuid.uuid4())
+
+    def save(self, *args, **kwargs):
+        if self.file_temp_url and not self.file:
+            if self.file_type == 0:
+                suffix = '.mp4'
+            elif self.file_type == 1:
+                suffix = '.jpg'
+            elif self.file_type == 2:
+                suffix = '.png'
+            else:
+                return
+
+            file_tmp = NamedTemporaryFile(delete=True)
+
+            _file_name = file_tmp.name.split('/')
+            _file_name = str(_file_name[2]) + suffix
+
+            result = requests.get(self.file_temp_url)
+            if result.status_code == 200:
+                file_tmp.write(result.content)
+                file_tmp.flush()
+                _f = File(file_tmp, name=_file_name)
+                if _f.size > 4194304:
+                    logger.warning('UserMediaFiles has not been saved. File size: %s', _f.size)
+                    return
+
+                self.file = _f
+                self.file_temp_url = None
+
+        super(UserMediaFiles, self).save(*args, **kwargs)

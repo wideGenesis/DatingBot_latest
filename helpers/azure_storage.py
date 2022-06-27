@@ -1,4 +1,6 @@
-from azure.storage.blob import BlobServiceClient
+import os
+
+from azure.storage.blob import BlobServiceClient, BlobClient
 from settings.conf import AZURE_STORAGE_CONF
 from settings.logger import CustomLogger
 
@@ -41,3 +43,22 @@ def rm_user_blobs(member_id: str):
         blobsToDelete.clear()
         pass
 
+
+# ---------------------------------------------------------------------------------------------------------
+# https://docs.microsoft.com/ru-ru/azure/storage/blobs/storage-quickstart-blobs-python?tabs=environment-variable-windows
+# ----------------------------------------------------------------------------------------------------------
+
+async def upload_blob(filename: str, member_id: str) -> bool:
+    local_file_path = os.path.join('ms_bot', 'temp_media', filename)
+    blob = 'video_{}'.format(filename)
+    container = 'media/tg_{}/'.format(member_id, filename)
+
+    # Create a blob client using the local file name as the name for the blob
+    blob_client = service_client.get_blob_client(container=container, blob=blob)
+
+    # Upload the created file
+    with open(local_file_path, "rb") as data:
+        blob_client.upload_blob(data)
+    logger.debug("\nUpload to Azure Storage as blob has been successful:\n\t" + blob)
+
+    return True
