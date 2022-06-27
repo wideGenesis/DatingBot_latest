@@ -78,7 +78,7 @@ class AuthDialog(ComponentDialog):
             logger.debug('USER (%s) FOUND IN DB', member_id)
 
         except Exception:
-            logger.exception('USER (%s) DOESN\'T EXIST IN DB', member_id)
+            logger.warning('USER (%s) DOESN\'T EXIST IN DB', member_id)
             self.customer_exists = None
 
         # if self.customer_exists is None:

@@ -13,7 +13,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
-from helpers.copyright import USER_FILES_KB
+from helpers.copyright import USER_FILES_KB, BOT_MESSAGES
 from ms_bot.dialogs.file_access_dialog import FileAccessDialog
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
@@ -75,14 +75,14 @@ class MyPhotoDialog(ComponentDialog):
 
         found_choice = step_context.result
 
-        if found_choice == 'KEY_CALLBACK:Завантажити файл':
+        if found_choice == 'KEY_CALLBACK:upload':
             return await step_context.begin_dialog(UploadDialog.__name__)
-        elif found_choice == 'KEY_CALLBACK:доступ':
+        elif found_choice == 'KEY_CALLBACK:access':
             return await step_context.begin_dialog(FileAccessDialog.__name__)
-        elif found_choice == 'KEY_CALLBACK:Назад':
+        elif found_choice == 'KEY_CALLBACK:back':
             return await step_context.end_dialog('need_replace_parent')
         else:
-            await step_context.context.send_activity('Bye!')
+            await step_context.context.send_activity(BOT_MESSAGES['bye'])
             return await step_context.cancel_all_dialogs(True)
 
     @staticmethod
@@ -90,10 +90,10 @@ class MyPhotoDialog(ComponentDialog):
         _value = prompt_context.context.activity.text
 
         if _value in [
-            'KEY_CALLBACK:Завантажити файл',
-            'KEY_CALLBACK:доступ',
-            'KEY_CALLBACK:Видалити файл',
-            'KEY_CALLBACK:Назад'
+            'KEY_CALLBACK:upload',
+            'KEY_CALLBACK:access',
+            'KEY_CALLBACK:file_rm',
+            'KEY_CALLBACK:back'
         ]:
             condition = True
         else:

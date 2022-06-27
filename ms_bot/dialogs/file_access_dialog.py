@@ -12,6 +12,8 @@ from botbuilder.dialogs import (
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
+
+from db.models import UserMediaFile
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger
@@ -157,8 +159,6 @@ class FileAccessDialog(ComponentDialog):
     async def choice_route(
             step_context: WaterfallStepContext, found_choice, user_data: CustomerProfile, list_id: int
     ) -> DialogTurnResult:
-        from . import UserMediaFiles
-
         try:
             item = user_data.files_dict[list_id]
             pk = item['id']
@@ -167,7 +167,7 @@ class FileAccessDialog(ComponentDialog):
 
         if found_choice == 'KEY_CALLBACK:file_open_hidden':
             try:
-                user_media_files = UserMediaFiles.objects.get(id=pk)
+                user_media_files = UserMediaFile.objects.get(id=pk)
                 logger.warning('Obj: %s, privacy_type: %s, pk: %s', user_media_files, user_media_files.privacy_type, pk)
                 user_media_files.privacy_type = 1 if user_media_files.privacy_type == 0 else 0
                 user_media_files.save()
@@ -179,7 +179,7 @@ class FileAccessDialog(ComponentDialog):
 
         elif found_choice == 'KEY_CALLBACK:file_rm':
             try:
-                user_media_files = UserMediaFiles.objects.get(id=pk)
+                user_media_files = UserMediaFile.objects.get(id=pk)
                 user_media_files.is_archived = 1
                 user_media_files.save()
             except Exception:

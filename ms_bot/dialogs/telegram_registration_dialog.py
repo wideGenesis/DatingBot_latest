@@ -1,4 +1,5 @@
 import pickle
+from asyncio import sleep
 
 from asyncpg import UniqueViolationError
 from botbuilder.core import MessageFactory, UserState, BotTelemetryClient, NullTelemetryClient
@@ -9,16 +10,16 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes
 import json
 
+from helpers.constants import remove_last_message, remove_reply, remove_last_dropped_message
+from helpers.exceptions import DropReply
 from settings.logger import CustomLogger
-from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, MY_AGE_KB, BOT_MESSAGES
+from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, MY_AGE_KB, BOT_MESSAGES
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
-
-from db.models import Area
 from db.models import Customer
 
 logger = CustomLogger.get_logger('bot')
@@ -49,7 +50,6 @@ class TelegramRegistrationDialog(ComponentDialog):
                 "TelegramRegistrationDialog",
                 [
                     self.choose_lang_step,
-                    self.agreement_step,
                     self.member_step,
                     self.choose_sex_step,
                     self.age_step,
@@ -67,6 +67,8 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     async def choose_lang_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('choose_lang_step %s', TelegramRegistrationDialog.__name__)
+        await remove_last_message(step_context, False)
+
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
                 prompt=Activity(
@@ -77,18 +79,9 @@ class TelegramRegistrationDialog(ComponentDialog):
             )
         )
 
-    async def agreement_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('agreement_step %s', TelegramRegistrationDialog.__name__)
-        await step_context.context.send_activity('Продовжуючи, ви погоджуєтесь з політикою конфіденційності '
-                                                 'https://zodier.com/policy.html')
-        return await step_context.next([])
-
     async def member_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('member_step %s', TelegramRegistrationDialog.__name__)
-
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
+        await remove_last_message(step_context, True)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         lang = str(step_context.result).split(':')
@@ -121,10 +114,7 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     async def age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('age_step %s', TelegramRegistrationDialog.__name__)
-
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
+        await remove_last_message(step_context, True)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         result_from_previous_step = str(step_context.result).split(':')
@@ -143,9 +133,7 @@ class TelegramRegistrationDialog(ComponentDialog):
     async def request_phone_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('request_phone_step %s', TelegramRegistrationDialog.__name__)
 
-        chat_id = f"{step_context.context.activity.channel_data['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
+        await remove_last_dropped_message(step_context)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         result_from_previous_step = str(step_context.result).split(':')

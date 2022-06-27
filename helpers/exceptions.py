@@ -20,3 +20,7 @@ class AuthError(ValueError):
 
 class EmptyResultSet(ValueError):
     pass
+
+
+class DropReply(KeyError):
+    pass

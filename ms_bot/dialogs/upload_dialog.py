@@ -7,7 +7,7 @@ from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepC
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, Attachment
 
-from sqlalchemy.exc import IntegrityError
+from starlette.responses import FileResponse
 
 from db.models import Customer, UserMediaFile
 from settings.logger import CustomLogger
@@ -88,7 +88,12 @@ class UploadDialog(ComponentDialog):
         # print('>>>> attachment', attachment)
 
         if result_from_previous_step:
-            save_result = await self._save_file(member_id, attachment.content_url, attachment.content_type, user_data)
+            save_result = await self._save_file_to_blob(
+                member_id,
+                attachment.content_url,
+                attachment.content_type,
+                attachment.name,
+                user_data)
 
             user_data.photo_main = attachment.content_url
             await step_context.context.send_activity(save_result)
@@ -97,9 +102,7 @@ class UploadDialog(ComponentDialog):
     @staticmethod
     async def file_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
         if not prompt_context.recognized.succeeded:
-            await prompt_context.context.send_activity(
-                "Вкладень не отримано. Продовжуємо далі..."
-            )
+            await prompt_context.context.send_activity(BOT_MESSAGES['file_not_uploaded'])
             # We can return true from a validator function even if recognized.succeeded is false.
             return True
 
@@ -117,7 +120,13 @@ class UploadDialog(ComponentDialog):
         return len(valid_files) > 0
 
     @classmethod
-    async def _save_file(cls, member_id: int, file_url: str, content_type: str, user_data: CustomerProfile) -> str:
+    async def _save_file_to_blob(
+            cls,
+            member_id: int,
+            file_url: str,
+            content_type: str,
+            file_name: str,
+            user_data: CustomerProfile) -> str:
 
         if user_data.files_dict is not None and len(user_data.files_dict) >= 4:
             logger.warning('Maximum files qty exceeded %s', len(user_data.files_dict))
@@ -131,6 +140,9 @@ class UploadDialog(ComponentDialog):
             _file_type = 2
         else:
             return BOT_MESSAGES['file_bad_format']
+
+        FileResponse(file_url, media_type='application/octet-stream', filename=file_name)
+
         member_id = int(member_id)
         customer_id = await Customer.objects.get(member_id=member_id)
 

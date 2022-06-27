@@ -2,7 +2,7 @@ import api
 import uvicorn
 import os
 
-from settings.conf import FAST_API_CONF
+from settings.conf import FAST_API_CONF, DATABASE_CONF
 from db.engine import DATABASE, ENGINE
 from fastapi import FastAPI
 from settings.logger import CustomLogger
@@ -11,9 +11,7 @@ from db.models import METADATA
 
 logger = CustomLogger.get_logger('bot')
 
-# TODO uncomment if tables creation needed, && server_default=text("nextval('areas_id_seq'::regclass)")
-#  UNcommented if parse tables from another ORM, else SqlAlchemy create tables comment this lines.
-#  Driver SYNC = export DB_DRIVER=postgresql
+# TODO uncomment if tables creation needed, set SYNC Driver = export DB_DRIVER=postgresql
 if DATABASE_CONF.DB_DRIVER == 'postgresql':
    METADATA.create_all(bind=ENGINE)
 
