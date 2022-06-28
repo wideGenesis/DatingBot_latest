@@ -52,15 +52,14 @@ class MySettingsDialog(ComponentDialog):
     async def show_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('show_menu_step %s', MySettingsDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
-
-        message = f'Мова бота: {user_data.lang}' \
-                  f'Моя стать: {user_data.gender}' \
-                  f'Мій вік: {user_data.age}' \
-                  f'Переважний вік партнера: {user_data.prefer_age}' \
-                  f'Я шукаю: {user_data.looking_gender}' \
-                  f'Мета пошуків: {user_data.looking_for}' \
-                  f'Моє місто: {user_data.area_id}' \
-                  f'Мій телефон: {user_data.phone}'
+        # f'Переважний вік партнера: {user_data.prefer_age}' \
+        # f'Я шукаю: {user_data.looking_gender}' \
+        # f'Мета пошуків: {user_data.looking_for}' \
+        # f'Моє місто: {user_data.area_id}\n \n' \
+        message = f'Мова бота: {user_data.lang}\n \n' \
+                  f'Моя стать: {user_data.self_sex}\n \n' \
+                  f'Мій вік: {user_data.age}\n \n' \
+                  f'Мій телефон: {user_data.phone}\n \n'
         await step_context.context.send_activity(message)
 
         return await step_context.prompt(
@@ -105,7 +104,3 @@ class MySettingsDialog(ComponentDialog):
                 prompt_context.recognized.succeeded
                 and condition
         )
-
-
-
-

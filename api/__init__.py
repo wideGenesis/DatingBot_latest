@@ -11,10 +11,10 @@ router.include_router(customer.router)
 router.include_router(advertisement.router)
 
 # CRUDRouter for fastApi
-router.include_router(ap.area_router)
-router.include_router(ap.redis_channel_router)
-router.include_router(ap.customer_router)
-router.include_router(ap.advertisement_router)
-router.include_router(ap.blacklist_router)
+# router.include_router(ap.area_router)
+# router.include_router(ap.redis_channel_router)
+# router.include_router(ap.customer_router)
+# router.include_router(ap.advertisement_router)
+# router.include_router(ap.blacklist_router)
 
 

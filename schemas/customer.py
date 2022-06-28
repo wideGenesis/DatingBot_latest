@@ -6,17 +6,19 @@ from pydantic import BaseModel, EmailStr
 
 class PremiumTier(BaseModel):
     id: int
-    tier: int
+    tier: str
 
 
 class BaseCustomer(BaseModel):
+    id: int
     nickname: str
     phone: int
     email: Optional[EmailStr]
     member_id: int
     conversation_reference: bytes
     lang: Optional[int]
-    post_header: Optional[bytes]
+    # premium_tier_id: PremiumTier
+    # post_header: Optional[bytes]
     is_active: bool
     passcode: Optional[str]
     created_at: datetime
@@ -32,7 +34,16 @@ class CustomerUpdate(BaseCustomer):
 
 
 class Customer(BaseCustomer):
-    premium_tier_id: PremiumTier
+    id: int
+    nickname: str
+    phone: int
+    email: Optional[EmailStr]
+    member_id: int
+    lang: Optional[int]
+    # premium_tier_id: PremiumTier
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

@@ -17,19 +17,38 @@ router = APIRouter(
 )
 
 
-# @router.get('/', response_model=List[schemas.Customer])
-@router.get('/')
-async def get_customers(limit: int):
-    # return await Customer.objects.paginate(3).all()
-    return await Customer.objects.all()
+@router.post('/create', response_model=schemas.Customer)
+async def create_customer(customer: schemas.CustomerCreate):
+    return await CustomerService().create(customer)
 
 
-@router.get('/{customer_id}',
-            response_model=Customer,
-            response_model_exclude={
-                'conversation_reference',
-                'post_header',
-                'passcode'}
-            )
-async def get_customer(customer_id: int):
-    return await Customer.objects.get_or_none(id=customer_id)
+@router.get('/list', response_model=List[schemas.Customer])
+async def get_customers(offset: int, limit: int):
+    return await CustomerService().list(offset, limit)
+
+
+@router.get('/member_id/{member_id}',
+            response_model=schemas.Customer)
+async def get_by_member_id(member_id: int):
+    return await CustomerService().get_by_member_id(member_id)
+
+
+@router.get('/phone/{phone}',
+            response_model=schemas.Customer)
+async def get_by_phone(phone: int):
+    return await CustomerService().get_by_phone(phone)
+
+
+@router.get('/nickname/{nickname}', response_model=schemas.Customer)
+async def get_by_nickname(nickname: str):
+    return await CustomerService().get_by_nickname(nickname)
+
+
+@router.put('/update', response_model=schemas.Customer)
+async def create_customer(customer: schemas.CustomerUpdate):
+    return await CustomerService().update(customer)
+
+
+@router.delete('/delete', response_model=schemas.Customer)
+async def delete_by_member_id(member_id: int):
+    return await CustomerService().delete(member_id)
