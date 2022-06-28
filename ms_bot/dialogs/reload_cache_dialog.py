@@ -7,8 +7,8 @@ from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDial
 from settings.logger import CustomLogger
 from ms_bot.bots_models.models import CustomerProfile
 
-from db.models import Customer
-from db.models import UserMediaFile
+from core.tables.models import Customer
+from core.tables.models import UserMediaFile
 
 
 logger = CustomLogger.get_logger('bot')

@@ -1,14 +1,10 @@
-import datetime
-
 from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext, ComponentDialog
 
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from settings.logger import CustomLogger
-from ms_bot.bots_models.models import CustomerProfile
 
-from db.models import Customer
-from db.models import UserMediaFile
+from core.tables.models import Customer
 
 logger = CustomLogger.get_logger('bot')
 

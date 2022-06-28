@@ -10,8 +10,8 @@ from fastapi import (
 )
 from sqlalchemy.orm import Session
 
-import schemas
-from db import models
+from core import schemas
+from core.tables import models
 from db.engine import get_session
 
 

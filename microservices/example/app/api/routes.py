@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
 
-from app.api.models import CastOut, CastIn, CastUpdate
-from app.api import db_manager
+from core.api import CastOut, CastIn
+from core.api import db_manager
 
 casts = APIRouter()
 

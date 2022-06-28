@@ -9,7 +9,7 @@ from . advertisement import (
     AdvertisementUpdate,
 )
 from . customer import (
-    Customer,
+    CustomerExpose,
     CustomerCreate,
     CustomerUpdate
 )

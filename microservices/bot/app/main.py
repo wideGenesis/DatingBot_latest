@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import api
+from core import api
 from db.engine import DATABASE, ENGINE, METADATA
 
 import uvicorn

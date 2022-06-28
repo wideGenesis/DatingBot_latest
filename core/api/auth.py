@@ -5,8 +5,8 @@ from fastapi import (
 )
 from fastapi.security import OAuth2PasswordRequestForm
 
-import schemas
-from crud.auth import (
+from core import schemas
+from core.crud.auth import (
     AuthService,
     get_current_user,
 )

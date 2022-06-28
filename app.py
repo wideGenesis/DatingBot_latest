@@ -1,12 +1,11 @@
-import api
+from core import api
 import uvicorn
-import os
 
 from settings.conf import FAST_API_CONF, DATABASE_CONF
 from db.engine import DATABASE, ENGINE
 from fastapi import FastAPI
 from settings.logger import CustomLogger
-from db.models import METADATA
+from core.tables.models import METADATA
 
 
 logger = CustomLogger.get_logger('bot')

@@ -1,8 +1,11 @@
-from datetime import date, datetime
+from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union, Dict
 
 from pydantic import BaseModel
+
+from core.schemas import CustomerExpose
+from core.schemas.area import AreaExpose
 
 
 class WhoForWhomOptions(int, Enum):
@@ -24,6 +27,11 @@ class BaseAdvertisement(BaseModel):
 
     is_published: bool
     created_at: datetime
+    updated_at: datetime
+    valid_to_date: datetime
+    area_id: Optional[Union[AreaExpose, Dict]]
+    large_city_near_id: Optional[Union[AreaExpose, Dict]]
+    publisher_id: Optional[Union[CustomerExpose, Dict]]
 
 
 class AdvertisementCreate(BaseAdvertisement):

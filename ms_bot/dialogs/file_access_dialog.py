@@ -13,7 +13,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from db.models import UserMediaFile
+from core.tables.models import UserMediaFile
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger

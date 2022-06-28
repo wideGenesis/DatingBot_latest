@@ -10,7 +10,6 @@ class PremiumTier(BaseModel):
 
 
 class BaseCustomer(BaseModel):
-    id: int
     nickname: str
     phone: int
     email: Optional[EmailStr]
@@ -33,17 +32,6 @@ class CustomerUpdate(BaseCustomer):
     pass
 
 
-class Customer(BaseCustomer):
-    id: int
-    nickname: str
-    phone: int
-    email: Optional[EmailStr]
-    member_id: int
-    lang: Optional[int]
-    # premium_tier_id: PremiumTier
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-
+class CustomerExpose(BaseCustomer):
     class Config:
         orm_mode = True

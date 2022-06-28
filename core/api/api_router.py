@@ -1,8 +1,6 @@
-from fastapi_crudrouter import SQLAlchemyCRUDRouter
 from fastapi_crudrouter import OrmarCRUDRouter
-from db import models
-from schemas import area
-
+from core.tables import models
+from core.schemas import area
 
 # https://fastapi-crudrouter.awtkns.com/
 

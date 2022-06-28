@@ -9,7 +9,7 @@ from botbuilder.dialogs import (
 )
 from botbuilder.schema import HeroCard, CardAction, ActionTypes, InputHints
 
-from db.models import Customer
+from core.tables.models import Customer
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger

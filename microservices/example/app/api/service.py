@@ -1,5 +1,5 @@
-from app.api.models import CastIn, CastOut, CastUpdate
-from app.api.db import casts, database
+from core.api import CastIn
+from core.api import casts, database
 
 
 async def add_cast(payload: CastIn):

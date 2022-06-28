@@ -1,8 +1,8 @@
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 
-import schemas
-from db import models
+from core import schemas
+from core.tables import models
 
 
 class CustomerService:
@@ -28,18 +28,8 @@ class CustomerService:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
 
-        # async def update(self, user_data: CustomerProfile, column_names: list) -> models.Customer:
-        #     customer = await Customer.objects.get(member_id=user_data.member_id)
-        #     # customer.name = "Terminator 2"
-        # # customer.year = 1991
-        # # customer.profit = 0.520
-        # # operation = await customer.update(_columns=column_names)
-        # operation = await customer.update(**user_data.__dict__)
-
-        # return operation
-
     async def update(self, customer: schemas.CustomerUpdate) -> models.Customer:
-        return await models.Customer(**customer.dict()).save()
+        return await models.Customer(**customer.dict()).update()
 
     async def delete(self, member_id: int) -> models.Customer.id:
         customer = await models.Customer.objects.get(member_id=member_id)

@@ -13,9 +13,9 @@ import json
 # from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
-from db.models import Area, Customer, PremiumTier
+from core.tables.models import Area, Customer, PremiumTier
 from settings.logger import CustomLogger
-from helpers.copyright import BOT_MESSAGES, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, MY_AGE_KB, PREFER_AGE_KB, \
+from helpers.copyright import BOT_MESSAGES, CHOOSE_SEX_KB, LOOKING_FOR_SEX_KB, PREFER_AGE_KB, \
     CREATE_AREA_KB
 
 from ms_bot.bots_models.models import CustomerProfile

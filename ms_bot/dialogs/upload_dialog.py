@@ -1,10 +1,7 @@
 import json
 import os
 import uuid
-from tempfile import NamedTemporaryFile
 from typing import Union
-
-from django.core.files import File
 
 import requests
 
@@ -22,7 +19,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, Attachment
 
-from db.models import Customer, UserMediaFile
+from core.tables.models import Customer, UserMediaFile
 from helpers.azure_storage import upload_blob
 from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES, UPLOAD_FILE_KB

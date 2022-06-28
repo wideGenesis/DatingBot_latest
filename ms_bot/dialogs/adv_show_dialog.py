@@ -15,7 +15,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from db.models import Advertisement
+from core.tables.models import Advertisement
 from ms_bot.bots_models.models import CustomerProfile
 from settings.logger import CustomLogger
 from helpers.copyright import send_photo_kb, send_video_kb, SEND_MEDIA_KB

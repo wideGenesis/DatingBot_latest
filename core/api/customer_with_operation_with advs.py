@@ -7,9 +7,9 @@ from fastapi import (
     status,
 )
 
-import schemas
-from crud.auth import get_current_user
-from crud.customer import CustomerService
+from core import schemas
+# from crud.auth import get_current_user
+from core.crud.customer import CustomerService
 
 
 router = APIRouter(
@@ -20,58 +20,57 @@ router = APIRouter(
 
 @router.get(
     '/',
-    response_model=List[schemas.Customer],
+    response_model=List[schemas.CustomerExpose],
 )
 def get_customers(
-    user: schemas.User = Depends(get_current_user),
+    customer: schemas.CustomerExpose,
     customer_service: CustomerService = Depends(),
 ):
-    return customer_service.get_many(user.id)
+    return customer_service.get_many(50)
 
 
 @router.post(
     '/',
-    response_model=schemas.Customer,
+    response_model=schemas.CustomerExpose,
     status_code=status.HTTP_201_CREATED,
 )
 def create_customer(
     customer_data: schemas.CustomerCreate,
-    user: schemas.User = Depends(get_current_user),
+    customer: schemas.CustomerExpose,
     customer_service: CustomerService = Depends(),
 ):
     return customer_service.create(
-        user.id,
+        customer.id,
         customer_data,
     )
 
 
 @router.get(
     '/{customer_id}',
-    response_model=schemas.Customer,
+    response_model=schemas.CustomerExpose,
 )
 def get_customer(
     customer_id: int,
-    user: schemas.User = Depends(get_current_user),
+    customer: schemas.CustomerExpose,
     customer_service: CustomerService = Depends(),
 ):
     return customer_service.get(
-        user.id,
-        customer_id,
+        customer.id,
     )
 
 
 @router.put(
     '/{customer_id}',
-    response_model=schemas.Customer,
+    response_model=schemas.CustomerExpose,
 )
 def update_customer(
     customer_id: int,
     customer_data: schemas.CustomerUpdate,
-    user: schemas.User = Depends(get_current_user),
+    customer: schemas.CustomerExpose,
     customer_service: CustomerService = Depends(),
 ):
     return customer_service.update(
-        user.id,
+        customer.id,
         customer_id,
         customer_data,
     )
@@ -83,11 +82,11 @@ def update_customer(
 )
 def delete_customer(
     customer_id: int,
-    user: schemas.User = Depends(get_current_user),
+    customer: schemas.CustomerExpose,
     customer_service: CustomerService = Depends(),
 ):
     customer_service.delete(
-        user.id,
+        customer.id,
         customer_id,
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

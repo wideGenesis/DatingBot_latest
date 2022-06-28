@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-import api.api_router as ap
+import core.api.api_router as ap
 
-from api import advertisement, auth, customer, bot, bot_proactive
+from core.api import advertisement, customer, bot, auth, bot_proactive
 
 router = APIRouter()
 router.include_router(auth.router)
