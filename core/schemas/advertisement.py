@@ -4,7 +4,7 @@ from typing import Optional, Union, Dict
 
 from pydantic import BaseModel
 
-from core.schemas import CustomerExpose
+from core.schemas.customer import CustomerExpose
 from core.schemas.area import AreaExpose
 
 
@@ -42,13 +42,12 @@ class AdvertisementUpdate(BaseAdvertisement):
     pass
 
 
-class Advertisement(BaseAdvertisement):
+class AdvertisementExpose(BaseAdvertisement):
     id: int
     area_id: int
     large_city_near_id: int
     publisher_id: int
-    redis_channel_main: str
-    redis_channel_second: str
+    redis_channel_id: int
 
     class Config:
         orm_mode = True

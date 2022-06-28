@@ -6,48 +6,51 @@ from fastapi import (
     status,
 )
 
-from core import schemas
+from core.schemas.advertisement import AdvertisementExpose
+from core.crud.advertisement import AdvertisementService
+from core.schemas.customer import CustomerCreate, CustomerUpdate
 
 router = APIRouter(
     prefix='/advertisement',
     tags=['Advertisement'],
 )
 
-@router.post('/create', response_model=schemas.CustomerExpose, status_code=status.HTTP_201_CREATED)
-async def create_customer(customer: schemas.CustomerCreate):
-    return await AdvertismentService().create(customer)
+
+@router.post('/create', response_model=AdvertisementExpose, status_code=status.HTTP_201_CREATED)
+async def create_customer(customer: CustomerCreate):
+    return await AdvertisementService().create(customer)
 
 
-@router.get('/list', response_model=List[schemas.CustomerExpose])
+@router.get('/list', response_model=List[AdvertisementExpose])
 async def get_customers(offset: int, limit: int):
-    return await AdvertismentService().list(offset, limit)
+    return await AdvertisementService().list(offset, limit)
 
 
-@router.get('/member_id/{member_id}',
-            response_model=schemas.CustomerExpose)
-async def get_by_member_id(member_id: int):
-    return await AdvertismentService().get_by_member_id(member_id)
+@router.get('/advertisement/{location}',
+            response_model=AdvertisementExpose)
+async def get_by_location(member_id: int):
+    return await AdvertisementService().get_by_location(member_id)
 
 
-@router.get('/phone/{phone}',
-            response_model=schemas.CustomerExpose)
-async def get_by_phone(phone: int):
-    return await AdvertismentService().get_by_phone(phone)
+@router.get('/advertisement/{redis_channel_id}',
+            response_model=AdvertisementExpose)
+async def get_by_redis_channel_id(phone: int):
+    return await AdvertisementService().get_by_redis_channel_id(phone)
 
 
-@router.get('/nickname/{nickname}', response_model=schemas.CustomerExpose)
-async def get_by_nickname(nickname: str):
-    return await AdvertismentService().get_by_nickname(nickname)
+@router.get('/advertisement/{publisher_id}', response_model=AdvertisementExpose)
+async def get_by_publisher_id(nickname: str):
+    return await AdvertisementService().get_by_publisher_id(nickname)
 
 
-@router.put('/update', response_model=schemas.CustomerExpose)
-async def create_customer(customer: schemas.CustomerUpdate):
-    return await AdvertismentService().update(customer)
+@router.put('/update', response_model=AdvertisementExpose)
+async def create_customer(customer: CustomerUpdate):
+    return await AdvertisementService().update(customer)
 
 
 @router.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_customer_by_member_id(member_id: int):
-    await AdvertismentService().delete(member_id)
+    await AdvertisementService().delete(member_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

@@ -21,7 +21,7 @@ class AreaUpdate(BaseArea):
     pass
 
 
-class Area(BaseArea):
+class AreaExpose(BaseArea):
     id: int
 
     class Config:

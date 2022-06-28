@@ -5,7 +5,7 @@ from fastapi import (
 )
 from fastapi.security import OAuth2PasswordRequestForm
 
-from core import schemas
+from core.schemas.auth import Token, UserCreate, User
 from core.crud.auth import (
     AuthService,
     get_current_user,
@@ -20,11 +20,11 @@ router = APIRouter(
 
 @router.post(
     '/sign-up/',
-    response_model=schemas.Token,
+    response_model=Token,
     status_code=status.HTTP_201_CREATED,
 )
 def sign_up(
-    user_data: schemas.UserCreate,
+    user_data: UserCreate,
     auth_service: AuthService = Depends(),
 ):
     return auth_service.register_new_user(user_data)
@@ -32,7 +32,7 @@ def sign_up(
 
 @router.post(
     '/sign-in/',
-    response_model=schemas.Token,
+    response_model=Token,
 )
 def sign_in(
     auth_data: OAuth2PasswordRequestForm = Depends(),
@@ -46,9 +46,9 @@ def sign_in(
 
 @router.get(
     '/user/',
-    response_model=schemas.User,
+    response_model=User,
 )
-def get_user(user: schemas.User = Depends(get_current_user)):
+def get_user(user: User = Depends(get_current_user)):
     return user
 
 

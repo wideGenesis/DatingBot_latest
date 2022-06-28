@@ -18,7 +18,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from core.tables import models
-from core import schemas
+from core.schemas.auth import User, Token, UserCreate
 
 from db.engine import get_session
 from settings.conf import FAST_API_CONF
@@ -30,7 +30,7 @@ security = HTTPBasic()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/sign-in/')
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> schemas.User:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     return AuthService.verify_token(token)
 
 
@@ -44,7 +44,7 @@ class AuthService:
         return bcrypt.hash(password)
 
     @classmethod
-    def verify_token(cls, token: str) -> schemas.User:
+    def verify_token(cls, token: str) -> User:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
@@ -62,15 +62,15 @@ class AuthService:
         user_data = payload.get('user')
 
         try:
-            user = schemas.User.parse_obj(user_data)
+            user = User.parse_obj(user_data)
         except ValidationError:
             raise exception from None
 
         return user
 
     @classmethod
-    async def create_token(cls, user: models.User) -> schemas.Token:
-        user_data = schemas.User.from_orm(user)
+    async def create_token(cls, user: models.User) -> Token:
+        user_data = User.from_orm(user)
         now = datetime.utcnow()
         payload = {
             'iat': now,
@@ -86,15 +86,15 @@ class AuthService:
             algorithm=FAST_API_CONF.JWT_ALGO,
         )
 
-        return schemas.Token(access_token=token)
+        return Token(access_token=token)
 
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
     async def register_new_user(
         self,
-        user_data: schemas.UserCreate,
-    ) -> schemas.Token:
+        user_data: UserCreate,
+    ) -> Token:
 
         user = models.User(
             email=user_data.email,
@@ -108,7 +108,7 @@ class AuthService:
         self,
         username: str,
         password: str,
-    ) -> schemas.Token:
+    ) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Incorrect username or password',

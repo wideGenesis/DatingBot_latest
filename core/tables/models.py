@@ -3,10 +3,9 @@ import datetime
 import ormar
 
 from typing import Optional, Union, Dict, List
-
 from sqlalchemy import text
-
 from db.engine import METADATA, DATABASE
+from enum import Enum
 
 
 class ForOrmarMeta(ormar.ModelMeta):
@@ -57,6 +56,14 @@ class PremiumTier(ormar.Model):
     tier: str = ormar.String(unique=True, max_length=100, nullable=False)
 
 
+class RedisChannel(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = 'redis_channels'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    redis_channel: str = ormar.String(max_length=200, nullable=False, unique=True)
+
+
 class Customer(ormar.Model):
     class Meta(ForOrmarMeta):
         tablename: str = 'customers'
@@ -68,21 +75,24 @@ class Customer(ormar.Model):
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
     lang: Optional[int] = ormar.Integer(index=True)
-    post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
+    instagram_link: Optional[str] = ormar.String(index=True, max_length=50, unique=True, nullable=True)
+    tiktok_link: Optional[str] = ormar.String(index=True, max_length=50, unique=True, nullable=True)
     is_active: bool = ormar.Boolean(nullable=False)
+    post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(PremiumTier)
+    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(RedisChannel)
 
 
-class RedisChannel(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = 'redis_channels'
-
-    id: int = ormar.BigInteger(primary_key=True)
-    redis_channel: str = ormar.String(max_length=200, nullable=False, unique=True)
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
+class WhoForWhomEnum(Enum):
+    Man_to_Woman = 0
+    Woman_to_Man = 1
+    Any_to_Both = 2
+    Man_to_Man = 3
+    Woman_to_Woman = 4
+    Other_to_Other = 5
 
 
 class Advertisement(ormar.Model):
@@ -90,7 +100,7 @@ class Advertisement(ormar.Model):
         tablename: str = 'advertisements'
 
     id: int = ormar.BigInteger(primary_key=True)
-    who_for_whom: int = ormar.Integer(index=True)
+    who_for_whom: int = ormar.Integer(index=True, choices=list(WhoForWhomEnum))
     age: int = ormar.Integer(index=True)
     prefer_age: int = ormar.Integer(index=True)
     has_place: int = ormar.Integer(nullable=False)

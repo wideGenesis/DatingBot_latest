@@ -5,10 +5,11 @@ from core.api import advertisement, customer, bot, auth, bot_proactive
 
 router = APIRouter()
 router.include_router(auth.router)
-router.include_router(bot.router)
-router.include_router(bot_proactive.router)
 router.include_router(customer.router)
 router.include_router(advertisement.router)
+router.include_router(bot.router)
+router.include_router(bot_proactive.router)
+
 
 # CRUDRouter for fastApi
 # router.include_router(ap.area_router)

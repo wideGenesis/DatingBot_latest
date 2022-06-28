@@ -200,6 +200,10 @@ class FastApiConfig(BaseSettings):
             'description': 'Создание, редактирование, удаление и просмотр пользователей',
         },
         {
+            'name': 'Advertisement',
+            'description': 'Создание, редактирование, удаление и просмотр объявлений',
+        },
+        {
             'name': 'Bot messages exchange',
             'description': 'Bot messages exchange',
         },
