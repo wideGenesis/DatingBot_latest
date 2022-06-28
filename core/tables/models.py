@@ -178,3 +178,12 @@ class Commercial(ormar.Model):
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
     is_active: bool = ormar.Boolean(nullable=False)
+
+
+class TemporaryTable(ormar.Model):
+
+    class Meta(ForOrmarMeta):
+        tablename: str = 'temporarytable'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    temp: str = ormar.String(unique=True, max_length=100, nullable=False)

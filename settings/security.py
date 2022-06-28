@@ -7,16 +7,20 @@ from .config import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+
 def verify_password(password: str, hash: str) -> bool:
     return pwd_context.verify(password, hash)
+
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     to_encode.update({"exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 def decode_access_token(token: str):
     try:
@@ -24,6 +28,7 @@ def decode_access_token(token: str):
     except jwt.JWSError:
         return None
     return encoded_jwt
+
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
