@@ -9,7 +9,7 @@ router.include_router(customer.router)
 router.include_router(advertisement.router)
 router.include_router(bot.router)
 router.include_router(bot_proactive.router)
-router.include_router(index.router)
+router.include_router(index.index)
 
 
 # CRUDRouter for fastApi

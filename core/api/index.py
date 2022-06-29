@@ -10,16 +10,19 @@ from fastapi.templating import Jinja2Templates
 
 from starlette.status import HTTP_415_UNSUPPORTED_MEDIA_TYPE, HTTP_201_CREATED
 
-router = APIRouter(
+index = APIRouter(
     prefix='',
     tags=['index'],
 )
 
-router.mount("/static", StaticFiles(directory="static_assets"), name="static")
-
 templates = Jinja2Templates(directory="templates")
+#
+# index.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@router.get("/", response_class=HTMLResponse, status_code=status.HTTP_202_ACCEPTED)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "id": None})
+@index.get("/", response_class=HTMLResponse, status_code=status.HTTP_202_ACCEPTED)
+async def home(request: Request):
+    data = {
+        "page": "Home page"
+    }
+    return templates.TemplateResponse("index.html", {"request": request, "data": data})

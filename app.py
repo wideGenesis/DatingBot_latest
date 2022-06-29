@@ -7,6 +7,9 @@ from fastapi import FastAPI
 from settings.logger import CustomLogger
 from core.tables.models import METADATA
 from startup_insert_fixture import fixture
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 
 logger = CustomLogger.get_logger('bot')
 
@@ -25,6 +28,8 @@ app = FastAPI(
 app.include_router(api.router)
 
 app.state.database = DATABASE
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.on_event("startup")
