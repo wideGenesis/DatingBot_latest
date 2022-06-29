@@ -8,6 +8,82 @@ from db.engine import METADATA, DATABASE
 from enum import Enum
 
 
+class WhoForWhomEnum(Enum):
+    man_to_woman = 0
+    woman_to_man = 1
+    any_to_both = 2
+    man_to_man = 3
+    woman_to_woman = 4
+    other_to_other = 5
+
+
+class LangEnum(Enum):
+    en = 0
+    ua = 1
+    es = 2
+    ru = 3
+
+
+class HasPlaceEnum(Enum):
+    none = 0
+    yours = 1
+    mine = 2
+    fifty_fifty = 3
+
+
+class DatingTime(Enum):
+    morning = 0
+    day = 1
+    evening = 2
+    night = 3
+
+
+class DatingDay(Enum):
+    _any = 0
+    today = 1
+    weekend = 2
+
+
+class AdvGoalEnum(Enum):
+    dating = 0
+    walking = 1
+    talking = 2
+    relationships = 3
+    children = 4
+    petting_jerk = 5
+    oral_for_me = 6
+    oral_for_you = 7
+    classic_man_to_woman = 8
+    anal_for_me = 9
+    anal_for_you = 10
+    rim_for_me = 11
+    rim_for_you = 12
+    fetishes_for_me = 13
+    massage_for_me = 14
+    massage_for_you = 15
+    escorting_for_me = 16
+    escorting_for_you = 17
+
+
+class PremiumTierEnum(Enum):
+    free = 0
+    advanced_1m = 1
+    advanced_12m = 2
+    premium_1m = 3
+    premium_12m = 4
+
+
+class PrivacyTypeEnum(Enum):
+    open = 0
+    hidden = 1
+
+
+class FileTypeEnum(Enum):
+    mp4 = 0
+    jpg = 1
+    png = 2
+
+
 class ForOrmarMeta(ormar.ModelMeta):
     metadata = METADATA
     database = DATABASE
@@ -45,14 +121,11 @@ class Area(ormar.Model):
 
 
 class PremiumTier(ormar.Model):
-    """
-    free, advanced_1m, advanced_12m, premium_1m, premium_12m
-    """
     class Meta(ForOrmarMeta):
         tablename: str = 'premium_tiers'
 
     id: int = ormar.BigInteger(primary_key=True)
-    tier: str = ormar.String(unique=True, max_length=100, nullable=False)
+    tier: int = ormar.Integer(unique=True, nullable=False, choices=list(PremiumTierEnum))
 
 
 class RedisChannel(ormar.Model):
@@ -73,7 +146,7 @@ class Customer(ormar.Model):
     email: Optional[str] = ormar.String(max_length=100, unique=True, nullable=True)
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
-    lang: Optional[int] = ormar.Integer(index=True)
+    lang: Optional[int] = ormar.Integer(index=True, choices=list(LangEnum))
     instagram_link: Optional[str] = ormar.String(index=True, max_length=50, unique=True, nullable=True)
     tiktok_link: Optional[str] = ormar.String(index=True, max_length=50, unique=True, nullable=True)
     is_active: bool = ormar.Boolean(nullable=False)
@@ -89,15 +162,6 @@ class Customer(ormar.Model):
     )
 
 
-class WhoForWhomEnum(Enum):
-    Man_to_Woman = 0
-    Woman_to_Man = 1
-    Any_to_Both = 2
-    Man_to_Man = 3
-    Woman_to_Woman = 4
-    Other_to_Other = 5
-
-
 class Advertisement(ormar.Model):
     class Meta(ForOrmarMeta):
         tablename: str = 'advertisements'
@@ -106,9 +170,9 @@ class Advertisement(ormar.Model):
     who_for_whom: int = ormar.Integer(index=True, choices=list(WhoForWhomEnum))
     age: int = ormar.Integer(index=True)
     prefer_age: int = ormar.Integer(index=True)
-    has_place: int = ormar.Integer(nullable=False)
-    dating_time: int = ormar.Integer(nullable=False)
-    dating_day: int = ormar.Integer(nullable=False)
+    has_place: int = ormar.Integer(nullable=False, choices=list(HasPlaceEnum))
+    dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTime))
+    dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDay))
     adv_text: str = ormar.Text(nullable=False)
     location: str = ormar.String(max_length=50)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
@@ -150,8 +214,8 @@ class UserMediaFile(ormar.Model):
     id: int = ormar.BigInteger(primary_key=True)
     # member_id: int = ormar.BigInteger(index=True)
     file: str = ormar.String(max_length=200, nullable=False)
-    file_type: int = ormar.Integer()
-    privacy_type: int = ormar.Integer()
+    file_type: int = ormar.Integer(choices=list(FileTypeEnum))
+    privacy_type: int = ormar.Integer(choices=list(PrivacyTypeEnum))
     is_archived: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
@@ -164,14 +228,14 @@ class AdvGoal(ormar.Model):
         tablename: str = 'adv_goals'
 
     id: int = ormar.BigInteger(primary_key=True)
-    goals_1: Optional[int] = ormar.Integer()
-    goals_2: Optional[int] = ormar.Integer()
-    goals_3: Optional[int] = ormar.Integer()
-    goals_4: Optional[int] = ormar.Integer()
-    goals_5: Optional[int] = ormar.Integer()
-    goals_6: Optional[int] = ormar.Integer()
-    goals_7: Optional[int] = ormar.Integer()
-    goals_8: Optional[int] = ormar.Integer()
+    goals_1: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_2: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_3: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_4: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_5: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_6: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_7: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_8: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Advertisement, related_name='rel_adv')
 
@@ -191,12 +255,3 @@ class Commercial(ormar.Model):
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
     is_active: bool = ormar.Boolean(nullable=False)
-
-
-class TemporaryTable(ormar.Model):
-
-    class Meta(ForOrmarMeta):
-        tablename: str = 'temporarytable'
-
-    id: int = ormar.BigInteger(primary_key=True)
-    temp: str = ormar.String(unique=True, max_length=100, nullable=False)

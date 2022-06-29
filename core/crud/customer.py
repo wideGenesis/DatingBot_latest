@@ -11,19 +11,19 @@ class CustomerService:
         return await models.Customer(**customer.dict()).save()
 
     async def get_by_member_id(self, member_id: int) -> models.Customer:
-        _customer = await models.Customer.objects.get_or_none(member_id=member_id)
+        _customer = await models.Customer.objects.select_related('premium_tier_id').get_or_none(member_id=member_id)
         if not _customer:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
 
     async def get_by_phone(self, phone: int) -> models.Customer:
-        _customer = await models.Customer.objects.get_or_none(phone=phone)
+        _customer = await models.Customer.objects.select_related('premium_tier_id').get_or_none(phone=phone)
         if not _customer:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
 
     async def get_by_nickname(self, nickname: str) -> models.Customer:
-        _customer = await models.Customer.objects.get_or_none(nickname=nickname)
+        _customer = await models.Customer.objects.select_related('premium_tier_id').get_or_none(nickname=nickname)
         if not _customer:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
