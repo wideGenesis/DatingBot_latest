@@ -48,7 +48,6 @@ class PremiumTier(ormar.Model):
     """
     free, advanced_1m, advanced_12m, premium_1m, premium_12m
     """
-
     class Meta(ForOrmarMeta):
         tablename: str = 'premium_tiers'
 
@@ -82,8 +81,12 @@ class Customer(ormar.Model):
     passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(PremiumTier)
-    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(RedisChannel)
+    premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(
+        PremiumTier, related_name='rel_premium_tier'
+    )
+    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
+        RedisChannel, related_name='rel_redis_channel_from_customer'
+    )
 
 
 class WhoForWhomEnum(Enum):
@@ -110,16 +113,22 @@ class Advertisement(ormar.Model):
     location: str = ormar.String(max_length=50)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     money_support: bool = ormar.Boolean(nullable=False)
-    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(RedisChannel)
     is_published: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     valid_to_date: datetime.datetime = ormar.DateTime(
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
-    area_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(Area, related_name="customer_area_id")
-    large_city_near_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(Area, related_name="customer_large_city_near_id")
-    publisher_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
+    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
+        RedisChannel, related_name='rel_redis_channel_from adv'
+    )
+    area_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
+        Area, related_name='rel_area_id'
+    )
+    large_city_near_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
+        Area, related_name='rel_large_city_near_id'
+    )
+    publisher_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer, related_name='rel_publisher')
 
 
 class Blacklist(ormar.Model):
@@ -129,7 +138,9 @@ class Blacklist(ormar.Model):
     id: int = ormar.BigInteger(primary_key=True)
     banned_member_id: int = ormar.Integer(nullable=False, index=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
+    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_customer_from_blacklist'
+    )
 
 
 class UserMediaFile(ormar.Model):
@@ -137,13 +148,15 @@ class UserMediaFile(ormar.Model):
         tablename: str = 'user_media_files'
 
     id: int = ormar.BigInteger(primary_key=True)
-    member_id: int = ormar.BigInteger(index=True)
+    # member_id: int = ormar.BigInteger(index=True)
     file: str = ormar.String(max_length=200, nullable=False)
     file_type: int = ormar.Integer()
     privacy_type: int = ormar.Integer()
     is_archived: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
+    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_customer_from_usermediafile'
+    )
 
 
 class AdvGoal(ormar.Model):
@@ -160,7 +173,7 @@ class AdvGoal(ormar.Model):
     goals_7: Optional[int] = ormar.Integer()
     goals_8: Optional[int] = ormar.Integer()
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Advertisement)
+    adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Advertisement, related_name='rel_adv')
 
 
 class Commercial(ormar.Model):

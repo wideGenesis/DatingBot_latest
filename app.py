@@ -6,7 +6,7 @@ from db.engine import DATABASE, ENGINE
 from fastapi import FastAPI
 from settings.logger import CustomLogger
 from core.tables.models import METADATA
-
+from startup_insert_fixture import fixture
 
 logger = CustomLogger.get_logger('bot')
 
@@ -33,6 +33,7 @@ async def startup() -> None:
     if not database_.is_connected:
         await database_.connect()
         logger.info(f'Connection to database {DATABASE.url.hostname} has been established')
+        # await fixture()
 
 
 @app.on_event("shutdown")

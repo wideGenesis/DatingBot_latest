@@ -37,5 +37,5 @@ class CustomerService:
         return deleted_id
 
     async def list(self, offset: int, limit: int) -> models.Customer:
-        return await models.Customer.objects.offset(offset).limit(limit).all()
+        return await models.Customer.objects.offset(offset).limit(limit).select_related('premium_tier_id').all()
 

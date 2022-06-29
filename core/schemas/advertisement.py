@@ -24,7 +24,6 @@ class BaseAdvertisement(BaseModel):
     location: str
     phone_is_hidden: bool
     money_support: bool
-
     is_published: bool
     created_at: datetime
     updated_at: datetime

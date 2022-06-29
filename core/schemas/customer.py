@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
+from core.tables.models import RedisChannel
+
 
 class PremiumTier(BaseModel):
     id: int
@@ -16,8 +18,9 @@ class BaseCustomer(BaseModel):
     member_id: int
     conversation_reference: bytes
     lang: Optional[int]
-    # premium_tier_id: PremiumTier
-    # post_header: Optional[bytes]
+    premium_tier_id: Optional[PremiumTier]
+    redis_channel_id: Optional[RedisChannel]
+    post_header: Optional[bytes]
     is_active: bool
     passcode: Optional[str]
     created_at: datetime
@@ -33,5 +36,7 @@ class CustomerUpdate(BaseCustomer):
 
 
 class CustomerExpose(BaseCustomer):
+    id: int
+
     class Config:
         orm_mode = True

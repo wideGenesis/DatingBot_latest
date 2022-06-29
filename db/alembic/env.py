@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from settings.conf import DATABASE_CONF
-from db.engine import METADATA
+from core.tables.models import METADATA
 
 
 config = context.config
