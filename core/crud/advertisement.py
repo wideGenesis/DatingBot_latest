@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from core.schemas.advertisement import AdvertisementUpdate, AdvertisementCreate
 from core.tables import models
-from core.tables.models import RedisChannel, Customer
+from core.tables.models import RedisChannel, Customer, Area
 from db.engine import get_session
 
 
@@ -21,20 +21,26 @@ class AdvertisementService:
     async def create(self, advertisement: AdvertisementCreate) -> models.Advertisement:
         return await models.Advertisement(**advertisement.dict()).save()
 
-    async def get_by_location(self, location: str) -> models.Advertisement:
-        _advertisement = await models.Advertisement.objects.get_or_none(location=location)
+    async def get_by_area(self, area_id: int) -> models.Advertisement:
+        _advertisement = await models.Advertisement.objects.get_or_none(area_id=area_id)
         if not _advertisement:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _advertisement
 
-    async def get_by_redis_channel_id(self, redis_channel_id: Optional[Union[RedisChannel, Dict]]) -> models.Advertisement:
-        _advertisement = await models.Advertisement.objects.get_or_none(redis_channel_id=phone)
+    async def get_by_redis_channel(self, redis_channel: str) -> models.Advertisement:
+        _advertisement = await models.Advertisement.objects.get_or_none(redis_channel=redis_channel)
         if not _advertisement:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _advertisement
 
-    async def get_by_publisher_id(self, publisher_id: Optional[Union[Customer, Dict]]) -> models.Advertisement:
-        _advertisement = await models.Advertisement.objects.get_or_none(publisher_id=nickname)
+    async def get_by_large_city_near(self, large_city_near_id: int) -> models.Advertisement:
+        _advertisement = await models.Advertisement.objects.get_or_none(large_city_near_id=large_city_near_id)
+        if not _advertisement:
+            raise HTTPException(status.HTTP_404_NOT_FOUND)
+        return _advertisement
+
+    async def get_by_publisher_id(self, publisher_id: int) -> models.Advertisement:
+        _advertisement = await models.Advertisement.objects.get_or_none(publisher_id=publisher_id)
         if not _advertisement:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _advertisement
@@ -42,8 +48,8 @@ class AdvertisementService:
     async def update(self, advertisement: AdvertisementUpdate) -> models.Advertisement:
         return await models.Advertisement(**advertisement.dict()).update()
 
-    async def delete(self, member_id: int) -> models.Advertisement.id:
-        _advertisement = await models.Advertisement.objects.get(member_id=member_id)
+    async def delete(self, _id: int) -> models.Advertisement.id:
+        _advertisement = await models.Advertisement.objects.get(id=_id)
         deleted_id = await _advertisement.delete()
         return deleted_id
 

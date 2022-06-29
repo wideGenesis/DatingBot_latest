@@ -125,7 +125,7 @@ class PremiumTier(ormar.Model):
         tablename: str = 'premium_tiers'
 
     id: int = ormar.BigInteger(primary_key=True)
-    tier: int = ormar.Integer(unique=True, nullable=False, choices=list(PremiumTierEnum))
+    tier: str = ormar.String(unique=True, nullable=False, max_length=30)  # , choices=list(PremiumTierEnum)
 
 
 class RedisChannel(ormar.Model):
@@ -168,19 +168,17 @@ class Advertisement(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     who_for_whom: int = ormar.Integer(index=True, choices=list(WhoForWhomEnum))
-    age: int = ormar.Integer(index=True)
     prefer_age: int = ormar.Integer(index=True)
     has_place: int = ormar.Integer(nullable=False, choices=list(HasPlaceEnum))
     dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTime))
     dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDay))
     adv_text: str = ormar.Text(nullable=False)
-    location: str = ormar.String(max_length=50)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     money_support: bool = ormar.Boolean(nullable=False)
     is_published: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    valid_to_date: datetime.datetime = ormar.DateTime(
+    valid_until_date: datetime.datetime = ormar.DateTime(
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
     redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(

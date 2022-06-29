@@ -6,9 +6,9 @@ from fastapi import (
     status,
 )
 
-from core.schemas.advertisement import AdvertisementExpose
+from core.schemas.advertisement import AdvertisementExpose, AdvertisementUpdate, AdvertisementCreate
 from core.crud.advertisement import AdvertisementService
-from core.schemas.customer import CustomerCreate, CustomerUpdate
+
 
 router = APIRouter(
     prefix='/advertisement',
@@ -17,40 +17,40 @@ router = APIRouter(
 
 
 @router.post('/create', response_model=AdvertisementExpose, status_code=status.HTTP_201_CREATED)
-async def create_customer(customer: CustomerCreate):
-    return await AdvertisementService().create(customer)
+async def create_adv(adv: AdvertisementCreate):
+    return await AdvertisementService().create(adv)
 
 
 @router.get('/list', response_model=List[AdvertisementExpose])
-async def get_customers(offset: int, limit: int):
+async def get_adv_list(offset: int, limit: int):
     return await AdvertisementService().list(offset, limit)
 
 
-@router.get('/advertisement/{location}',
+@router.get('/advertisement/{area_id}',
             response_model=AdvertisementExpose)
-async def get_by_location(member_id: int):
-    return await AdvertisementService().get_by_location(member_id)
+async def get_by_area_id(area_id: int):
+    return await AdvertisementService().get_by_area(area_id)
 
 
 @router.get('/advertisement/{redis_channel_id}',
             response_model=AdvertisementExpose)
-async def get_by_redis_channel_id(phone: int):
-    return await AdvertisementService().get_by_redis_channel_id(phone)
+async def get_by_redis_channel(redis_channel: str):
+    return await AdvertisementService().get_by_redis_channel(redis_channel)
 
 
 @router.get('/advertisement/{publisher_id}', response_model=AdvertisementExpose)
-async def get_by_publisher_id(nickname: str):
-    return await AdvertisementService().get_by_publisher_id(nickname)
+async def get_by_publisher_id(publisher_id: int):
+    return await AdvertisementService().get_by_publisher_id(publisher_id)
 
 
 @router.put('/update', response_model=AdvertisementExpose)
-async def create_customer(customer: CustomerUpdate):
-    return await AdvertisementService().update(customer)
+async def create_adv(adv: AdvertisementUpdate):
+    return await AdvertisementService().update(adv)
 
 
 @router.delete('/delete', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_customer_by_member_id(member_id: int):
-    await AdvertisementService().delete(member_id)
+async def delete_adv_by_id(_id: int):
+    await AdvertisementService().delete(_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
