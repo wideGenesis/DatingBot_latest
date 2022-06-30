@@ -16,18 +16,12 @@ from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
-from ms_bot.dialogs.adv_menu_dialog import AdvMenuDialog
-from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
-from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
-from ms_bot.dialogs.my_settings_dialog import MySettingsDialog
-from ms_bot.dialogs.nearby_search_dialog import NearbySearchDialog
-
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger('bot')
 
 
-class MenuDialog(ComponentDialog):
+class NearbySearchDialog(ComponentDialog):
     def __init__(
             self,
             user_state: UserState,
@@ -35,22 +29,15 @@ class MenuDialog(ComponentDialog):
             telemetry_client: BotTelemetryClient = NullTelemetryClient(),
 
     ):
-        super(MenuDialog, self).__init__(dialog_id or MenuDialog.__name__)
+        super(NearbySearchDialog, self).__init__(dialog_id or NearbySearchDialog.__name__)
         self.telemetry_client = telemetry_client
         self.user_state = user_state
         self.user_profile_accessor = self.user_state.create_property("CustomerProfile")
 
-        self.add_dialog(TextPrompt(TextPrompt.__name__, MenuDialog.answer_prompt_validator))
-        self.add_dialog(MyProfileDialog(user_state, MyProfileDialog.__name__))
-        self.add_dialog(MyPhotoDialog(user_state, MyPhotoDialog.__name__))
-        self.add_dialog(AdvMenuDialog(user_state, AdvMenuDialog.__name__))
-        self.add_dialog(MySettingsDialog(user_state, MySettingsDialog.__name__))
-        self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
-        self.add_dialog(NearbySearchDialog(user_state, NearbySearchDialog.__name__))
-
+        self.add_dialog(TextPrompt(TextPrompt.__name__, NearbySearchDialog.answer_prompt_validator))
         self.add_dialog(
             WaterfallDialog(
-                "MainMenuDialog",
+                "MainNearbySearchDialog",
                 [
                     self.reload_cache_step,
                     self.show_menu_step,
@@ -61,14 +48,14 @@ class MenuDialog(ComponentDialog):
         )
         TextPrompt.telemetry_client = self.telemetry_client
         ChoicePrompt.telemetry_client = self.telemetry_client
-        self.initial_dialog_id = "MainMenuDialog"
+        self.initial_dialog_id = "MainNearbySearchDialog"
 
     async def reload_cache_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('reload_cache_step %s', MenuDialog.__name__)
+        logger.debug('reload_cache_step %s', NearbySearchDialog.__name__)
         return await step_context.begin_dialog(ReloadCacheDialog.__name__)
 
     async def show_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('show_menu_step %s', MenuDialog.__name__)
+        logger.debug('show_menu_step %s', NearbySearchDialog.__name__)
 
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
@@ -81,7 +68,7 @@ class MenuDialog(ComponentDialog):
         )
 
     async def parse_choice_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('parse_choice_step %s', MenuDialog.__name__)
+        logger.debug('parse_choice_step %s', NearbySearchDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
@@ -92,7 +79,7 @@ class MenuDialog(ComponentDialog):
             return await step_context.begin_dialog(NearbySearchDialog.__name__)
 
         elif found_choice == 'KEY_CALLBACK:adv_search':
-            return await step_context.begin_dialog(AdvMenuDialog.__name__)
+            return await step_context.begin_dialog(AdvNearbySearchDialog.__name__)
 
         elif found_choice == 'KEY_CALLBACK:my_profile':
             return await step_context.begin_dialog(MyProfileDialog.__name__)
@@ -107,11 +94,11 @@ class MenuDialog(ComponentDialog):
             return await step_context.cancel_all_dialogs(True)
 
     async def loop_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('loop_menu_step %s', MenuDialog.__name__)
+        logger.debug('loop_menu_step %s', NearbySearchDialog.__name__)
 
         result_from_previous_step = step_context.result
         if result_from_previous_step == 'need_replace_parent':
-            return await step_context.replace_dialog(MenuDialog.__name__)
+            return await step_context.replace_dialog(NearbySearchDialog.__name__)
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:

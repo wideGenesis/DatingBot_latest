@@ -177,7 +177,6 @@ class UploadDialog(ComponentDialog):
         customer_photo = UserMediaFile(
             customer_id=customer_id.id,
             file=_file_name,
-            member_id=member_id,
             file_type=_file_type,
             privacy_type=1,
             is_archived=False

@@ -10,7 +10,6 @@ from ms_bot.bots_models.models import CustomerProfile
 from core.tables.models import Customer
 from core.tables.models import UserMediaFile
 
-
 logger = CustomLogger.get_logger('bot')
 
 
@@ -43,6 +42,7 @@ class ReloadCacheDialog(ComponentDialog):
         self.initial_dialog_id = "ReloadCacheDialog"
         self.customer_exists = None
         self.customer_instance = None
+        self.customer = None
 
     async def is_user_exists_in_blob(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
@@ -92,20 +92,21 @@ class ReloadCacheDialog(ComponentDialog):
         files_in_storage = []
 
         try:
-            user_files = await UserMediaFile.objects.filter(member_id=member_id).fields(
-                ['member_id',
-                 'file',
-                 'file_type',
-                 'privacy_type',
-                 'is_archived',
-                 'file_temp_url',
-                 'created_at']).all()
+            user_files = await UserMediaFile.objects.filter(customer_id=self.customer_instance.id).fields(
+                [
+                    'file',
+                    'file_type',
+                    'privacy_type',
+                    'is_archived',
+                    'file_temp_url',
+                    'created_at']).all()
 
             for item in user_files:
                 item = dict(item)
 
                 if item['is_archived']:
                     continue
+
                 files_in_storage.append(
                     {
                         'id': item['id'],
@@ -117,7 +118,7 @@ class ReloadCacheDialog(ComponentDialog):
                 )
             logger.debug('USER FILES (%s) FOUND IN DB', member_id)
         except Exception:
-            logger.exception('USER FILES (%s) NOT FOUND IN DB', member_id)
+            logger.exception('USER FILES (%s) NOT FOUND IN DB', self.customer_instance.member_id)
 
         await self._reload_cache(user_data, self.customer_instance, files_in_storage)
 

@@ -10,6 +10,7 @@ from botbuilder.schema import Activity, ActivityTypes
 import json
 
 from helpers.constants import remove_last_message, remove_last_dropped_message
+from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 from settings.logger import CustomLogger
 from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, MY_AGE_KB, BOT_MESSAGES
 
@@ -17,7 +18,7 @@ from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
-from core.tables.models import Customer
+from core.tables.models import Customer, PremiumTier
 
 logger = CustomLogger.get_logger('bot')
 
@@ -129,8 +130,15 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     async def request_phone_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('request_phone_step %s', TelegramRegistrationDialog.__name__)
+        chat_id = f"{step_context.context.activity.channel_data['message']['chat']['id']}"
+        message_id = f"{step_context.context.activity.channel_data['message']['message_id']}"
+        await rm_tg_message(step_context.context, chat_id, message_id)
 
-        await remove_last_dropped_message(step_context)
+        try:
+            message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
+            await rm_tg_message(step_context.context, chat_id, message_id_1)
+        except Exception:
+            logger.debug('Customer drop reply and make direct answer')
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(step_context.context, CustomerProfile)
         result_from_previous_step = str(step_context.result).split(':')
@@ -205,27 +213,29 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     @classmethod
     async def _save_customer(cls, user_data):
+        try:
+            premium_tier_id = await PremiumTier.objects.get_or_none(tier='free')
+            premium_tier_id = premium_tier_id.__dict__
+            premium_tier_id = premium_tier_id['id']
+        except Exception as e:
+            raise Exception('Something went wrong! %s' % e)
 
         customer = Customer(
             nickname=user_data.nickname,
             phone=int(user_data.phone),
-            premium_tier_id=1,
+            premium_tier_id=premium_tier_id,
             conversation_reference=user_data.conversation_reference,
             member_id=int(user_data.member_id),
             lang=int(user_data.lang),
             is_active=int(user_data.is_active)
         )
-
         try:
             await customer.save()
-            print('>>>1 ')
-
         except UniqueViolationError:
-            print('<<<<2 ')
             await Customer.objects.filter(member_id=int(user_data.member_id)).update(
                 nickname=user_data.nickname,
                 phone=int(user_data.phone),
-                premium_tier_id=1,
+                premium_tier_id=premium_tier_id,
                 conversation_reference=user_data.conversation_reference,
                 member_id=int(user_data.member_id),
                 lang=int(user_data.lang),

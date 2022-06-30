@@ -295,28 +295,35 @@ MAIN_MENU_KB = {
         'text': f"{BOT_MESSAGES['main_menu']}",
         'reply_markup': {
             'inline_keyboard': [
-                # [
-                #     {
-                #         'text': '📂 Профіль',
-                #         'callback_data': 'KEY_CALLBACK:Профіль'
-                #     }
-                # ],
+
                 [
                     {
-                        'text': '📸 Мої файли',
-                        'callback_data': 'KEY_CALLBACK:Мої файли'
+                        'text': '🌍 Пошук людей поруч',
+                        'callback_data': 'KEY_CALLBACK:nearby_people'
                     }
                 ],
                 [
                     {
-                        'text': '💌 Мої оголошення',
-                        'callback_data': 'KEY_CALLBACK:Мої оголошення'
+                        'text': '💌 Пошук за оголошеннями',
+                        'callback_data': 'KEY_CALLBACK:adv_search'
+                    }
+                ],
+                [
+                    {
+                        'text': '📂 Профіль',
+                        'callback_data': 'KEY_CALLBACK:my_profile'
+                    }
+                ],
+                [
+                    {
+                        'text': '📸 Мої файли',
+                        'callback_data': 'KEY_CALLBACK:files'
                     }
                 ],
                 [
                     {
                         'text': '⚙️ Налаштування',
-                        'callback_data': 'KEY_CALLBACK:Налаштування'
+                        'callback_data': 'KEY_CALLBACK:settings'
                     }
                 ]
             ]
