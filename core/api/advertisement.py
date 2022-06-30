@@ -34,7 +34,7 @@ async def get_by_area_id(area_id: int):
 
 @router.get('/advertisement/{redis_channel_id}',
             response_model=AdvertisementExpose)
-async def get_by_redis_channel(redis_channel: str):
+async def get_by_redis_channel(redis_channel: int):
     return await AdvertisementService().get_by_redis_channel(redis_channel)
 
 

@@ -32,8 +32,6 @@ class DatabaseConfig(BaseSettings):
     # DB_DRIVER = 'mssql+pymssql'
     # DB_DRIVER = 'mssql+pyodbc'
 
-    DB_URL: str = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
     # if DB_DRIVER in ['postgresql+asyncpg', 'postgresql']:
     #     import psycopg2
     #
@@ -189,7 +187,7 @@ class FastApiConfig(BaseSettings):
     # HOST: str = '127.0.0.1'
     # PORT: int = 8000
 
-    DB_URL: str = DATABASE_CONF.DB_URL
+    # DB_URL: str = DATABASE_CONF.DB_URL
 
     JWT_SECRET: str = os.environ.get('JWT_SECRET', '')
     JWT_ALGO: str = 'HS256'

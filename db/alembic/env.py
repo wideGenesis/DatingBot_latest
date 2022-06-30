@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 from settings.conf import DATABASE_CONF
 from core.tables.models import METADATA
-
+from db.engine import DB_URL
 
 config = context.config
 
@@ -27,7 +27,7 @@ target_metadata = METADATA
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", DATABASE_CONF.DB_URL)
+config.set_main_option("sqlalchemy.url", DB_URL)
 
 
 def run_migrations_offline():

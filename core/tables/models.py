@@ -184,7 +184,7 @@ class Advertisement(ormar.Model):
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
     redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
-        RedisChannel, related_name='rel_redis_channel_from adv'
+        RedisChannel, related_name='rel_redis_channel_from_adv'
     )
     area_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
         Area, related_name='rel_area_id'
@@ -221,6 +221,38 @@ class UserMediaFile(ormar.Model):
     customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
         Customer, related_name='rel_customer_from_usermediafile'
     )
+
+
+class Message(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = 'messages'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    from_member_id: int = ormar.BigInteger(index=True)
+    to_member_id: int = ormar.BigInteger(index=True)
+    message_text: str = ormar.String(max_length=1000, nullable=False)
+    send_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
+    sender_id: Union[Customer, Dict] = ormar.ForeignKey(
+        Customer, related_name='rel_sender_id'
+    )
+    recipient_id: Union[Customer, Dict] = ormar.ForeignKey(
+        Customer, related_name='rel_recipient_id'
+    )
+    is_seen: bool = ormar.Boolean(nullable=False)
+    sender_avatar: Optional[Union[UserMediaFile, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_sender_avatar'
+    )
+    recipient_avatar: Optional[Union[UserMediaFile, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_recipient_avatar'
+    )
+
+
+class Conversation(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = 'conversations'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    conversation_name: str = ormar.String(max_length=20, nullable=False)
 
 
 class AdvGoal(ormar.Model):

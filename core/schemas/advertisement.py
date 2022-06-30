@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from core.schemas.customer import CustomerExpose
 from core.schemas.area import AreaExpose
-from core.schemas.redis_and_tiers import PydanticRedisChannel
+from core.schemas.redis_and_tiers import RedisChannelExpose
 
 
 class WhoForWhomOptions(int, Enum):
@@ -26,14 +26,10 @@ class BaseAdvertisement(BaseModel):
     is_published: bool
     created_at: datetime
     updated_at: datetime
-
-    area_id: int
-    large_city_near_id: int
-    # publisher_id: int
-    # redis_channel_id: Optional[PydanticRedisChannel]
     valid_until_date: datetime
-    area_id: Optional[Union[AreaExpose, Dict]]
-    large_city_near_id: Optional[Union[AreaExpose, Dict]]
+    redis_channel_id: Optional[RedisChannelExpose]
+    # area_id: Optional[AreaExpose]
+    # large_city_near_id: Optional[AreaExpose]
     publisher_id: Optional[Union[CustomerExpose, Dict]]
 
 

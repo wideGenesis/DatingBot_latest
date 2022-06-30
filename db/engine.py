@@ -3,19 +3,24 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from contextlib import contextmanager
-from settings.conf import DATABASE_CONF
+from settings.conf import DatabaseConfig
 
+DB = DatabaseConfig()
+
+DB_URL: str = f"{DB.DB_DRIVER}://{DB.DB_USER}:{DB.DB_PASSWORD}@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
 METADATA = MetaData()
-DATABASE = Database(DATABASE_CONF.DB_URL)
+DATABASE = Database(DB_URL)
 
-if DATABASE_CONF.DB_DRIVER != 'postgresql':
-    print('ASYNC', DATABASE_CONF.DB_URL)
-    ENGINE = create_async_engine(DATABASE_CONF.DB_URL, future=True, echo=True)
+if DB.DB_DRIVER == 'postgresql+asyncpg':
+    print('ASYNC', DB_URL)
+    ENGINE = create_async_engine(DB_URL, future=True, echo=True)
     SESSION = sessionmaker(bind=ENGINE, expire_on_commit=False, class_=AsyncSession)
-else:
-    print('SYNC', DATABASE_CONF.DB_URL)
-    ENGINE = create_engine(DATABASE_CONF.DB_URL)
+
+if DB.DB_DRIVER == 'postgresql':
+    print('SYNC', DB_URL)
+    ENGINE = create_engine(DB_URL)
     SESSION = sessionmaker(ENGINE)
+
 
 BASE = declarative_base()
 

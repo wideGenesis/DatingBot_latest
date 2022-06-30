@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
 
-class PydanticPremiumTier(BaseModel):
+class PremiumTierExpose(BaseModel):
     id: int
     tier: str
 
 
-class PydanticRedisChannel(BaseModel):
+class RedisChannelExpose(BaseModel):
     id: int
     redis_channel: str
