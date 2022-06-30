@@ -10,13 +10,11 @@ from startup_insert_fixture import fixture
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-
 logger = CustomLogger.get_logger('bot')
 
 # TODO uncomment if tables creation needed, set SYNC Driver = export DB_DRIVER=postgresql
 if DATABASE_CONF.DB_DRIVER == 'postgresql':
-   METADATA.create_all(bind=ENGINE)
-
+    METADATA.create_all(bind=ENGINE)
 
 app = FastAPI(
     title='FastApi Microsoft Bot Framework',

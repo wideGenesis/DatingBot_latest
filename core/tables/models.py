@@ -152,6 +152,8 @@ class Customer(ormar.Model):
     is_active: bool = ormar.Boolean(nullable=False)
     post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
+    likes: Optional[int] = ormar.Integer(nullable=True)
+    gps_coordinates: Optional[str] = ormar.String(max_length=50, nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(
@@ -253,3 +255,25 @@ class Commercial(ormar.Model):
         default=(datetime.datetime.now() + datetime.timedelta(days=30)),
         nullable=False)
     is_active: bool = ormar.Boolean(nullable=False)
+
+
+class CommonProfile(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = 'common_profiles'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
+    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_customer_from_common_profile'
+    )
+
+
+class SexProfile(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = 'sex_profiles'
+
+    id: int = ormar.BigInteger(primary_key=True)
+    created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
+    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
+        Customer, related_name='rel_customer_from_sex_profile'
+    )

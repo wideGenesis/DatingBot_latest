@@ -26,7 +26,12 @@ class DatabaseConfig(BaseSettings):
     DB_USER: str = os.environ.get('DB_USER', '')
     DB_PORT: str = os.environ.get('DB_PORT', '')
 
-    DB_DRIVER: str = os.environ.get('DB_DRIVER', '')
+    DB_DRIVER = 'postgresql+asyncpg'
+    # DB_DRIVER = 'postgresql'
+    # DB_DRIVER = 'asyncmy'
+    # DB_DRIVER = 'mssql+pymssql'
+    # DB_DRIVER = 'mssql+pyodbc'
+
     DB_URL: str = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     # if DB_DRIVER in ['postgresql+asyncpg', 'postgresql']:
@@ -180,8 +185,8 @@ DJANGO_CONF = DjangoConfig()
 class FastApiConfig(BaseSettings):
     # ########## FastApi settings ########## #
     HOST: str = 'localhost'
-    # HOST: str = '127.0.0.1'
     PORT: int = 3978
+    # HOST: str = '127.0.0.1'
     # PORT: int = 8000
 
     DB_URL: str = DATABASE_CONF.DB_URL
