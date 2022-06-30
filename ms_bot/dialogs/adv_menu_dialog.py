@@ -20,7 +20,6 @@ from ms_bot.dialogs.adv_show_dialog import MyAdvDialog
 from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
 from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
-from ms_bot.dialogs.my_settings_dialog import MySettingsDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
@@ -45,7 +44,6 @@ class AdvMenuDialog(ComponentDialog):
         self.add_dialog(MyPhotoDialog(user_state, MyPhotoDialog.__name__))
         self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
         self.add_dialog(MyAdvDialog(user_state, MyAdvDialog.__name__))
-        self.add_dialog(MySettingsDialog(user_state, MySettingsDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
 
         self.add_dialog(

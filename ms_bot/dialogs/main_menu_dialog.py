@@ -19,7 +19,6 @@ from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 from ms_bot.dialogs.adv_menu_dialog import AdvMenuDialog
 from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
-from ms_bot.dialogs.my_settings_dialog import MySettingsDialog
 from ms_bot.dialogs.nearby_search_dialog import NearbySearchDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -44,7 +43,6 @@ class MenuDialog(ComponentDialog):
         self.add_dialog(MyProfileDialog(user_state, MyProfileDialog.__name__))
         self.add_dialog(MyPhotoDialog(user_state, MyPhotoDialog.__name__))
         self.add_dialog(AdvMenuDialog(user_state, AdvMenuDialog.__name__))
-        self.add_dialog(MySettingsDialog(user_state, MySettingsDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
         self.add_dialog(NearbySearchDialog(user_state, NearbySearchDialog.__name__))
 
@@ -100,10 +98,8 @@ class MenuDialog(ComponentDialog):
         elif found_choice == 'KEY_CALLBACK:files':
             return await step_context.begin_dialog(MyPhotoDialog.__name__)
 
-        elif found_choice == 'KEY_CALLBACK:settings':
-            return await step_context.begin_dialog(MySettingsDialog.__name__)
         else:
-            await step_context.context.send_activity('buy')
+            await step_context.context.send_activity('bye!')
             return await step_context.cancel_all_dialogs(True)
 
     async def loop_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:

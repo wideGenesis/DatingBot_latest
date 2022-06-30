@@ -25,6 +25,11 @@ async def get_customers(offset: int, limit: int):
     return await CustomerService().list(offset, limit)
 
 
+@router.get('/list-by-city', response_model=List[CustomerExpose])
+async def list_by_city(offset: int, limit: int, city: str):
+    return await CustomerService().list_by_city(offset, limit, city)
+
+
 @router.get('/member_id/{member_id}',
             response_model=CustomerExpose)
 async def get_by_member_id(member_id: int):

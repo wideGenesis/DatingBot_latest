@@ -14,7 +14,7 @@ from botbuilder.schema import ActivityTypes, Activity
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger
-from helpers.copyright import BOT_MESSAGES
+from helpers.copyright import BOT_MESSAGES, REQUEST_GEO
 from ms_bot.bot_helpers.telegram_helper import reverse_geocode
 
 logger = CustomLogger.get_logger('bot')
@@ -50,29 +50,10 @@ class RequestLocationDialog(ComponentDialog):
     async def request_location_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('request_location_step %s', RequestLocationDialog.__name__)
 
-        request_geo = {
-            'method': 'sendMessage',
-            'parameters': {
-                'text': f"{BOT_MESSAGES['location_request']}",
-                'reply_markup': {
-                    "one_time_keyboard": True,
-                    "resize_keyboard": True,
-                    'keyboard': [
-                        [
-                            {
-                                'text': '✅ Визначити місто',
-                                'request_location': True
-                            }
-                        ]
-                    ]
-                }
-            }
-        }
-
         return await step_context.prompt(
             TextPrompt.__name__, PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(request_geo),
+                    channel_data=json.dumps(REQUEST_GEO),
                     type=ActivityTypes.message,
 
                 ),
@@ -93,7 +74,6 @@ class RequestLocationDialog(ComponentDialog):
         user_data.is_active = 1
 
         area = await reverse_geocode(_loc)
-        print('>>>>>>>>>', area)
         user_data.area_id = f'{area[2]}:{area[1]}:{area[0]}'
 
         chat_id = f"{step_context.context.activity.channel_data['message']['chat']['id']}"

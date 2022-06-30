@@ -153,9 +153,14 @@ class Customer(ormar.Model):
     post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
     likes: Optional[int] = ormar.Integer(nullable=True)
-    gps_coordinates: Optional[str] = ormar.String(max_length=50, nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
+    gps_coordinates: Optional[Union[Area, Dict]] = ormar.ForeignKey(
+        PremiumTier, related_name='rel_gps_coordinates'
+    )
+    city: Optional[Union[Area, Dict]] = ormar.ForeignKey(
+        PremiumTier, related_name='rel_city'
+    )
     premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(
         PremiumTier, related_name='rel_premium_tier'
     )

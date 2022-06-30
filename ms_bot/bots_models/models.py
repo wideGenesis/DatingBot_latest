@@ -17,7 +17,7 @@ class CustomerProfile:
             lang=None,
             self_sex=None,
             age=None,
-
+            city=None,
             post_header=None,
             is_active=None,
             created_at=None,
@@ -82,6 +82,7 @@ class CustomerProfile:
         self.created_at: datetime = created_at
         self.is_active: int = is_active
         self.post_header: str = post_header
+        self.city: str = city
         self.self_sex: int = self_sex
         self.lang: int = lang
         self.member_id: int = member_id

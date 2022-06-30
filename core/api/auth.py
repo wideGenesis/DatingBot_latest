@@ -18,20 +18,20 @@ router = APIRouter(
 )
 
 
-@router.post(
-    '/sign-up/',
-    response_model=Token,
-    status_code=status.HTTP_201_CREATED,
-)
-def sign_up(
-    user_data: UserCreate,
-    auth_service: AuthService = Depends(),
-):
-    return auth_service.register_new_user(user_data)
+# @router.post(
+#     '/sign-up/',
+#     response_model=Token,
+#     status_code=status.HTTP_201_CREATED,
+# )
+# def sign_up(
+#     user_data: UserCreate,
+#     auth_service: AuthService = Depends(),
+# ):
+#     return auth_service.register_new_user(user_data)
 
 
 @router.post(
-    '/sign-in/',
+    '/get-bearer/',
     response_model=Token,
 )
 def sign_in(
@@ -44,12 +44,12 @@ def sign_in(
     )
 
 
-@router.get(
-    '/user/',
-    response_model=User,
-)
-def get_user(user: User = Depends(get_current_user)):
-    return user
+# @router.get(
+#     '/user/',
+#     response_model=User,
+# )
+# def get_user(user: User = Depends(get_current_user)):
+#     return user
 
 
 # auth_handler = AuthHandler()

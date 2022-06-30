@@ -319,12 +319,6 @@ MAIN_MENU_KB = {
                         'text': '📸 Мої файли',
                         'callback_data': 'KEY_CALLBACK:files'
                     }
-                ],
-                [
-                    {
-                        'text': '⚙️ Налаштування',
-                        'callback_data': 'KEY_CALLBACK:settings'
-                    }
                 ]
             ]
         }
@@ -386,6 +380,24 @@ USER_FILES_KB = {
     }
 }
 
+REQUEST_GEO = {
+    'method': 'sendMessage',
+    'parameters': {
+        'text': f"{BOT_MESSAGES['location_request']}",
+        'reply_markup': {
+            "one_time_keyboard": True,
+            "resize_keyboard": True,
+            'keyboard': [
+                [
+                    {
+                        'text': '✅ Визначити місто',
+                        'request_location': True
+                    }
+                ]
+            ]
+        }
+    }
+}
 
 def send_photo_kb(file: str, privacy_type: int) -> dict:
     if privacy_type == 0:

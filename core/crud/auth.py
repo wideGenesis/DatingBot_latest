@@ -27,7 +27,7 @@ import secrets
 
 security = HTTPBasic()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/sign-in/')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/get-bearer/')
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
@@ -70,14 +70,14 @@ class AuthService:
 
     @classmethod
     async def create_token(cls, user: models.User) -> Token:
-        user_data = User.from_orm(user)
+        # user_data = User.from_orm(user)
         now = datetime.utcnow()
         payload = {
             'iat': now,
             'nbf': now,
             'exp': now + timedelta(seconds=FAST_API_CONF.JWT_EXPIRES_S),
-            'sub': str(user_data.id),
-            'user': user_data.dict(),
+            'sub': str('bot'),
+            # 'user': user_data.dict(),
         }
 
         token = jwt.encode(
@@ -91,24 +91,20 @@ class AuthService:
     def __init__(self, session: Session = Depends(get_session)):
         self.session = session
 
-    async def register_new_user(
-        self,
-        user_data: UserCreate,
-    ) -> Token:
+    # async def register_new_user(
+    #     self,
+    #     user_data: UserCreate,
+    # ) -> Token:
+    #
+    #     user = models.User(
+    #         email=user_data.email,
+    #         username=user_data.username,
+    #         password_hash=self.hash_password(user_data.password),
+    #     )
+    #     await user.save()
+    #     return await self.create_token(user)
 
-        user = models.User(
-            email=user_data.email,
-            username=user_data.username,
-            password_hash=self.hash_password(user_data.password),
-        )
-        await user.save()
-        return await self.create_token(user)
-
-    async def authenticate_user(
-        self,
-        username: str,
-        password: str,
-    ) -> Token:
+    async def authenticate_user(self, username: str, password: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Incorrect username or password',
@@ -125,16 +121,20 @@ class AuthService:
 
         return await self.create_token(user)
 
-    async def authenticate_service(
-        self, credentials: HTTPBasicCredentials = Depends(security)
-    ):
+    async def authenticate_service(self, credentials: HTTPBasicCredentials = Depends(security)) -> Token:
 
         correct_username = secrets.compare_digest(credentials.username, "adm-bot")
         correct_password = secrets.compare_digest(credentials.password, "general2035")
+        exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="UNAUTHORIZED REQUEST",
+            headers={"WWW-Authenticate": "Basic"},
+        )
         if not (correct_username and correct_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="UNAUTHORIZED REQUEST",
-                headers={"WWW-Authenticate": "Basic"},
-            )
+            raise exception
+
+        if not self.verify_password(password, service.password_hash):
+            raise exception
+
+        return await self.create_token(user)
         return True

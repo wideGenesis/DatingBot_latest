@@ -47,3 +47,8 @@ class CustomerService:
             'premium_tier_id').select_related(
             'redis_channel_id').all()
 
+    async def list_by_city(self, offset: int, limit: int, city: str) -> models.Customer:
+        city_list = await models.Area.objects.offset(offset).limit(limit).filter(city=city).all()
+        print('city_list', city_list)
+        return city_list
+

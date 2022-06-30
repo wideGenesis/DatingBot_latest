@@ -26,8 +26,8 @@ class DatabaseConfig(BaseSettings):
     DB_USER: str = os.environ.get('DB_USER', '')
     DB_PORT: str = os.environ.get('DB_PORT', '')
 
-    DB_DRIVER = 'postgresql+asyncpg'
-    # DB_DRIVER = 'postgresql'
+    # DB_DRIVER = 'postgresql+asyncpg'
+    DB_DRIVER = 'postgresql'
     # DB_DRIVER = 'asyncmy'
     # DB_DRIVER = 'mssql+pymssql'
     # DB_DRIVER = 'mssql+pyodbc'

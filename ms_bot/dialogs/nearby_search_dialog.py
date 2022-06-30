@@ -12,9 +12,10 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
+from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
+from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB
-from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
@@ -39,8 +40,7 @@ class NearbySearchDialog(ComponentDialog):
             WaterfallDialog(
                 "MainNearbySearchDialog",
                 [
-                    self.reload_cache_step,
-                    self.show_menu_step,
+                    self.show_nearby_people_step,
                     self.parse_choice_step,
                     self.loop_menu_step
                 ]
@@ -50,22 +50,9 @@ class NearbySearchDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "MainNearbySearchDialog"
 
-    async def reload_cache_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug('reload_cache_step %s', NearbySearchDialog.__name__)
-        return await step_context.begin_dialog(ReloadCacheDialog.__name__)
-
-    async def show_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def show_nearby_people_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('show_menu_step %s', NearbySearchDialog.__name__)
 
-        return await step_context.prompt(
-            TextPrompt.__name__, PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(MAIN_MENU_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
-            )
-        )
 
     async def parse_choice_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('parse_choice_step %s', NearbySearchDialog.__name__)
@@ -73,25 +60,7 @@ class NearbySearchDialog(ComponentDialog):
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
 
-        found_choice = step_context.result
 
-        if found_choice == 'KEY_CALLBACK:nearby_people':
-            return await step_context.begin_dialog(NearbySearchDialog.__name__)
-
-        elif found_choice == 'KEY_CALLBACK:adv_search':
-            return await step_context.begin_dialog(AdvNearbySearchDialog.__name__)
-
-        elif found_choice == 'KEY_CALLBACK:my_profile':
-            return await step_context.begin_dialog(MyProfileDialog.__name__)
-
-        elif found_choice == 'KEY_CALLBACK:files':
-            return await step_context.begin_dialog(MyPhotoDialog.__name__)
-
-        elif found_choice == 'KEY_CALLBACK:settings':
-            return await step_context.begin_dialog(MySettingsDialog.__name__)
-        else:
-            await step_context.context.send_activity('buy')
-            return await step_context.cancel_all_dialogs(True)
 
     async def loop_menu_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug('loop_menu_step %s', NearbySearchDialog.__name__)

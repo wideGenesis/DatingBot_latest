@@ -58,12 +58,8 @@ class MyProfileDialog(ComponentDialog):
         area = str(user_data.area_id).split(':')
 
         message = f'Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n' \
-                  f'Моя стать: {GENDER_CHOICE[user_data.gender]}  \n \n' \
+                  f'Моя стать: {GENDER_CHOICE[user_data.self_sex]}  \n \n' \
                   f'Мій вік: {user_data.age}  \n \n' \
-                  f'Переважний вік партнера: {str(user_data.prefer_age)[0:2]}-{str(user_data.prefer_age)[2:]}  \n \n' \
-                  f'Я шукаю: {LOOKING_GENDER_CHOICE[user_data.looking_gender]}  \n \n' \
-                  f'Мета пошуків: {LOOKING_FOR_CHOICE[user_data.looking_for]}  \n \n' \
-                  f'Моє місто: {area[2]}  \n \n' \
                   f'Мій телефон: {user_data.phone}  \n \n'
 
         # await step_context.context.send_activity(message)
