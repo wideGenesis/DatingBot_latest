@@ -3,9 +3,11 @@ from typing import List
 from fastapi import (
     APIRouter,
     Response,
-    status,
+    status, Depends, HTTPException,
 )
 from asyncpg.exceptions import ForeignKeyViolationError
+
+from core.api.auth import get_current_username
 from core.crud.customer import (
     CustomerService,
     EXCLUDE_FOR_LIST,
@@ -134,7 +136,14 @@ async def get_by_member_id(member_id: int):
     response_model_exclude=EXCLUDE_FOR_GET,
     status_code=status.HTTP_201_CREATED,
 )
-async def get_by_phone(phone: int):
+async def get_by_phone(phone: int, username: str = Depends(get_current_username)):
+    print('<<<<<', username)
+    if not username:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
     customer = await Customer.objects.get_or_none(phone=phone)
     if customer is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)

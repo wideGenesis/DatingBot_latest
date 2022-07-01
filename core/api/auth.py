@@ -2,21 +2,43 @@ from fastapi import (
     APIRouter,
     Depends,
     status,
+    HTTPException
 )
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
 
-from core.schemas.auth import Token, UserCreate, User
-from core.crud.auth import (
-    AuthService,
-    get_current_user,
-)
-
+security = HTTPBasic()
+# from core.schemas.auth import Token, UserCreate, User
+# from core.crud.auth import (
+#     AuthService,
+# get_current_user,
+# )
 
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"],
 )
 
+
+async def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
+    correct_password = secrets.compare_digest(credentials.password, "swordfish")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+
+@router.get(
+    "/sign-in/",
+    # response_model=Token,
+)
+async def sign_in(username: str = Depends(get_current_username)):
+    return {"username": username, 'access': 'allowed'}
 
 # @router.post(
 #     '/sign-up/',
@@ -28,21 +50,6 @@ router = APIRouter(
 #     auth_service: AuthService = Depends(),
 # ):
 #     return auth_service.register_new_user(user_data)
-
-
-@router.post(
-    "/get-bearer/",
-    response_model=Token,
-)
-def sign_in(
-    auth_data: OAuth2PasswordRequestForm = Depends(),
-    auth_service: AuthService = Depends(),
-):
-    return auth_service.authenticate_service(
-        auth_data.username,
-        auth_data.password,
-    )
-
 
 # @router.get(
 #     '/user/',
