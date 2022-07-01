@@ -38,7 +38,7 @@ def sign_in(
     auth_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthService = Depends(),
 ):
-    return auth_service.authenticate_user(
+    return auth_service.authenticate_service(
         auth_data.username,
         auth_data.password,
     )

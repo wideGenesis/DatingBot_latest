@@ -105,11 +105,11 @@ class AuthService:
     #     return await self.create_token(user)
 
     async def authenticate_user(self, username: str, password: str) -> Token:
-        exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        # exception = HTTPException(
+        #     status_code=status.HTTP_401_UNAUTHORIZED,
+        #     detail="Incorrect username or password",
+        #     headers={"WWW-Authenticate": "Bearer"},
+        # )
 
         user = await models.User.objects.get_or_none(username=username)
 
@@ -140,3 +140,20 @@ class AuthService:
 
         return await self.create_token(user)
         return True
+
+    async def authenticate_bot(self, username: str, password: str) -> Token:
+        exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+        user = await models.User.objects.get_or_none(username=username)
+
+        if not user:
+            raise exception
+
+        if not self.verify_password(password, user.password_hash):
+            raise exception
+
+        return await self.create_token(user)
