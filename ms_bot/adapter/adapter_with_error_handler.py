@@ -11,7 +11,7 @@ from helpers.copyright import BOT_MESSAGES
 from settings.logger import CustomLogger
 
 
-logger = CustomLogger.get_logger('bot')
+logger = CustomLogger.get_logger("bot")
 
 
 class AdapterWithErrorHandler(BotFrameworkAdapter):
@@ -32,10 +32,10 @@ class AdapterWithErrorHandler(BotFrameworkAdapter):
             application insights.
             """
             _exceptions = traceback.format_exc()
-            logger.warning('EXCEPTION: %s', _exceptions)
+            logger.warning("EXCEPTION: %s", _exceptions)
 
             # Send a message to the user
-            await context.send_activity(BOT_MESSAGES['exceptions_occurs'])
+            await context.send_activity(BOT_MESSAGES["exceptions_occurs"])
 
             # Clear out state
             nonlocal self

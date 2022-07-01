@@ -13,13 +13,13 @@ from core.crud.customer import CustomerService
 
 
 router = APIRouter(
-    prefix='/customer',
-    tags=['Customer'],
+    prefix="/customer",
+    tags=["Customer"],
 )
 
 
 @router.get(
-    '/',
+    "/",
     response_model=List[schemas.CustomerExpose],
 )
 def get_customers(
@@ -30,7 +30,7 @@ def get_customers(
 
 
 @router.post(
-    '/',
+    "/",
     response_model=schemas.CustomerExpose,
     status_code=status.HTTP_201_CREATED,
 )
@@ -46,7 +46,7 @@ def create_customer(
 
 
 @router.get(
-    '/{customer_id}',
+    "/{customer_id}",
     response_model=schemas.CustomerExpose,
 )
 def get_customer(
@@ -61,7 +61,7 @@ def get_customer(
 
 
 @router.put(
-    '/{customer_id}',
+    "/{customer_id}",
     response_model=schemas.CustomerExpose,
 )
 def update_customer(
@@ -78,7 +78,7 @@ def update_customer(
 
 
 @router.delete(
-    '/{customer_id}',
+    "/{customer_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_customer(

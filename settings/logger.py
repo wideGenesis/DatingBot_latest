@@ -14,24 +14,24 @@ DEBUG_LOG_FILE = None
 
 
 class BColors:
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[34m'
-    CYAN = '\033[36m'
-    LIGHT_GREEN = '\033[92m'
-    LIGHT_RED = '\033[91m'
-    LIGHT_GREY = '\033[37m'
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[34m"
+    CYAN = "\033[36m"
+    LIGHT_GREEN = "\033[92m"
+    LIGHT_RED = "\033[91m"
+    LIGHT_GREY = "\033[37m"
 
     def disable(self):
-        self.RED = ''
-        self.GREEN = ''
-        self.YELLOW = ''
-        self.BLUE = ''
-        self.CYAN = ''
-        self.LIGHT_GREEN = ''
-        self.LIGHT_RED = ''
-        self.LIGHT_GREY = ''
+        self.RED = ""
+        self.GREEN = ""
+        self.YELLOW = ""
+        self.BLUE = ""
+        self.CYAN = ""
+        self.LIGHT_GREEN = ""
+        self.LIGHT_RED = ""
+        self.LIGHT_GREY = ""
 
 
 class ColorHandler(logging.StreamHandler):
@@ -40,16 +40,15 @@ class ColorHandler(logging.StreamHandler):
         logging.INFO: BColors.LIGHT_GREY,
         logging.WARNING: BColors.YELLOW,
         logging.ERROR: BColors.LIGHT_RED,
-        logging.CRITICAL: BColors.RED
+        logging.CRITICAL: BColors.RED,
     }
 
     def emit(self, record: logging.LogRecord) -> None:
-        color = self.COLORS.get(record.levelno, '')
-        self.stream.write(color + self.format(record) + '\n')
+        color = self.COLORS.get(record.levelno, "")
+        self.stream.write(color + self.format(record) + "\n")
 
 
 class SSLSMTPHandler(SMTPHandler):
-
     def emit(self, record):
         """
         Emit a record.
@@ -60,10 +59,10 @@ class SSLSMTPHandler(SMTPHandler):
                 port = smtplib.SMTP_PORT
             smtp = smtplib.SMTP_SSL(self.mailhost, port)
             msg = EmailMessage()
-            msg['From'] = self.fromaddr
-            msg['To'] = ','.join(self.toaddrs)
-            msg['Subject'] = self.getSubject(record)
-            msg['Date'] = email.utils.localtime()
+            msg["From"] = self.fromaddr
+            msg["To"] = ",".join(self.toaddrs)
+            msg["Subject"] = self.getSubject(record)
+            msg["Date"] = email.utils.localtime()
             msg.set_content(self.format(record))
             if self.username:
                 smtp.login(self.username, self.password)
@@ -76,32 +75,34 @@ class SSLSMTPHandler(SMTPHandler):
 
 
 class CustomLogger:
-    LOG_FILE_PATH = os.environ.get('LOG_FILE_PATH', '')
+    LOG_FILE_PATH = os.environ.get("LOG_FILE_PATH", "")
     logger = None
 
     @classmethod
-    def get_logger(cls, service_name='django'):
+    def get_logger(cls, service_name="django"):
         if cls.logger is not None:
             return cls.logger
 
         stdout_handler = ColorHandler()
         formatter = logging.Formatter(
-            '%(asctime)s - [%(levelname)-3s] - FILE: %(module)-3s - FUNC: %('
-            'funcName)-3s - [LINE: %(lineno)-3s] >>> %(message)s '
+            "%(asctime)s - [%(levelname)-3s] - FILE: %(module)-3s - FUNC: %("
+            "funcName)-3s - [LINE: %(lineno)-3s] >>> %(message)s "
         )
         smtpHandler = logging.handlers.SMTPHandler(
             mailhost=(EMAIL_CONF.MAIL_SERVER, 587),
             fromaddr=EMAIL_CONF.MAIL_USER,
             toaddrs=[EMAIL_CONF.MAIL_USER],
-            subject='Alert! Logger Exception has been registered!',
-            credentials=(f'{EMAIL_CONF.MAIL_USER}', f'{EMAIL_CONF.MAIL_PASSWORD}'),
-            secure=()
+            subject="Alert! Logger Exception has been registered!",
+            credentials=(f"{EMAIL_CONF.MAIL_USER}", f"{EMAIL_CONF.MAIL_PASSWORD}"),
+            secure=(),
         )
 
         cls.logger = logging.getLogger(service_name)
         if not cls.logger.hasHandlers():
             if LOGGER_CONF.LOG_TO == 1:
-                file_handler = RotatingFileHandler(cls.LOG_FILE_PATH, maxBytes=50000, backupCount=20)
+                file_handler = RotatingFileHandler(
+                    cls.LOG_FILE_PATH, maxBytes=50000, backupCount=20
+                )
                 cls.logger.addHandler(file_handler)
                 file_handler.setFormatter(formatter)
 

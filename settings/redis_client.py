@@ -8,12 +8,8 @@ def get_redis_client():
         connection_pool=redis_pool,
         health_check_interval=10,
         charset="utf-8",
-        decode_responses=True
+        decode_responses=True,
     )
 
 
 redis_client = get_redis_client()
-
-
-
-

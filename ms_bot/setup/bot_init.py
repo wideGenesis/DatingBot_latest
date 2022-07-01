@@ -12,14 +12,17 @@ from ms_bot.dialogs.main_dialog import MainDialog
 from settings.logger import CustomLogger
 from ms_bot.bots.dialog_bot import ConversationBot
 
-logger = CustomLogger.get_logger('bot')
+logger = CustomLogger.get_logger("bot")
 
 
 # Create adapter.
-SETTINGS = BotFrameworkAdapterSettings(AZURE_BOT_CONF.BOT_APP_ID, AZURE_BOT_CONF.BOT_APP_PASSWORD)
+SETTINGS = BotFrameworkAdapterSettings(
+    AZURE_BOT_CONF.BOT_APP_ID, AZURE_BOT_CONF.BOT_APP_PASSWORD
+)
 BLOB_SETTINGS = BlobStorageSettings(
     connection_string=AZURE_STORAGE_CONF.STORAGE_CONNECTION_STRING,
-    container_name=AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME)
+    container_name=AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME,
+)
 
 # Create MemoryStorage, UserState and ConversationState
 MEMORY = BlobStorage(BLOB_SETTINGS)
@@ -53,4 +56,3 @@ ADAPTER = AdapterWithErrorHandler(SETTINGS, CONVERSATION_STATE)
 # Create dialogs and Bot
 DIALOG = MainDialog(CONVERSATION_STATE, USER_STATE, telemetry_client=None)
 BOT = ConversationBot(CONVERSATION_STATE, USER_STATE, DIALOG, None)
-

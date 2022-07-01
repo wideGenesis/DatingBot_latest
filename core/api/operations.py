@@ -13,13 +13,13 @@ from ..services.operations import OperationsService
 
 
 router = APIRouter(
-    prefix='/operations',
-    tags=['operations'],
+    prefix="/operations",
+    tags=["operations"],
 )
 
 
 @router.get(
-    '/',
+    "/",
     response_model=List[models.Operation],
 )
 def get_operations(
@@ -30,7 +30,7 @@ def get_operations(
 
 
 @router.post(
-    '/',
+    "/",
     response_model=models.Operation,
     status_code=status.HTTP_201_CREATED,
 )
@@ -46,7 +46,7 @@ def create_operation(
 
 
 @router.get(
-    '/{operation_id}',
+    "/{operation_id}",
     response_model=models.Operation,
 )
 def get_operation(
@@ -61,7 +61,7 @@ def get_operation(
 
 
 @router.put(
-    '/{operation_id}',
+    "/{operation_id}",
     response_model=models.Operation,
 )
 def update_operation(
@@ -78,7 +78,7 @@ def update_operation(
 
 
 @router.delete(
-    '/{operation_id}',
+    "/{operation_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_operation(

@@ -8,17 +8,19 @@ from settings.conf import DatabaseConfig
 DB = DatabaseConfig()
 
 DB_URL: str = f"{DB.DB_DRIVER}://{DB.DB_USER}:{DB.DB_PASSWORD}@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
-DB_URL_STR: str = f"{DB.DB_DRIVER}://{DB.DB_USER}:*****@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
+DB_URL_STR: str = (
+    f"{DB.DB_DRIVER}://{DB.DB_USER}:*****@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
+)
 METADATA = MetaData()
 DATABASE = Database(DB_URL)
 
-if DB.DB_DRIVER == 'postgresql+asyncpg':
-    print('ASYNC', DB_URL_STR)
+if DB.DB_DRIVER == "postgresql+asyncpg":
+    print("ASYNC", DB_URL_STR)
     ENGINE = create_async_engine(DB_URL, future=True, echo=True)
     SESSION = sessionmaker(bind=ENGINE, expire_on_commit=False, class_=AsyncSession)
 
-if DB.DB_DRIVER == 'postgresql':
-    print('SYNC', DB_URL_STR)
+if DB.DB_DRIVER == "postgresql":
+    print("SYNC", DB_URL_STR)
     ENGINE = create_engine(DB_URL)
     SESSION = sessionmaker(ENGINE)
     METADATA.create_all(bind=ENGINE)
@@ -29,6 +31,7 @@ BASE = declarative_base()
 async def get_session() -> AsyncSession:
     async with SESSION() as session:
         yield session
+
 
 # @contextmanager
 # async def get_async_db_cursor(commit=True, loop=None):

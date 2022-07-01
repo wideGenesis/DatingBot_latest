@@ -4,9 +4,11 @@ from azure.storage.blob import BlobServiceClient, BlobClient
 from settings.conf import AZURE_STORAGE_CONF
 from settings.logger import CustomLogger
 
-logger = CustomLogger.get_logger('bot')
+logger = CustomLogger.get_logger("bot")
 
-service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONF.STORAGE_CONNECTION_STRING)
+service_client = BlobServiceClient.from_connection_string(
+    AZURE_STORAGE_CONF.STORAGE_CONNECTION_STRING
+)
 client = service_client.get_container_client(AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME)
 
 
@@ -20,26 +22,29 @@ def rm_blobs():
             client.delete_blobs(*blobsToDelete)
             blobsToDelete.clear()
     except Exception:
-        logger.exception('Error while deleting blobs')
+        logger.exception("Error while deleting blobs")
         blobsToDelete.clear()
         pass
 
     logger.info(
-        '%s blobs has been removed from container: %s, account: %s',
+        "%s blobs has been removed from container: %s, account: %s",
         len(count_blobs),
         AZURE_STORAGE_CONF.BLOB_CONTAINER_NAME,
-        AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME
+        AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME,
     )
     return
 
 
 def rm_user_blobs(member_id: str):
-    blobsToDelete = [f'telegram/conversations/{member_id}', f'telegram/users/{member_id}']
+    blobsToDelete = [
+        f"telegram/conversations/{member_id}",
+        f"telegram/users/{member_id}",
+    ]
     try:
         client.delete_blobs(*blobsToDelete)
         blobsToDelete.clear()
     except Exception:
-        logger.exception('Error while deleting blobs')
+        logger.exception("Error while deleting blobs")
         blobsToDelete.clear()
         pass
 
@@ -48,10 +53,11 @@ def rm_user_blobs(member_id: str):
 # https://docs.microsoft.com/ru-ru/azure/storage/blobs/storage-quickstart-blobs-python?tabs=environment-variable-windows
 # ----------------------------------------------------------------------------------------------------------
 
+
 async def upload_blob(file_type: str, filename: str, member_id: str):
-    local_file_path = os.path.join('ms_bot', 'temp_media', filename)
-    blob = '{}_{}'.format(file_type, filename)
-    container = 'media/{}'.format(member_id)
+    local_file_path = os.path.join("ms_bot", "temp_media", filename)
+    blob = "{}_{}".format(file_type, filename)
+    container = "media/{}".format(member_id)
 
     # Create a blob client using the local file name as the name for the blob
     blob_client = service_client.get_blob_client(container=container, blob=blob)
@@ -60,7 +66,9 @@ async def upload_blob(file_type: str, filename: str, member_id: str):
     with open(local_file_path, "rb") as data:
         try:
             blob_client.upload_blob(data)
-            logger.debug("\nUpload to Azure Storage as blob has been successful:\n\t" + blob)
+            logger.debug(
+                "\nUpload to Azure Storage as blob has been successful:\n\t" + blob
+            )
         except Exception:
             return False
     return True

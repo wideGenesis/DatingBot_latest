@@ -5,55 +5,49 @@ from dataclasses import dataclass
 @dataclass
 class CustomerProfile:
     def __init__(
-            self,
-            # Customer
-            pk=None,
-            nickname=None,
-            phone=None,
-            email=None,
-            premium_tier=None,
-            conversation_reference=None,
-            member_id=None,
-            lang=None,
-            self_sex=None,
-            age=None,
-            city=None,
-            post_header=None,
-            is_active=None,
-            created_at=None,
-            updated_at=None,
-            personal_profile=None,
-            sex_profile=None,
-            passcode=None,
-            
-            # Adv
-            adv_dict=None,
-            
-            adv_pk=None,
-            who_for_whom=None,
-            prefer_age=None,
-            has_place=None,
-            dating_time=None,
-            dating_day=None,
-            adv_text=None,
-            location=None,
-            area_id=None,
-            large_city_near_id=None,
-            phone_is_hidden=None,
-            money_support=None,
-            redis_channel=None,
-            
-            # Ban
-            ban_list=None,
-
-            # Files
-            files_dict=None,
-
-            # Other
-            authorised=None,
-            otp=None,
-            temp=None
-            
+        self,
+        # Customer
+        pk=None,
+        nickname=None,
+        phone=None,
+        email=None,
+        premium_tier=None,
+        conversation_reference=None,
+        member_id=None,
+        lang=None,
+        self_sex=None,
+        age=None,
+        city=None,
+        post_header=None,
+        is_active=None,
+        created_at=None,
+        updated_at=None,
+        personal_profile=None,
+        sex_profile=None,
+        passcode=None,
+        # Adv
+        adv_dict=None,
+        adv_pk=None,
+        who_for_whom=None,
+        prefer_age=None,
+        has_place=None,
+        dating_time=None,
+        dating_day=None,
+        adv_text=None,
+        location=None,
+        area_id=None,
+        large_city_near_id=None,
+        phone_is_hidden=None,
+        money_support=None,
+        redis_channel=None,
+        # Ban
+        ban_list=None,
+        # Files
+        files_dict=None,
+        # Other
+        authorised=None,
+        otp=None,
+        temp=None,
     ):
         self.temp = temp
         self.otp: int = otp
@@ -92,6 +86,3 @@ class CustomerProfile:
         self.phone: int = phone
         self.nickname: str = nickname
         self.pk: int = pk
-
-        
-

@@ -10,7 +10,7 @@ from botbuilder.schema import ErrorResponseException
 from settings.logger import CustomLogger
 
 
-logger = CustomLogger.get_logger('bot')
+logger = CustomLogger.get_logger("bot")
 
 
 class DialogHelper:
@@ -31,12 +31,15 @@ class DialogHelper:
             # logger.debug('continue_dialog %s', dialog.id)
 
         except ErrorResponseException:
-            logger.exception('Error response code. Member_id: %s', turn_context.activity.from_property.id)
+            logger.exception(
+                "Error response code. Member_id: %s",
+                turn_context.activity.from_property.id,
+            )
             time.sleep(10)
             return
 
         except Exception:
-            logger.exception('EXCEPTION begin_dialog %s', dialog.id)
+            logger.exception("EXCEPTION begin_dialog %s", dialog.id)
             time.sleep(10)
             results = None
             await dialog_context.begin_dialog(dialog.id)
@@ -54,4 +57,3 @@ class DialogHelper:
         # results = await dialog_context.continue_dialog()
         # if results.status == DialogTurnStatus.Empty:
         #     await dialog_context.begin_dialog(dialog.id)
-

@@ -23,8 +23,7 @@ class OperationsService:
 
     def get_many(self, user_id: int) -> List[tables.Operation]:
         operations = (
-            self.session
-            .query(tables.Operation)
+            self.session.query(tables.Operation)
             .filter(tables.Operation.user_id == user_id)
             .order_by(
                 tables.Operation.date.desc(),
@@ -34,11 +33,7 @@ class OperationsService:
         )
         return operations
 
-    def get(
-        self,
-        user_id: int,
-        operation_id: int
-    ) -> tables.Operation:
+    def get(self, user_id: int, operation_id: int) -> tables.Operation:
         operation = self._get(user_id, operation_id)
         return operation
 
@@ -94,8 +89,7 @@ class OperationsService:
 
     def _get(self, user_id: int, operation_id: int) -> Optional[tables.Operation]:
         operation = (
-            self.session
-            .query(tables.Operation)
+            self.session.query(tables.Operation)
             .filter(
                 tables.Operation.user_id == user_id,
                 tables.Operation.id == operation_id,

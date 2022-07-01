@@ -27,7 +27,7 @@ import secrets
 
 security = HTTPBasic()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/get-bearer/')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/get-bearer/")
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
@@ -47,8 +47,8 @@ class AuthService:
     def verify_token(cls, token: str) -> User:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Could not validate credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
         )
         try:
             payload = jwt.decode(
@@ -59,7 +59,7 @@ class AuthService:
         except JWTError:
             raise exception from None
 
-        user_data = payload.get('user')
+        user_data = payload.get("user")
 
         try:
             user = User.parse_obj(user_data)
@@ -73,10 +73,10 @@ class AuthService:
         # user_data = User.from_orm(user)
         now = datetime.utcnow()
         payload = {
-            'iat': now,
-            'nbf': now,
-            'exp': now + timedelta(seconds=FAST_API_CONF.JWT_EXPIRES_S),
-            'sub': str('bot'),
+            "iat": now,
+            "nbf": now,
+            "exp": now + timedelta(seconds=FAST_API_CONF.JWT_EXPIRES_S),
+            "sub": str("bot"),
             # 'user': user_data.dict(),
         }
 
@@ -107,8 +107,8 @@ class AuthService:
     async def authenticate_user(self, username: str, password: str) -> Token:
         exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Incorrect username or password',
-            headers={'WWW-Authenticate': 'Bearer'},
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
         user = await models.User.objects.get_or_none(username=username)
@@ -121,7 +121,9 @@ class AuthService:
 
         return await self.create_token(user)
 
-    async def authenticate_service(self, credentials: HTTPBasicCredentials = Depends(security)) -> Token:
+    async def authenticate_service(
+        self, credentials: HTTPBasicCredentials = Depends(security)
+    ) -> Token:
 
         correct_username = secrets.compare_digest(credentials.username, "adm-bot")
         correct_password = secrets.compare_digest(credentials.password, "general2035")

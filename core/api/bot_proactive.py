@@ -18,14 +18,14 @@ from ms_bot.setup.bot_init import ADAPTER
 CONVERSATION_REFERENCES: Dict[str, ConversationReference] = dict()
 
 router = APIRouter(
-    prefix='/api',
-    tags=['Bot notification exchange'],
+    prefix="/api",
+    tags=["Bot notification exchange"],
 )
 
 
 # Listen for incoming requests on /api/messages
 @router.post(
-    '/notify',
+    "/notify",
     response_model=None,
     status_code=status.HTTP_202_ACCEPTED,
 )

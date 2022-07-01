@@ -17,14 +17,14 @@ from ms_bot.setup.bot_init import ADAPTER, BOT
 CONVERSATION_REFERENCES: Dict[str, ConversationReference] = dict()
 
 router = APIRouter(
-    prefix='/api',
-    tags=['Bot messages exchange'],
+    prefix="/api",
+    tags=["Bot messages exchange"],
 )
 
 
 # Listen for incoming requests on /api/messages
 @router.post(
-    '/messages',
+    "/messages",
     response_model=None,
     status_code=status.HTTP_202_ACCEPTED,
 )

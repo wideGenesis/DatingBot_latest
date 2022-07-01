@@ -2,8 +2,14 @@
 https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-v4-state?view=azure-bot-service-4.0&tabs=python
 """
 
-from botbuilder.core import ConversationState, UserState, TurnContext, ActivityHandler, BotTelemetryClient, \
-    NullTelemetryClient
+from botbuilder.core import (
+    ConversationState,
+    UserState,
+    TurnContext,
+    ActivityHandler,
+    BotTelemetryClient,
+    NullTelemetryClient,
+)
 from botbuilder.dialogs import Dialog
 
 from settings.conf import AZURE_BOT_CONF
@@ -12,19 +18,18 @@ from ms_bot.bot_helpers.dialog_helper import DialogHelper
 from settings.logger import CustomLogger
 
 
-logger = CustomLogger.get_logger('bot')
+logger = CustomLogger.get_logger("bot")
 
 
 class ConversationBot(ActivityHandler):
     """Main Teams dialog to welcome users implementation."""
 
     def __init__(
-            self,
-            conversation_state: ConversationState,
-            user_state: UserState,
-            dialog_state: Dialog,
-            telemetry_client: BotTelemetryClient,
-
+        self,
+        conversation_state: ConversationState,
+        user_state: UserState,
+        dialog_state: Dialog,
+        telemetry_client: BotTelemetryClient,
     ):
         # super(ConversationBot, self).__init__(
         #     conversation_state, user_state, dialog_state, telemetry_client
@@ -32,7 +37,9 @@ class ConversationBot(ActivityHandler):
         self.telemetry_client = telemetry_client
 
         if conversation_state is None:
-            raise Exception("[DialogBot]: Missing parameter. conversation_state is required")
+            raise Exception(
+                "[DialogBot]: Missing parameter. conversation_state is required"
+            )
         if user_state is None:
             raise Exception("[DialogBot]: Missing parameter. user_state is required")
         if dialog_state is None:
@@ -52,22 +59,24 @@ class ConversationBot(ActivityHandler):
         try:
             await self.conversation_state.save_changes(turn_context)
         except Exception:
-            logger.warning('self.conversation_state.save_changes')
+            logger.warning("self.conversation_state.save_changes")
         try:
             await self.user_state.save_changes(turn_context)
         except Exception:
-            logger.warning('self.user_state.save_changes')
+            logger.warning("self.user_state.save_changes")
 
     async def on_message_activity(self, turn_context: TurnContext):
         # достаем в каждом сообщении состояния, чтобы можно было их использовать в контексте диалогов
         # await self.user_profile_accessor.get(turn_context, EmployeeProfile)
-        if turn_context.activity.text == '/reset_cache':
+        if turn_context.activity.text == "/reset_cache":
             member_id = turn_context.activity.from_property.id
             rm_user_blobs(member_id)
             return
 
         if AZURE_BOT_CONF.MAINTENANCE:
-            await turn_context.send_activity('⚠️ Сервіс тимчасово недоступний  \n \n🔄 Відбувається процес оновлення')
+            await turn_context.send_activity(
+                "⚠️ Сервіс тимчасово недоступний  \n \n🔄 Відбувається процес оновлення"
+            )
             return
 
         await DialogHelper.run_dialog(

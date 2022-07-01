@@ -8,7 +8,7 @@ from settings.conf import REDIS_CONF
 from helpers.email import build_email_message
 from settings.redis_client import redis_client
 
-logger = logging.getLogger('bot')
+logger = logging.getLogger("bot")
 
 
 def generate_otp():
@@ -27,16 +27,12 @@ def generate_otp():
 
 def otp_send_to_email(recipients: list, otp: str):
 
-    email_message_data = build_email_message(
-        recipients,
-        otp,
-        'otp'
-    )
+    email_message_data = build_email_message(recipients, otp, "otp")
     try:
-        redis_client.rpush(REDIS_CONF.REDIS_ADMIN_MAIL_QUEUE_KEY, json.dumps(email_message_data))
+        redis_client.rpush(
+            REDIS_CONF.REDIS_ADMIN_MAIL_QUEUE_KEY, json.dumps(email_message_data)
+        )
     except Exception:
-        print('Push to Redis error for otp email %s' % recipients)
+        print("Push to Redis error for otp email %s" % recipients)
 
-    return 'Ok'
-
-
+    return "Ok"

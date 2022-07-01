@@ -25,7 +25,7 @@ area_router = OrmarCRUDRouter(
     schema=models.Area,
     create_schema=area.BaseArea,
     update_schema=area.BaseArea,
-    delete_all_route=False
+    delete_all_route=False,
 )
 # async def messages(request: Request):
 #     # Main bot message handler.
@@ -53,4 +53,3 @@ advertisement_router = OrmarCRUDRouter(
 blacklist_router = OrmarCRUDRouter(
     schema=models.Blacklist,
 )
-

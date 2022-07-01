@@ -1,3 +1,23 @@
+$poetry install --no-dev
+$black <path to directory/file>
+$prospector <from root directory>
+$vulture <path to directory/file>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 https://stackoverflow.com/questions/64943693/what-are-the-best-practices-for-structuring-a-fastapi-project
 

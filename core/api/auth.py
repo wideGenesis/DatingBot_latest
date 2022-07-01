@@ -13,8 +13,8 @@ from core.crud.auth import (
 
 
 router = APIRouter(
-    prefix='/auth',
-    tags=['Auth'],
+    prefix="/auth",
+    tags=["Auth"],
 )
 
 
@@ -31,7 +31,7 @@ router = APIRouter(
 
 
 @router.post(
-    '/get-bearer/',
+    "/get-bearer/",
     response_model=Token,
 )
 def sign_in(
