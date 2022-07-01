@@ -95,12 +95,26 @@ EXCLUDE_FOR_LIST_BY_CITY = {
     "rel_gps_coordinates"
 }
 
-EXCLUDE_FOR_MEMBER_ID = {
+EXCLUDE_FOR_GET = {
     "id",
     "phone",
     "conversation_reference",
     "post_header",
     "passcode",
+    "gps_coordinates",
+    "rel_recipient_avatar",
+    "rel_sender_avatar",
+    "rel_customer_from_usermediafile",
+    "rel_customer_from_sex_profile",
+    "rel_sender_id",
+    "rel_recipient_id",
+    "rel_customer_from_blacklist",
+    "rel_customer_from_common_profile",
+    "rel_publisher"
+}
+
+EXCLUDE_FOR_POST = {
+    "id",
     "gps_coordinates",
     "rel_recipient_avatar",
     "rel_sender_avatar",

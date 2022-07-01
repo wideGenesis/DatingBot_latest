@@ -163,7 +163,7 @@ class Customer(ormar.Model):
     likes: Optional[int] = ormar.Integer(nullable=True)
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
-    gps_coordinates: Optional[Union[Area, Dict]] = ormar.ForeignKey(
+    gps_coordinates: Optional[str] = ormar.ForeignKey(
         Area, related_name='rel_gps_coordinates'
     )
     city: Optional[Union[Area, Dict]] = ormar.ForeignKey(
