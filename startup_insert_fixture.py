@@ -26,34 +26,34 @@ async def fixture():
     ).save()
 
     await models.RedisChannel(
-        redis_channel='Україна:Одеська область:Одеса'
+        redis_channel='україна:одеська область:одеса'
     ).save()
 
     await models.RedisChannel(
-        redis_channel='Україна:Київська область:Київ'
+        redis_channel='україна:київська область:київ'
     ).save()
 
     await models.Area(
-        area='Україна:Київська область:Київ',
-        city='Київ',
-        state='Київська область',
-        country='Україна',
+        area='україна:київська область:київ',
+        city='київ',
+        state='київська область',
+        country='україна',
         is_administrative_center=True
     ).save()
 
     await models.Area(
-        area='Україна:Одеська область:Одеса',
-        city='Одеса',
-        state='Одеська область',
-        country='Україна',
+        area='україна:одеська область:одеса',
+        city='одеса',
+        state='одеська область',
+        country='україна',
         is_administrative_center=True
     ).save()
 
     await models.Area(
-        area='Україна:Львівська область:Львів',
-        city='Львів',
-        state='Львівська область',
-        country='Україна',
+        area='україна:львівська область:львів',
+        city='львів',
+        state='львівська область',
+        country='україна',
         is_administrative_center=True
     ).save()
 

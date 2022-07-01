@@ -113,11 +113,19 @@ class Area(ormar.Model):
         tablename: str = 'areas'
 
     id: int = ormar.BigInteger(primary_key=True)
-    area: str = ormar.String(max_length=200, nullable=False, unique=True)
-    city: str = ormar.String(max_length=30, nullable=False)
-    state: str = ormar.String(max_length=30, nullable=False)
-    country: str = ormar.String(max_length=30, nullable=False)
-    is_administrative_center: bool = ormar.Boolean(nullable=False)
+    area: Optional[str] = ormar.String(max_length=200, nullable=True, unique=True)
+    area_en: Optional[str] = ormar.String(max_length=200, nullable=True, unique=True)
+
+    city: Optional[str] = ormar.String(max_length=30, nullable=True)
+    city_en: Optional[str] = ormar.String(max_length=30, nullable=True)
+
+    state: Optional[str] = ormar.String(max_length=30, nullable=True)
+    state_en: Optional[str] = ormar.String(max_length=30, nullable=True)
+
+    country: Optional[str] = ormar.String(max_length=30, nullable=True)
+    country_en: Optional[str] = ormar.String(max_length=30, nullable=True)
+
+    is_administrative_center: Optional[bool] = ormar.Boolean(nullable=True)
 
 
 class PremiumTier(ormar.Model):

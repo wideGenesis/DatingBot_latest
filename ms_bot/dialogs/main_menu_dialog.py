@@ -1,4 +1,5 @@
 import json
+import pickle
 
 from botbuilder.core import MessageFactory, BotTelemetryClient, NullTelemetryClient, UserState
 from botbuilder.dialogs import (

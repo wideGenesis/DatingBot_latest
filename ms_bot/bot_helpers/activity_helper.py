@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 """Helper to create reply object."""
-
+import json
 from datetime import datetime
 from botbuilder.schema import (
     Activity,

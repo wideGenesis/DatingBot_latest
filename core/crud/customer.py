@@ -52,7 +52,7 @@ class CustomerService:
         return city_list
 
 
-EXCLUDE = {
+EXCLUDE_FOR_LIST = {
     "id",
     "phone",
     "conversation_reference",
@@ -70,3 +70,45 @@ EXCLUDE = {
     "city",
     "rel_customer_from_common_profile",
     "rel_recipient_avatar"}
+
+EXCLUDE_FOR_LIST_BY_CITY = {
+    "id",
+    "phone",
+    "conversation_reference",
+    "post_header",
+    "passcode",
+    "gps_coordinates",
+    "rel_redis_channel_from_adv",
+    "rel_sender_id",
+    "rel_publisher",
+    "rel_sender_avatar",
+    "rel_recipient_id",
+    "rel_customer_from_usermediafile",
+    "rel_customer_from_sex_profile",
+    "rel_customer_from_blacklist",
+    "rel_customer_from_common_profile",
+    "rel_recipient_avatar",
+    "city",
+    "rel_area_id",
+    "rel_city",
+    "rel_large_city_near_id",
+    "rel_gps_coordinates"
+}
+
+EXCLUDE_FOR_MEMBER_ID = {
+    "id",
+    "phone",
+    "conversation_reference",
+    "post_header",
+    "passcode",
+    "gps_coordinates",
+    "rel_recipient_avatar",
+    "rel_sender_avatar",
+    "rel_customer_from_usermediafile",
+    "rel_customer_from_sex_profile",
+    "rel_sender_id",
+    "rel_recipient_id",
+    "rel_customer_from_blacklist",
+    "rel_customer_from_common_profile",
+    "rel_publisher"
+}

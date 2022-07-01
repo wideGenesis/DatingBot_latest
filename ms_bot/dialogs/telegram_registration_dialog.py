@@ -87,6 +87,7 @@ class TelegramRegistrationDialog(ComponentDialog):
         conversation_reference = pickle.dumps(
             step_context.context.get_conversation_reference(step_context.context.activity)
         )
+
         nickname = step_context.context.activity.channel_data['callback_query']['from'].get('username')
 
         user_data.nickname = nickname
