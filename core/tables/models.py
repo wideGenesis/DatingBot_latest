@@ -133,7 +133,7 @@ class RedisChannel(ormar.Model):
         tablename: str = 'redis_channels'
 
     id: int = ormar.BigInteger(primary_key=True)
-    redis_channel: str = ormar.String(max_length=200, nullable=False, unique=True)
+    redis_channel: str = ormar.String(unique=True, nullable=False, max_length=200)
 
 
 class Customer(ormar.Model):
@@ -156,10 +156,10 @@ class Customer(ormar.Model):
     created_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     updated_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     gps_coordinates: Optional[Union[Area, Dict]] = ormar.ForeignKey(
-        PremiumTier, related_name='rel_gps_coordinates'
+        Area, related_name='rel_gps_coordinates'
     )
     city: Optional[Union[Area, Dict]] = ormar.ForeignKey(
-        PremiumTier, related_name='rel_city'
+        Area, related_name='rel_city'
     )
     premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(
         PremiumTier, related_name='rel_premium_tier'
@@ -236,6 +236,7 @@ class Message(ormar.Model):
     from_member_id: int = ormar.BigInteger(index=True)
     to_member_id: int = ormar.BigInteger(index=True)
     message_text: str = ormar.String(max_length=1000, nullable=False)
+    is_read: bool = ormar.Boolean(nullable=False)
     send_at: datetime.datetime = ormar.DateTime(default=datetime.datetime.now, nullable=False)
     sender_id: Union[Customer, Dict] = ormar.ForeignKey(
         Customer, related_name='rel_sender_id'

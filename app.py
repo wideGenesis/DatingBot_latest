@@ -1,26 +1,45 @@
-from core import api
-import uvicorn
+import os
 
-from settings.conf import FAST_API_CONF, DATABASE_CONF
-from db.engine import DATABASE, ENGINE
+import uvicorn
 from fastapi import FastAPI
-from settings.logger import CustomLogger
-from core.tables.models import METADATA
-from startup_insert_fixture import fixture
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+from core import api
+from db.engine import DATABASE
+from settings.conf import FAST_API_CONF
+from settings.logger import CustomLogger
 
 logger = CustomLogger.get_logger('bot')
-
-# TODO uncomment if tables creation needed, set SYNC Driver = export DB_DRIVER=postgresql
-if DATABASE_CONF.DB_DRIVER == 'postgresql':
-    METADATA.create_all(bind=ENGINE)
 
 app = FastAPI(
     title='FastApi Microsoft Bot Framework',
     description='Microsoft Bot Implementation',
     version='1.0.0',
     openapi_tags=FAST_API_CONF.TAGS_META,
+)
+
+origins = [
+    "http://127.0.0.1",
+    "https://127.0.0.1",
+    "http://localhost",
+    "http://localhost:8080",
+]
+# if os.enviton.get('IS_LOCAL_ENV', ''):
+#
+# app.add_middleware(HTTPSRedirectMiddleware)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "*.example.com"])
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(api.router)

@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException, status
 
 from core.schemas.customer import CustomerCreate, CustomerUpdate
@@ -52,3 +51,22 @@ class CustomerService:
         print('city_list', city_list)
         return city_list
 
+
+EXCLUDE = {
+    "id",
+    "phone",
+    "conversation_reference",
+    "post_header",
+    "passcode",
+    "gps_coordinates",
+    "rel_redis_channel_from_adv",
+    "rel_sender_id",
+    "rel_publisher",
+    "rel_sender_avatar",
+    "rel_recipient_id",
+    "rel_customer_from_usermediafile",
+    "rel_customer_from_sex_profile",
+    "rel_customer_from_blacklist",
+    "city",
+    "rel_customer_from_common_profile",
+    "rel_recipient_avatar"}
