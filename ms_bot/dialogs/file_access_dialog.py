@@ -52,6 +52,7 @@ class FileLoopDialog(ComponentDialog):
             WaterfallDialog(
                 "MainFileLoopDialog",
                 [
+                    self.pre_loop_step,
                     self.loop_step,
                 ],
             )
@@ -61,7 +62,7 @@ class FileLoopDialog(ComponentDialog):
         self.initial_dialog_id = "MainFileLoopDialog"
         self.user_files_list = None
 
-    async def loop_step(
+    async def pre_loop_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("loop_step %s", FileLoopDialog.__name__)
@@ -82,3 +83,11 @@ class FileLoopDialog(ComponentDialog):
 
         logger.debug("back_to_parent from %s", FileLoopDialog.__name__)
         return await step_context.end_dialog(True)
+
+    async def pre_loop_step(
+        self, step_context: WaterfallStepContext
+    ) -> DialogTurnResult:
+        logger.debug("loop_step %s", FileLoopDialog.__name__)
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
