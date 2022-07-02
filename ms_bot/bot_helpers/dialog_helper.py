@@ -40,7 +40,7 @@ class DialogHelper:
 
         except Exception:
             logger.exception("EXCEPTION begin_dialog %s", dialog.id)
-            time.sleep(10)
+            time.sleep(1)
             results = None
             await dialog_context.begin_dialog(dialog.id)
 

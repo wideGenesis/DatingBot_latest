@@ -13,6 +13,7 @@ from botbuilder.dialogs import (
     WaterfallStepContext,
     ComponentDialog,
     PromptValidatorContext,
+    DialogReason
 )
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
@@ -22,10 +23,7 @@ from core.tables.models import UserMediaFile
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger
-from helpers.copyright import send_file_kb, SEND_MEDIA_KB
-from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
-from ms_bot.dialogs.upload_dialog import UploadDialog
-
+from helpers.copyright import send_file_kb, BOT_MESSAGES
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger("bot")
@@ -33,10 +31,10 @@ logger = CustomLogger.get_logger("bot")
 
 class FileManagementDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(FileManagementDialog, self).__init__(dialog_id or FileManagementDialog.__name__)
         self.telemetry_client = telemetry_client
@@ -46,56 +44,95 @@ class FileManagementDialog(ComponentDialog):
         self.add_dialog(
             TextPrompt(TextPrompt.__name__, FileManagementDialog.answer_prompt_validator)
         )
-        self.add_dialog(
-            TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
-        )
-        self.add_dialog(UploadDialog(user_state, UploadDialog.__name__))
+
         self.add_dialog(
             WaterfallDialog(
                 "MainFileManagementDialog",
                 [
-                    self.show_file_0_step,
-                    # self.back_to_parent
+                    self.show_file_step,
+                    self.parse_choice_step
                 ],
             )
         )
         TextPrompt.telemetry_client = self.telemetry_client
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "MainFileManagementDialog"
+        self.file = None
 
-    async def show_file_0_step(
-        self, step_context: WaterfallStepContext
+    async def show_file_step(
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("show_file_0_step %s", FileManagementDialog.__name__)
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
+        logger.debug("show_file_step %s", FileManagementDialog.__name__)
+        member_id = str(step_context.context.activity.from_property.id)
+        self.file = step_context.options
+        print('file', self.file)
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(send_file_kb(member_id, self.file["file"], self.file["privacy_type"])),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES['reprompt']),
+            ),
         )
 
-        return await self.yield_file_and_kb(step_context, user_data, step=0)
-
-    async def parse_0_step(
-        self, step_context: WaterfallStepContext
+    async def parse_choice_step(
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("parse_0_choice_step %s", FileManagementDialog.__name__)
+        logger.debug("parse_choice_step %s", FileManagementDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
 
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
+        pk = self.file.get("id")
+        privacy_type = self.file.get("privacy_type")
+        file = self.file.get("file")
 
         found_choice = step_context.result
-        return await self.choice_route(step_context, found_choice, user_data, 0)
+        if found_choice == 'KEY_CALLBACK:back':
+            return await step_context.end_dialog('need_replace_parent')
+
+        elif found_choice == 'KEY_CALLBACK:file_open_hidden':
+            get_file = await UserMediaFile.objects.get_or_none(id=pk)
+            if get_file is None:
+                return await step_context.end_dialog('continue_parent')
+            logger.warning(
+                "file: %s, privacy_type: %s, pk: %s",
+                file,
+                privacy_type,
+                pk,
+            )
+
+            privacy_type = (1 if privacy_type == 0 else 0)
+            logger.warning("privacy_type: %s", privacy_type)
+
+            await get_file.update(privacy_type=privacy_type, updated_at=datetime.datetime.utcnow())
+            await step_context.context.send_activity("buy")
+            return await step_context.end_dialog()
+
+        elif found_choice == 'KEY_CALLBACK:file_rm':
+
+            return await step_context.end_dialog('continue_parent')
+
+        elif found_choice == 'KEY_CALLBACK:next':
+            return await step_context.end_dialog('continue_parent')
+
+        else:
+            await step_context.context.send_activity("buy")
+            return await step_context.cancel_all_dialogs(True)
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
         _value = prompt_context.context.activity.text
 
         if _value in [
+            "KEY_CALLBACK:back",
             "KEY_CALLBACK:file_open_hidden",
             "KEY_CALLBACK:file_rm",
             "KEY_CALLBACK:next",
+            "KEY_CALLBACK:menu",
         ]:
             condition = True
         else:
@@ -105,10 +142,10 @@ class FileManagementDialog(ComponentDialog):
 
     @staticmethod
     async def choice_route(
-        step_context: WaterfallStepContext,
-        found_choice,
-        user_data: CustomerProfile,
-        list_id: int,
+            step_context: WaterfallStepContext,
+            found_choice,
+            user_data: CustomerProfile,
+            list_id: int,
     ) -> DialogTurnResult:
         try:
             item = user_data.files_dict[list_id]
@@ -146,6 +183,7 @@ class FileManagementDialog(ComponentDialog):
             user_data.files_dict.pop(list_id)
 
             return await step_context.next([])
+
         elif found_choice == "KEY_CALLBACK:next":
             return await step_context.next([])
 
@@ -155,48 +193,3 @@ class FileManagementDialog(ComponentDialog):
         else:
             await step_context.context.send_activity("buy")
             return await step_context.cancel_all_dialogs(True)
-
-    @staticmethod
-    async def yield_file_and_kb(
-        step_context: WaterfallStepContext, user_data: CustomerProfile, step=None
-    ) -> DialogTurnResult:
-        print('files', user_data.files_dict)
-
-        user_files = user_data.files_dict
-
-        if len(user_files) == 0:
-            await step_context.context.send_activity("У вас немає завантажених файлів")
-            return await step_context.end_dialog("need_replace_parent")
-
-        activities = []
-        member_id = str(step_context.context.activity.from_property.id)
-
-        try:
-            item = user_files[step]
-            print("file", item)
-        except Exception:
-            return await step_context.end_dialog("need_replace_parent")
-
-        activities.append(
-            Activity(
-                channel_data=json.dumps(
-                    send_file_kb(member_id, item["file"], item["privacy_type"])
-                ),
-                type=ActivityTypes.message,
-            )
-        )
-
-        await step_context.context.send_activities(activities)
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(SEND_MEDIA_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
-                ),
-            ),
-        )

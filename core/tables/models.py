@@ -253,6 +253,9 @@ class UserMediaFile(ormar.Model):
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
+    updated_at: datetime.datetime = ormar.DateTime(
+        default=datetime.datetime.now, nullable=True
+    )
     customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
         Customer, related_name="rel_customer_from_usermediafile"
     )

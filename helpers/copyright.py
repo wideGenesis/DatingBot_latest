@@ -90,6 +90,7 @@ BOT_MESSAGES = {
     "incoming_message": "Ви маєте одне нове повідомлення",
     "bye": "Вдалих пошуків!",
     "agreement": "Продовжуючи, ви погоджуєтесь з політикою конфіденційності https://zodier.com/policy.html",
+    "files_not_found": "У вас немає завантажених файлів",
 }
 
 LOCALES = {"en": {}, "ua": {}, "es": {}, "ru": {}}

@@ -46,9 +46,6 @@ class FileAccessDialog(ComponentDialog):
         self.add_dialog(
             TextPrompt(TextPrompt.__name__, FileAccessDialog.answer_prompt_validator)
         )
-        self.add_dialog(
-            TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
-        )
         self.add_dialog(UploadDialog(user_state, UploadDialog.__name__))
         self.add_dialog(
             WaterfallDialog(

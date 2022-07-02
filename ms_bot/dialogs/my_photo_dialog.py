@@ -19,7 +19,7 @@ from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
 from helpers.copyright import USER_FILES_KB, BOT_MESSAGES
-from ms_bot.dialogs.file_access_dialog import FileAccessDialog
+from ms_bot.dialogs.file_access_dialog import FileLoopDialog
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
 
@@ -47,14 +47,13 @@ class MyPhotoDialog(ComponentDialog):
             TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
         )
         self.add_dialog(UploadDialog(user_state, UploadDialog.__name__))
-        self.add_dialog(FileAccessDialog(user_state, FileAccessDialog.__name__))
+        self.add_dialog(FileLoopDialog(user_state, FileLoopDialog.__name__))
         self.add_dialog(
             WaterfallDialog(
                 "MainMyPhotoDialog",
                 [
                     self.show_menu_step,
                     self.parse_choice_step,
-                    # self.back_to_parent
                 ],
             )
         )
@@ -93,7 +92,7 @@ class MyPhotoDialog(ComponentDialog):
         if found_choice == "KEY_CALLBACK:upload":
             return await step_context.begin_dialog(UploadDialog.__name__)
         elif found_choice == "KEY_CALLBACK:access":
-            return await step_context.begin_dialog(FileAccessDialog.__name__)
+            return await step_context.begin_dialog(FileLoopDialog.__name__)
         elif found_choice == "KEY_CALLBACK:back":
             return await step_context.end_dialog("need_replace_parent")
         else:
