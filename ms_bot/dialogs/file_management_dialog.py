@@ -50,7 +50,7 @@ class FileManagementDialog(ComponentDialog):
                 "MainFileManagementDialog",
                 [
                     self.show_file_step,
-                    self.parse_choice_step
+                    self.parse_choice_step,
                 ],
             )
         )
@@ -65,7 +65,6 @@ class FileManagementDialog(ComponentDialog):
         logger.debug("show_file_step %s", FileManagementDialog.__name__)
         member_id = str(step_context.context.activity.from_property.id)
         self.file = step_context.options
-        print('file', self.file)
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -109,18 +108,16 @@ class FileManagementDialog(ComponentDialog):
             logger.warning("privacy_type: %s", privacy_type)
 
             await get_file.update(privacy_type=privacy_type, updated_at=datetime.datetime.utcnow())
-            await step_context.context.send_activity("buy")
-            return await step_context.end_dialog()
+            return await step_context.next('continue_parent')
 
         elif found_choice == 'KEY_CALLBACK:file_rm':
-
-            return await step_context.end_dialog('continue_parent')
+            return await step_context.next('continue_parent')
 
         elif found_choice == 'KEY_CALLBACK:next':
-            return await step_context.end_dialog('continue_parent')
+            return await step_context.next('continue_parent')
 
         else:
-            await step_context.context.send_activity("buy")
+            await step_context.context.send_activity("Bye!")
             return await step_context.cancel_all_dialogs(True)
 
     @staticmethod

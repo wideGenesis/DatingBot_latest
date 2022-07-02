@@ -23,7 +23,7 @@ from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 # from ms_bot.dialogs.adv_show_dialog import MyAdvDialog
 from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
-from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
+from ms_bot.dialogs.my_file_dialog import MyFileDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -47,7 +47,7 @@ class AdvMenuDialog(ComponentDialog):
             TextPrompt(TextPrompt.__name__, AdvMenuDialog.answer_prompt_validator)
         )
         self.add_dialog(MyProfileDialog(user_state, MyProfileDialog.__name__))
-        self.add_dialog(MyPhotoDialog(user_state, MyPhotoDialog.__name__))
+        self.add_dialog(MyFileDialog(user_state, MyFileDialog.__name__))
         self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
         # self.add_dialog(MyAdvDialog(user_state, MyAdvDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))

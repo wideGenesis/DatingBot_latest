@@ -17,7 +17,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from ms_bot.dialogs.my_photo_dialog import MyPhotoDialog
+from ms_bot.dialogs.my_file_dialog import MyFileDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB

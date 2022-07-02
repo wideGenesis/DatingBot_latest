@@ -34,10 +34,10 @@ logger = CustomLogger.get_logger("bot")
 
 class FileLoopDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(FileLoopDialog, self).__init__(dialog_id or FileLoopDialog.__name__)
         self.telemetry_client = telemetry_client
@@ -52,42 +52,49 @@ class FileLoopDialog(ComponentDialog):
             WaterfallDialog(
                 "MainFileLoopDialog",
                 [
-                    self.pre_loop_step,
                     self.loop_step,
+                    self.post_loop_step,
                 ],
             )
         )
         TextPrompt.telemetry_client = self.telemetry_client
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "MainFileLoopDialog"
-        self.user_files_list = None
 
-    async def pre_loop_step(
-        self, step_context: WaterfallStepContext
+    async def loop_step(
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("loop_step %s", FileLoopDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        self.user_files_list = user_data.files_dict
 
-        if len(self.user_files_list) == 0:
+        files = user_data.files_dict
+        file_number = user_data.file_number
+        print('file_number', file_number)
+
+        if len(files) == 0:
             await step_context.context.send_activity(BOT_MESSAGES["files_not_found"])
             return await step_context.end_dialog("need_replace_parent")
 
-        cycle = 0
-        for item in self.user_files_list:
-            logger.debug("%s item, %s round", item, cycle)
-            cycle += 1
-            await step_context.begin_dialog(FileManagementDialog.__name__, item)
+        item = files[file_number]
+        return await step_context.begin_dialog(FileManagementDialog.__name__, item)
 
-        logger.debug("back_to_parent from %s", FileLoopDialog.__name__)
-        return await step_context.end_dialog(True)
-
-    async def pre_loop_step(
-        self, step_context: WaterfallStepContext
+    async def post_loop_step(
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("loop_step %s", FileLoopDialog.__name__)
+        logger.debug("post_loop_step %s", FileLoopDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
+        files = user_data.files_dict
+        length = len(files) - 1
+
+        if user_data.file_number < length:
+            user_data.file_number += 1
+            return await step_context.replace_dialog(FileLoopDialog.__name__)
+
+        if user_data.file_number >= length:
+            user_data.file_number = 0
+            await step_context.context.send_activity("Bye!")
+            return await step_context.cancel_all_dialogs(True)

@@ -44,6 +44,7 @@ class CustomerProfile:
         ban_list=None,
         # Files
         files_dict=None,
+        file_number=0,
         # Other
         authorised=None,
         otp=None,
@@ -52,6 +53,7 @@ class CustomerProfile:
         self.temp = temp
         self.otp: int = otp
         self.authorised: int = authorised
+        self.file_number: int = file_number
         self.files_dict = files_dict
         self.ban_list: list = ban_list
         self.redis_channel: str = redis_channel
@@ -69,6 +71,7 @@ class CustomerProfile:
         self.who_for_whom: int = who_for_whom
         self.adv_pk: int = adv_pk
         self.adv_dict: dict = adv_dict
+
         self.passcode: str = passcode
         self.sex_profile: int = sex_profile
         self.personal_profile: int = personal_profile

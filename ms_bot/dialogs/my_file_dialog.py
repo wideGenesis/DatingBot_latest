@@ -19,7 +19,7 @@ from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
 from helpers.copyright import USER_FILES_KB, BOT_MESSAGES
-from ms_bot.dialogs.file_access_dialog import FileLoopDialog
+from ms_bot.dialogs.file_loop_dialog import FileLoopDialog
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
 
@@ -28,20 +28,20 @@ from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 logger = CustomLogger.get_logger("bot")
 
 
-class MyPhotoDialog(ComponentDialog):
+class MyFileDialog(ComponentDialog):
     def __init__(
         self,
         user_state: UserState,
         dialog_id: str = None,
         telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
-        super(MyPhotoDialog, self).__init__(dialog_id or MyPhotoDialog.__name__)
+        super(MyFileDialog, self).__init__(dialog_id or MyFileDialog.__name__)
         self.telemetry_client = telemetry_client
         self.user_state = user_state
         self.user_profile_accessor = self.user_state.create_property("CustomerProfile")
 
         self.add_dialog(
-            TextPrompt(TextPrompt.__name__, MyPhotoDialog.answer_prompt_validator)
+            TextPrompt(TextPrompt.__name__, MyFileDialog.answer_prompt_validator)
         )
         self.add_dialog(
             TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
@@ -64,7 +64,7 @@ class MyPhotoDialog(ComponentDialog):
     async def show_menu_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("show_menu_step %s", MyPhotoDialog.__name__)
+        logger.debug("show_menu_step %s", MyFileDialog.__name__)
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -82,7 +82,7 @@ class MyPhotoDialog(ComponentDialog):
     async def parse_choice_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("parse_choice_step %s", MyPhotoDialog.__name__)
+        logger.debug("parse_choice_step %s", MyFileDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
