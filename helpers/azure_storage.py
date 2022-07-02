@@ -54,9 +54,9 @@ def rm_user_blobs(member_id: str):
 # ----------------------------------------------------------------------------------------------------------
 
 
-async def upload_blob(file_type: str, filename: str, member_id: str):
+async def upload_blob(filename: str, member_id: str):
     local_file_path = os.path.join("ms_bot", "temp_media", filename)
-    blob = "{}_{}".format(file_type, filename)
+    blob = "{}".format(filename)
     container = "media/{}".format(member_id)
 
     # Create a blob client using the local file name as the name for the blob

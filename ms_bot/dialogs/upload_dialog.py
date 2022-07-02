@@ -184,7 +184,7 @@ class UploadDialog(ComponentDialog):
                 return await step_context.replace_dialog(UploadDialog.__name__)
 
         upload_result = await upload_blob(
-            suffix.replace(".", ""), _file_name, str(member_id)
+            _file_name, str(member_id)
         )
         if upload_result:
             os.remove(file)

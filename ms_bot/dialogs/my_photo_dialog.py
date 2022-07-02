@@ -107,7 +107,6 @@ class MyPhotoDialog(ComponentDialog):
         if _value in [
             "KEY_CALLBACK:upload",
             "KEY_CALLBACK:access",
-            "KEY_CALLBACK:file_rm",
             "KEY_CALLBACK:back",
         ]:
             condition = True

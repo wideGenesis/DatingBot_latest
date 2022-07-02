@@ -303,7 +303,12 @@ USER_FILES_KB = {
                         "callback_data": "KEY_CALLBACK:access",
                     }
                 ],
-                [{"text": "↩️ Назад", "callback_data": "KEY_CALLBACK:back"}],
+                [
+                    {
+                        "text": "↩️ Назад",
+                        "callback_data": "KEY_CALLBACK:back"
+                    }
+                ],
             ]
         },
     },
@@ -322,8 +327,8 @@ REQUEST_GEO = {
 }
 
 
-def send_photo_kb(file: str, privacy_type: int) -> dict:
-    if privacy_type == 0:
+def send_file_kb(member_id: str, file: str, privacy_type: int) -> dict:
+    if privacy_type == 1:
         msg = "Приватний файл"
     else:
         msg = "Файл доступний користувачам"
@@ -331,27 +336,28 @@ def send_photo_kb(file: str, privacy_type: int) -> dict:
     return {
         "method": "sendPhoto",
         "parameters": {
-            "protect_content": True,
             "caption": f"{msg}",
-            "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{file}",
+            "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{member_id}/{file}",
+            "protect_content": True,
+            "disable_notification": True,
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {"text": "⬅️", "callback_data": "KEY_CALLBACK:back"},
+                        {"text": "🔐", "callback_data": "KEY_CALLBACK:file_open_hidden"},
+                        {"text": "🗑", "callback_data": "KEY_CALLBACK:file_rm"},
+                        {"text": "➡️", "callback_data": "KEY_CALLBACK:next"},
+                    ],
+                    [
+                        {
+                            "text": "↩️ меню",
+                            "callback_data": "KEY_CALLBACK:menu"
+                        }
+                    ],
+                ]
+            },
         },
     }
-
-
-def send_video_kb(file: str, privacy_type: int) -> dict:
-    if privacy_type == 0:
-        msg = "Файл доступний користувачам"
-    else:
-        msg = "Приватний файл"
-    return {
-        "method": "sendVideo",
-        "parameters": {
-            "protect_content": True,
-            "caption": f"{msg}",
-            "video": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{file}",
-        },
-    }
-
 
 SEND_MEDIA_KB = {
     "method": "sendMessage",
@@ -367,7 +373,7 @@ SEND_MEDIA_KB = {
                         "callback_data": "KEY_CALLBACK:file_open_hidden",
                     }
                 ],
-                [{"text": "🗑 Видалити файл", "callback_data": "KEY_CALLBACK:file_rm"}],
+                [{"text": " файл", "callback_data": "KEY_CALLBACK:file_rm"}],
                 [{"text": "➡️ Далі", "callback_data": "KEY_CALLBACK:next"}],
             ]
         },
