@@ -3,11 +3,13 @@ import random
 from settings.conf import AZURE_STORAGE_CONF
 
 LANG_CHOICE = {
-    0: "Українська",
-    1: "ru",
+    0: "English",
+    1: "Українська",
+    2: "Español",
+    3: "російська",
 }
 
-GENDER_CHOICE = {
+SEX_CHOICE = {
     0: "👱🏻‍♂️ Чоловік",
     1: "👩🏼‍🦱 Жінка",
 }
@@ -142,8 +144,8 @@ CHOOSE_SEX_KB = {
         "reply_markup": {
             "inline_keyboard": [
                 [
-                    {"text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:Man"},
-                    {"text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:Woman"},
+                    {"text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:0"},
+                    {"text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:1"},
                 ],
             ]
         },

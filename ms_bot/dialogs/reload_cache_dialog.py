@@ -52,23 +52,25 @@ class ReloadCacheDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        print("updated_at >>> ", user_data.updated_at)
+        # print("updated_at >>> ", user_data.updated_at)
         member_id = int(step_context.context.activity.from_property.id)
 
         h, m, s = "0:01:00".split(":")
         threshold = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
         time_now = datetime.datetime.utcnow()
 
-        try:
-            timer = time_now - user_data.updated_at
-            print("timer", timer, time_now, user_data.updated_at)
-        except Exception:
-            logger.exception("USER (%s) DOESN'T EXISTS IN CACHE", member_id)
-            return await step_context.next([])
+        # try:
+        #     timer = time_now - user_data.updated_at
+        #     # print("timer", timer, time_now, user_data.updated_at)
+        # except Exception:
+        #     logger.exception("USER (%s) DOESN'T EXISTS IN CACHE", member_id)
+        #     return await step_context.next([])
 
         if user_data.updated_at is None:
             logger.debug("USER (%s) DOESN'T EXISTS IN CACHE", member_id)
             return await step_context.next([])
+
+        timer = time_now - user_data.updated_at
 
         if timer < threshold and user_data.is_active:
             logger.debug("USER (%s) STATE LOADED SUCCESSFULLY", member_id)
@@ -142,7 +144,7 @@ class ReloadCacheDialog(ComponentDialog):
 
         await self._reload_cache(user_data, self.customer_instance, files_in_storage)
 
-        return await step_context.end_dialog()
+        return await step_context.end_dialog(self.customer_exists)
 
     @classmethod
     async def _reload_cache(cls, user_data, customer_instance, user_files):
@@ -159,4 +161,6 @@ class ReloadCacheDialog(ComponentDialog):
         user_data.pk = customer_instance.id
         user_data.post_header = customer_instance.post_header
         user_data.password_hash = customer_instance.password_hash
+        user_data.self_sex = customer_instance.self_sex
+        user_data.age = customer_instance.age
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)

@@ -12,11 +12,11 @@ from botbuilder.dialogs import (
     WaterfallStepContext,
     DialogTurnResult,
 )
-
+# from ms_bot.dialogs.auth_dialog import AuthDialog
+from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 from settings.logger import CustomLogger
 from ms_bot.dialogs.main_menu_dialog import MenuDialog
 from ms_bot.dialogs.utils_dialog import UtilsDialog
-# from ms_bot.dialogs.auth_dialog import AuthDialog
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from ms_bot.bots_models.models import CustomerProfile
 
@@ -36,7 +36,7 @@ class MainDialog(ComponentDialog):
         # Add state property accessors
         self.user_profile_accessor = user_state.create_property("CustomerProfile")
 
-        # self.add_dialog(AuthDialog(user_state, AuthDialog.__name__))
+        self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
         self.add_dialog(MenuDialog(user_state, MenuDialog.__name__))
         self.add_dialog(
             TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
@@ -56,7 +56,7 @@ class MainDialog(ComponentDialog):
             )
         )
         MainDialog.telemetry_client = self.telemetry_client
-        # AuthDialog.telemetry_client = self.telemetry_client
+        ReloadCacheDialog.telemetry_client = self.telemetry_client
         TelegramRegistrationDialog.telemetry_client = self.telemetry_client
         UtilsDialog.telemetry_client = self.telemetry_client
 
@@ -73,11 +73,11 @@ class MainDialog(ComponentDialog):
             return await step_context.end_dialog()
         return await step_context.next([])
 
-    # async def is_auth_step(
-    #     self, step_context: WaterfallStepContext
-    # ) -> DialogTurnResult:
-    #     logger.debug("is_auth_step %s", MainDialog.__name__)
-    #     return await step_context.begin_dialog(AuthDialog.__name__)
+    async def is_auth_step(
+        self, step_context: WaterfallStepContext
+    ) -> DialogTurnResult:
+        logger.debug("is_auth_step %s", MainDialog.__name__)
+        return await step_context.begin_dialog(ReloadCacheDialog.__name__)
 
     async def routing_step(
         self, step_context: WaterfallStepContext

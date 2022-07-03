@@ -24,6 +24,11 @@ class LangEnum(Enum):
     ru = 3
 
 
+class SelfSexEnum(Enum):
+    man = 0
+    woman = 1
+
+
 class HasPlaceEnum(Enum):
     none = 0
     yours = 1
@@ -139,6 +144,8 @@ class Customer(ormar.Model):
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
     lang: Optional[int] = ormar.Integer(index=True, choices=list(LangEnum))
+    self_sex: Optional[int] = ormar.Integer(choices=list(SelfSexEnum), nullable=True)
+    age: Optional[int] = ormar.Integer(nullable=True)
     instagram_link: Optional[str] = ormar.String(
         index=True, max_length=50, unique=True, nullable=True
     )

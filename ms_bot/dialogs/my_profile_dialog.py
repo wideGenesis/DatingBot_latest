@@ -22,7 +22,7 @@ from settings.logger import CustomLogger
 from helpers.copyright import (
     profile_kb,
     LANG_CHOICE,
-    GENDER_CHOICE,
+    SEX_CHOICE,
     LOOKING_GENDER_CHOICE,
     LOOKING_FOR_CHOICE, BOT_MESSAGES,
 )
@@ -69,11 +69,11 @@ class MyProfileDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        area = str(user_data.area_id).split(":")
-
+        # area = str(user_data.area_id).split(":")
+        print('>>>>>>>>lang ', user_data.lang)
         message = (
-            f"Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n"
-            f"Моя стать: {GENDER_CHOICE[user_data.self_sex]}  \n \n"
+            f"Мова бота: {LANG_CHOICE[int(user_data.lang)]}  \n \n"
+            f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
             f"Мій телефон: {user_data.phone}  \n \n"
         )

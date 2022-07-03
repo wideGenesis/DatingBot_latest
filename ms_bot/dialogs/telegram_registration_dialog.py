@@ -156,7 +156,7 @@ class TelegramRegistrationDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
         result_from_previous_step = str(step_context.result).split(":")
-        user_data.self_sex = result_from_previous_step
+        user_data.self_sex = result_from_previous_step[1]
 
         return await step_context.prompt(
             NumberPrompt.__name__,
@@ -190,8 +190,7 @@ class TelegramRegistrationDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.age = result_from_previous_step
+        user_data.age = step_context.result
 
         return await step_context.begin_dialog(RequestPhoneDialog.__name__)
 
@@ -286,6 +285,8 @@ class TelegramRegistrationDialog(ComponentDialog):
             conversation_reference=user_data.conversation_reference,
             member_id=int(user_data.member_id),
             lang=int(user_data.lang),
+            self_sex=int(user_data.self_sex),
+            age=int(user_data.age),
             is_active=int(user_data.is_active),
         )
         try:
@@ -298,6 +299,8 @@ class TelegramRegistrationDialog(ComponentDialog):
                 conversation_reference=user_data.conversation_reference,
                 member_id=int(user_data.member_id),
                 lang=int(user_data.lang),
+                self_sex=int(user_data.self_sex),
+                age=int(user_data.age),
                 is_active=int(user_data.is_active),
             )
         except Exception:
