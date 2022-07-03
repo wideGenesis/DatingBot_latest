@@ -29,6 +29,7 @@ redis = "^4.3.1"
 fastapi-crudrouter = "^0.8.5"
 Django = "^4.0.5"
 Jinja2 = "^3.1.2"
+jose = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 python-dotenv = "^0.20.0"

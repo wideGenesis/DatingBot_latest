@@ -7,7 +7,7 @@ from fastapi import (
     status,
 )
 
-from .. import models
+from core import models
 from ..services.auth import get_current_user
 from ..services.operations import OperationsService
 

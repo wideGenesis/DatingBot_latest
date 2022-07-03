@@ -89,29 +89,6 @@ class ForOrmarMeta(ormar.ModelMeta):
     database = DATABASE
 
 
-class User(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "users"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    email: Optional[str] = ormar.String(max_length=50, nullable=False, unique=True)
-    username: Union[str, int] = ormar.String(max_length=50, nullable=False, unique=True)
-    first_name: Optional[str]
-    last_name: Optional[str]
-    password_hash: str = ormar.String(max_length=1000, nullable=False)
-    # groups: Optional[List] =
-    # user_permissions: Optional[List] =
-    is_staff: bool = ormar.Boolean(nullable=False, server_default=text("False"))
-    is_active: bool = ormar.Boolean(nullable=False, server_default=text("True"))
-    is_superuser: bool = ormar.Boolean(nullable=False, server_default=text("False"))
-    last_login: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    date_joined: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-
-
 class Area(ormar.Model):
     class Meta(ForOrmarMeta):
         tablename: str = "areas"
@@ -158,6 +135,7 @@ class Customer(ormar.Model):
     nickname: Optional[str] = ormar.String(max_length=50, nullable=False, unique=True)
     phone: int = ormar.BigInteger(unique=True)
     email: Optional[str] = ormar.String(max_length=100, unique=True, nullable=True)
+    description: Optional[str] = ormar.String(max_length=300, nullable=True)
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
     lang: Optional[int] = ormar.Integer(index=True, choices=list(LangEnum))
@@ -167,9 +145,14 @@ class Customer(ormar.Model):
     tiktok_link: Optional[str] = ormar.String(
         index=True, max_length=50, unique=True, nullable=True
     )
-    is_active: bool = ormar.Boolean(nullable=False)
+    is_active: bool = ormar.Boolean(nullable=True, default=True)
+    is_staff: bool = ormar.Boolean(nullable=True, default=False)
+    is_superuser: bool = ormar.Boolean(nullable=True, default=False)
+
     post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
-    passcode: Optional[str] = ormar.String(max_length=50, nullable=True)
+    password_hash: Optional[str] = ormar.String(max_length=50, nullable=True)
+    password_hint: Optional[str] = ormar.String(max_length=50, nullable=True)
+
     likes: Optional[int] = ormar.Integer(nullable=True)
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False

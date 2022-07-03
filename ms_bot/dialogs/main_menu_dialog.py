@@ -114,6 +114,9 @@ class MenuDialog(ComponentDialog):
         elif found_choice == "KEY_CALLBACK:files":
             return await step_context.begin_dialog(MyFileDialog.__name__)
 
+        elif found_choice == "KEY_CALLBACK:scrape":
+            return await step_context.begin_dialog(MyFileDialog.__name__)
+
         else:
             await step_context.context.send_activity("bye!")
             return await step_context.cancel_all_dialogs(True)
@@ -137,6 +140,7 @@ class MenuDialog(ComponentDialog):
             "KEY_CALLBACK:my_profile",
             "KEY_CALLBACK:files",
             "KEY_CALLBACK:settings",
+            "KEY_CALLBACK: scrape"
         ]:
             condition = True
         else:

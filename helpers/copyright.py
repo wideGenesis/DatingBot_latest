@@ -258,8 +258,20 @@ MAIN_MENU_KB = {
                         "callback_data": "KEY_CALLBACK:adv_search",
                     }
                 ],
-                [{"text": "📂 Профіль", "callback_data": "KEY_CALLBACK:my_profile"}],
-                [{"text": "📸 Мої файли", "callback_data": "KEY_CALLBACK:files"}],
+                [
+                    {
+                        "text": "🔥 Пошук(Scrape)",
+                        "callback_data": "KEY_CALLBACK:scrape",
+                    }
+                ],
+                [
+                    {
+                        "text": "📂 Профіль", "callback_data": "KEY_CALLBACK:my_profile"
+                    },
+                    {
+                        "text": "📸 Мої файли", "callback_data": "KEY_CALLBACK:files"
+                    }
+                ],
             ]
         },
     },

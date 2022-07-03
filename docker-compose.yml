@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: mlnw
       POSTGRES_PASSWORD: mlnw
     env_file:
-      - ./envs/prod.env
+      - settings/prod.env
     volumes:
           - ../postgres-db:/var/lib/postgresql/data
     ports:

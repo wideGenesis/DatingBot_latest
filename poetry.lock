@@ -717,6 +717,17 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jose"
+version = "1.0.0"
+description = "An implementation of the JOSE draft"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pycrypto = ">=2.6"
+
+[[package]]
 name = "jsonpickle"
 version = "1.4.2"
 description = "Python library for serializing any arbitrary object graph into JSON"
@@ -987,6 +998,14 @@ description = "C parser in Python"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
+name = "pycrypto"
+version = "2.6.1"
+description = "Cryptographic modules for Python."
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "pydantic"
@@ -1550,7 +1569,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "3215b317c0069e6b5bece2a50de6cb619edce3ea5aa55d51301d17a1bc9a7e25"
+content-hash = "8acc453984c6883c8c1aac96926045f63ef6abab03fb512c835723321741a717"
 
 [metadata.files]
 aiohttp = [
@@ -2067,6 +2086,9 @@ jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
+jose = [
+    {file = "jose-1.0.0.tar.gz", hash = "sha256:8436c3617cd94e1ba97828fbb1ce27c129f66c78fb855b4bb47e122b5f345fba"},
+]
 jsonpickle = [
     {file = "jsonpickle-1.4.2-py2.py3-none-any.whl", hash = "sha256:2ac5863099864c63d7f0c367af5e512c94f3384977dd367f2eae5f2303f7b92c"},
     {file = "jsonpickle-1.4.2.tar.gz", hash = "sha256:c9b99b28a9e6a3043ec993552db79f4389da11afcb1d0246d93c79f4b5e64062"},
@@ -2350,6 +2372,9 @@ pycodestyle = [
 pycparser = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
+]
+pycrypto = [
+    {file = "pycrypto-2.6.1.tar.gz", hash = "sha256:f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c"},
 ]
 pydantic = [
     {file = "pydantic-1.9.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c8098a724c2784bf03e8070993f6d46aa2eeca031f8d8a048dff277703e6e193"},

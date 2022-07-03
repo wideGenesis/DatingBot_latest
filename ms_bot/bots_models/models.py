@@ -24,7 +24,7 @@ class CustomerProfile:
         updated_at=None,
         personal_profile=None,
         sex_profile=None,
-        passcode=None,
+        password_hash=None,
         # Adv
         adv_dict=None,
         adv_pk=None,
@@ -72,7 +72,7 @@ class CustomerProfile:
         self.adv_pk: int = adv_pk
         self.adv_dict: dict = adv_dict
 
-        self.passcode: str = passcode
+        self.password_hash: str = password_hash
         self.sex_profile: int = sex_profile
         self.personal_profile: int = personal_profile
         self.updated_at: datetime = updated_at

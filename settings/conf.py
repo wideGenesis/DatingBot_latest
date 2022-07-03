@@ -195,9 +195,9 @@ class FastApiConfig(BaseSettings):
 
     # DB_URL: str = DATABASE_CONF.DB_URL
 
-    JWT_SECRET: str = os.environ.get("JWT_SECRET", "")
-    JWT_ALGO: str = "HS256"
-    JWT_EXPIRES_S: int = 3600
+    SECRET: str = os.environ.get("SECRET", "")
+    ALGO: str = "HS256"
+    EXPIRES_S: int = 3600
 
     TAGS_META = [
         {

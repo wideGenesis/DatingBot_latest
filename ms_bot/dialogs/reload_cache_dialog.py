@@ -161,5 +161,5 @@ class ReloadCacheDialog(ComponentDialog):
         user_data.updated_at = customer_instance.updated_at
         user_data.pk = customer_instance.id
         user_data.post_header = customer_instance.post_header
-        user_data.passcode = customer_instance.passcode
+        user_data.password_hash = customer_instance.password_hash
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)

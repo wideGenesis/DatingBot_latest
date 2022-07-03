@@ -21,19 +21,26 @@ app = FastAPI(
     description="Microsoft Bot Implementation",
     version="1.0.0",
     openapi_tags=FAST_API_CONF.TAGS_META,
+    redoc_url=None
 )
 
 origins = [
     "http://127.0.0.1",
     "https://127.0.0.1",
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:8080"
+    "http://mysite.localtest.me:3978/"
+    "http://mysite.localtest.me:3978/docs",  # TODO Add valid origins on prod
 ]
 # if os.enviton.get('IS_LOCAL_ENV', ''):
 #
-# app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)  # TODO Uncomment on prod
 app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "*.example.com"]
+    TrustedHostMiddleware, allowed_hosts=[
+        "localhost",
+        "127.0.0.1",
+        "*.example.com",  # TODO Add domain on prod
+    ]
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
@@ -59,7 +66,7 @@ async def startup() -> None:
         logger.info(
             f"Connection to database {DATABASE.url.hostname} has been established"
         )
-        # await fixture()
+        # await fixture()  # TODO Uncomment when need a fill DB
 
 
 @app.on_event("shutdown")
