@@ -19,7 +19,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
-from helpers.copyright import MAIN_MENU_KB
+from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 from ms_bot.dialogs.adv_menu_dialog import AdvMenuDialog
@@ -87,7 +87,7 @@ class MenuDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )
@@ -115,7 +115,8 @@ class MenuDialog(ComponentDialog):
             return await step_context.begin_dialog(MyFileDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:scrape":
-            return await step_context.begin_dialog(MyFileDialog.__name__)
+            await step_context.context.send_activity('Not implemented')
+            return await step_context.replace_dialog(MenuDialog.__name__)
 
         else:
             await step_context.context.send_activity("bye!")
@@ -140,7 +141,7 @@ class MenuDialog(ComponentDialog):
             "KEY_CALLBACK:my_profile",
             "KEY_CALLBACK:files",
             "KEY_CALLBACK:settings",
-            "KEY_CALLBACK: scrape"
+            "KEY_CALLBACK: scrape",
         ]:
             condition = True
         else:

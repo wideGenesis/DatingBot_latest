@@ -22,7 +22,7 @@ from core.tables.models import UserMediaFile
 from ms_bot.bots_models.models import CustomerProfile
 
 from settings.logger import CustomLogger
-from helpers.copyright import send_file_kb, SEND_MEDIA_KB
+from helpers.copyright import send_file_kb, SEND_MEDIA_KB, BOT_MESSAGES
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
 
@@ -242,7 +242,7 @@ class FileAccessDialog(ComponentDialog):
     async def yield_file_and_kb(
         step_context: WaterfallStepContext, user_data: CustomerProfile, step=None
     ) -> DialogTurnResult:
-        print('files', user_data.files_dict)
+        print("files", user_data.files_dict)
 
         user_files = user_data.files_dict
 
@@ -278,7 +278,7 @@ class FileAccessDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )

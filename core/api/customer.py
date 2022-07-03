@@ -3,7 +3,9 @@ from typing import List
 from fastapi import (
     APIRouter,
     Response,
-    status, Depends, HTTPException,
+    status,
+    Depends,
+    HTTPException,
 )
 from asyncpg.exceptions import ForeignKeyViolationError
 from fastapi.openapi.models import APIKey
@@ -30,12 +32,10 @@ router = APIRouter(
     response_model=Customer,
     response_model_exclude=EXCLUDE_FOR_POST,
     status_code=status.HTTP_201_CREATED,
-
 )
 async def create_customer(
-        customer: Customer,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
-        ):
+    customer: Customer, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     """
     {
       "nickname": "string",
@@ -72,7 +72,9 @@ async def create_customer(
     response_model_exclude=EXCLUDE_FOR_LIST,
     status_code=status.HTTP_201_CREATED,
 )
-async def list_customers(offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def list_customers(
+    offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return (
         await Customer.objects.offset(offset)
         .limit(limit)
@@ -88,7 +90,12 @@ async def list_customers(offset: int, limit: int, api_key: APIKey = Depends(ApiK
     response_model_exclude=EXCLUDE_FOR_LIST_BY_CITY,
     status_code=status.HTTP_201_CREATED,
 )
-async def list_by_city(offset: int, limit: int, city: str, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def list_by_city(
+    offset: int,
+    limit: int,
+    city: str,
+    api_key: APIKey = Depends(ApiKeyService.get_api_key),
+):
     city_obj = await Area.objects.get_or_none(city=city.lower())
     if city_obj is None:
         city_obj = await Area.objects.get_or_none(city_en=city.lower())
@@ -107,10 +114,11 @@ async def list_by_city(offset: int, limit: int, city: str, api_key: APIKey = Dep
     status_code=status.HTTP_201_CREATED,
 )
 async def list_by_redis_channel(
-        offset: int,
-        limit: int,
-        redis_channel: str,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+    offset: int,
+    limit: int,
+    redis_channel: str,
+    api_key: APIKey = Depends(ApiKeyService.get_api_key),
+):
     channel_obj = await RedisChannel.objects.get_or_none(
         redis_channel=redis_channel.lower()
     )
@@ -133,7 +141,9 @@ async def list_by_redis_channel(
     response_model_exclude=EXCLUDE_FOR_GET,
     status_code=status.HTTP_201_CREATED,
 )
-async def get_by_member_id(member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_member_id(
+    member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     customer = await Customer.objects.get_or_none(member_id=member_id)
     if customer is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
@@ -146,7 +156,9 @@ async def get_by_member_id(member_id: int, api_key: APIKey = Depends(ApiKeyServi
     response_model_exclude=EXCLUDE_FOR_GET,
     status_code=status.HTTP_201_CREATED,
 )
-async def get_by_phone(phone: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_phone(
+    phone: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     customer = await Customer.objects.get_or_none(phone=phone)
     if customer is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
@@ -159,7 +171,9 @@ async def get_by_phone(phone: int, api_key: APIKey = Depends(ApiKeyService.get_a
     response_model_exclude=EXCLUDE_FOR_GET,
     status_code=status.HTTP_201_CREATED,
 )
-async def get_by_nickname(nickname: str, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_nickname(
+    nickname: str, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     customer = await Customer.objects.get_or_none(nickname=nickname)
     if customer is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
@@ -167,12 +181,16 @@ async def get_by_nickname(nickname: str, api_key: APIKey = Depends(ApiKeyService
 
 
 @router.put("/update", response_model=Customer)
-async def update_customer(customer: Customer, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def update_customer(
+    customer: Customer, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await CustomerService().update(customer)
 
 
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_customer_by_member_id(member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def delete_customer_by_member_id(
+    member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     customer = await Customer.objects.get_or_none(member_id=member_id)
     if customer is None:
         return Response(status_code=status.HTTP_404_NOT_FOUND)

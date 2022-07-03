@@ -73,8 +73,7 @@ class CreateAdvDialog(ComponentDialog):
             WaterfallDialog(
                 "CreateAdvDialog",
                 [
-                    self.gender_step,
-                    self.looking_gender_step,
+                    self.looking_srx_step,
                     self.prefer_age_step,
                     self.goals_routing,
                     self.area_step,
@@ -93,26 +92,10 @@ class CreateAdvDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "CreateAdvDialog"
 
-    async def gender_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("gender_step %s", CreateAdvDialog.__name__)
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(CHOOSE_SEX_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
-                ),
-            ),
-        )
-
-    async def looking_gender_step(
+    async def looking_srx_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("looking_gender_step %s", CreateAdvDialog.__name__)
+        logger.debug("looking_srx_step %s", CreateAdvDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
         await rm_tg_message(step_context.context, chat_id, message_id)
@@ -132,7 +115,7 @@ class CreateAdvDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )
@@ -191,7 +174,7 @@ class CreateAdvDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )

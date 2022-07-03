@@ -74,7 +74,7 @@ class MyFileDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )

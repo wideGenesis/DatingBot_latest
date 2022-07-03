@@ -1,9 +1,4 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-    HTTPException
-)
+from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
@@ -38,7 +33,8 @@ async def get_current_username(credentials: HTTPBasicCredentials = Depends(secur
     # response_model=Token,
 )
 async def sign_in(username: str = Depends(get_current_username)):
-    return {"username": username, 'access': 'allowed'}
+    return {"username": username, "access": "allowed"}
+
 
 # @router.post(
 #     '/sign-up/',

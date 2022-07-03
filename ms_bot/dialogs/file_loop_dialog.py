@@ -34,19 +34,17 @@ logger = CustomLogger.get_logger("bot")
 
 class FileLoopDialog(ComponentDialog):
     def __init__(
-            self,
-            user_state: UserState,
-            dialog_id: str = None,
-            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+        self,
+        user_state: UserState,
+        dialog_id: str = None,
+        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(FileLoopDialog, self).__init__(dialog_id or FileLoopDialog.__name__)
         self.telemetry_client = telemetry_client
         self.user_state = user_state
         self.user_profile_accessor = self.user_state.create_property("CustomerProfile")
 
-        self.add_dialog(
-            FileManagementDialog(user_state, FileManagementDialog.__name__)
-        )
+        self.add_dialog(FileManagementDialog(user_state, FileManagementDialog.__name__))
         self.add_dialog(UploadDialog(user_state, UploadDialog.__name__))
         self.add_dialog(
             WaterfallDialog(
@@ -61,9 +59,7 @@ class FileLoopDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "MainFileLoopDialog"
 
-    async def loop_step(
-            self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
+    async def loop_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("loop_step %s", FileLoopDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
@@ -71,7 +67,7 @@ class FileLoopDialog(ComponentDialog):
 
         files = user_data.files_dict
         file_number = user_data.file_number
-        print('file_number', file_number)
+        print("file_number", file_number)
 
         if len(files) == 0:
             await step_context.context.send_activity(BOT_MESSAGES["files_not_found"])
@@ -81,7 +77,7 @@ class FileLoopDialog(ComponentDialog):
         return await step_context.begin_dialog(FileManagementDialog.__name__, item)
 
     async def post_loop_step(
-            self, step_context: WaterfallStepContext
+        self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("post_loop_step %s", FileLoopDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(

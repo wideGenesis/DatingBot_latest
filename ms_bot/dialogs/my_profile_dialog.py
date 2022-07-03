@@ -24,7 +24,7 @@ from helpers.copyright import (
     LANG_CHOICE,
     GENDER_CHOICE,
     LOOKING_GENDER_CHOICE,
-    LOOKING_FOR_CHOICE,
+    LOOKING_FOR_CHOICE, BOT_MESSAGES,
 )
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 
@@ -47,9 +47,6 @@ class MyProfileDialog(ComponentDialog):
 
         self.add_dialog(
             TextPrompt(TextPrompt.__name__, MyProfileDialog.answer_prompt_validator)
-        )
-        self.add_dialog(
-            TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
         )
         self.add_dialog(
             WaterfallDialog(
@@ -91,7 +88,7 @@ class MyProfileDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )

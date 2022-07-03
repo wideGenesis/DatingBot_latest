@@ -31,9 +31,6 @@ class ReloadCacheDialog(ComponentDialog):
         self.user_profile_accessor = self.user_state.create_property("CustomerProfile")
 
         self.add_dialog(
-            TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
-        )
-        self.add_dialog(
             WaterfallDialog(
                 "ReloadCacheDialog",
                 [

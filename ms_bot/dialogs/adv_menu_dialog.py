@@ -18,7 +18,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
 from settings.logger import CustomLogger
-from helpers.copyright import ADV_MENU_KB
+from helpers.copyright import ADV_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
 # from ms_bot.dialogs.adv_show_dialog import MyAdvDialog
@@ -75,7 +75,7 @@ class AdvMenuDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )
@@ -92,7 +92,8 @@ class AdvMenuDialog(ComponentDialog):
 
         if found_choice == "KEY_CALLBACK:create_adv":
             return await step_context.begin_dialog(CreateAdvDialog.__name__)
-        elif found_choice == "KEY_CALLBACK:income_adv":
+
+        elif found_choice == "KEY_CALLBACK:matched":
             # return await step_context.begin_dialog(MyAdvDialog.__name__)
             pass
         elif found_choice == "KEY_CALLBACK:review_adv":

@@ -197,8 +197,7 @@ LOOKING_FOR_SEX_KB = {
                         "text": "👱🏻‍♂️ 👩🏼‍🦱 Чоловіків та Жінок",
                         "callback_data": "KEY_CALLBACK:Both",
                     }
-                ],
-                [{"text": "☯️ Інші варіанти", "callback_data": "KEY_CALLBACK:Other"}],
+                ]
             ]
         },
     },
@@ -402,8 +401,8 @@ ADV_MENU_KB = {
             "inline_keyboard": [
                 [
                     {
-                        "text": "📬 Вхідні повідомлення",
-                        "callback_data": "KEY_CALLBACK:income_adv",
+                        "text": "📬 Співпадіння",
+                        "callback_data": "KEY_CALLBACK:matched",
                     }
                 ],
                 [

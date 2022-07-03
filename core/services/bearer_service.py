@@ -29,7 +29,9 @@ def create_access_token(data: dict) -> str:
 
 def decode_access_token(token: str):
     try:
-        encoded_jwt = jwt.decode(token, FAST_API_CONF.SECRET, algorithms=[FAST_API_CONF.ALGO])
+        encoded_jwt = jwt.decode(
+            token, FAST_API_CONF.SECRET, algorithms=[FAST_API_CONF.ALGO]
+        )
     except jwt.JWSError:
         return None
     return encoded_jwt

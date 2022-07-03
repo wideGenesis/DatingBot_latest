@@ -9,11 +9,12 @@ from starlette.status import HTTP_403_FORBIDDEN
 class ApiKeyService:
     @classmethod
     async def get_api_key(
-            cls,
-            _api_key_query: str = Security(APIKeyQuery(name="access_token", auto_error=False)),
-            # _api_key_header: str = Security(APIKeyHeader(name="access_token", auto_error=False)),
-            # _api_key_cookie: str = Security(APIKeyCookie(name="access_token", auto_error=False)),
-
+        cls,
+        _api_key_query: str = Security(
+            APIKeyQuery(name="access_token", auto_error=False)
+        ),
+        # _api_key_header: str = Security(APIKeyHeader(name="access_token", auto_error=False)),
+        # _api_key_cookie: str = Security(APIKeyCookie(name="access_token", auto_error=False)),
     ):
         if _api_key_query == FAST_API_CONF.SECRET:
             return _api_key_query
@@ -25,5 +26,3 @@ class ApiKeyService:
             raise HTTPException(
                 status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
             )
-
-

@@ -26,7 +26,7 @@ from helpers.copyright import (
     sex_buttons,
     relationships_buttons,
     friends_buttons,
-    goals_kb,
+    goals_kb, BOT_MESSAGES,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -133,7 +133,7 @@ class CreateAdvGoalsDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )
@@ -173,7 +173,7 @@ class CreateAdvGoalsDialog(ComponentDialog):
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
-                    "Зробіть вибір, натиснувши на відповідну кнопку вище"
+                    BOT_MESSAGES['reprompt']
                 ),
             ),
         )

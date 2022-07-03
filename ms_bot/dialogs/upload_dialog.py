@@ -183,9 +183,7 @@ class UploadDialog(ComponentDialog):
                 await step_context.context.send_activity("File > 4Mb")
                 return await step_context.replace_dialog(UploadDialog.__name__)
 
-        upload_result = await upload_blob(
-            _file_name, str(member_id)
-        )
+        upload_result = await upload_blob(_file_name, str(member_id))
         if upload_result:
             os.remove(file)
 
