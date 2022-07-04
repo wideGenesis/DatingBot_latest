@@ -95,12 +95,16 @@ class AdvMenuDialog(ComponentDialog):
 
         elif found_choice == "KEY_CALLBACK:matched":
             # return await step_context.begin_dialog(MatchedAdvDialog.__name__)
-            pass
+            await step_context.context.send_activity('Bye!')
+
+            return await step_context.replace_dialog(AdvMenuDialog.__name__)
         elif found_choice == "KEY_CALLBACK:review_adv":
-            # return await step_context.begin_dialog(ReviewAdvDialog.__name__)
-            pass
+            await step_context.context.send_activity('Bye!')
+
+            return await step_context.replace_dialog(AdvMenuDialog.__name__)
         elif found_choice == "KEY_CALLBACK:back":
-            return await step_context.end_dialog()
+            await step_context.context.send_activity('Bye!')
+            return await step_context.replace_dialog(AdvMenuDialog.__name__)
 
         else:
             await step_context.context.send_activity("buy")

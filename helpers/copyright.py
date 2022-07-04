@@ -201,7 +201,8 @@ PREFER_AGE_KB = {
     "method": "sendPhoto",
     "parameters": {
         "caption": f"{BOT_MESSAGES['prefer_age']}",
-        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[2]}.jpg",
         "reply_markup": {"force_reply": True},
     },
 }

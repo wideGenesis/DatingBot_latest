@@ -25,7 +25,7 @@ import json
 from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer, PremiumTier
-from helpers.constants import remove_last_message
+from helpers.constants import remove_last_message, remove_last_dropped_message
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
@@ -131,19 +131,20 @@ class CreateAdvDialog(ComponentDialog):
     ) -> DialogTurnResult:
         logger.debug("prefer_age_step %s", CreateAdvDialog.__name__)
 
-        chat_id = (
-            f"{step_context.context.activity.channel_data['message']['chat']['id']}"
-        )
-        message_id = (
-            f"{step_context.context.activity.channel_data['message']['message_id']}"
-        )
-        await rm_tg_message(step_context.context, chat_id, message_id)
-
-        try:
-            message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
-            await rm_tg_message(step_context.context, chat_id, message_id_1)
-        except Exception:
-            logger.debug("Customer drop reply and make direct answer")
+        # chat_id = (
+        #     f"{step_context.context.activity.channel_data['message']['chat']['id']}"
+        # )
+        # message_id = (
+        #     f"{step_context.context.activity.channel_data['message']['message_id']}"
+        # )
+        # await rm_tg_message(step_context.context, chat_id, message_id)
+        #
+        # try:
+        #     message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
+        #     await rm_tg_message(step_context.context, chat_id, message_id_1)
+        # except Exception:
+        #     logger.debug("Customer drop reply and make direct answer")
+        await remove_last_message(step_context, True)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
