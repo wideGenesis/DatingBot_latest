@@ -18,6 +18,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
+from ms_bot.bots_models import CustomerProfile
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
@@ -129,6 +130,12 @@ class MenuDialog(ComponentDialog):
 
         result_from_previous_step = step_context.result
         if result_from_previous_step == "need_replace_parent":
+            print('>>>>>>>>>>>>', result_from_previous_step)
+
+            return await step_context.replace_dialog(MenuDialog.__name__)
+        else:
+            res: CustomerProfile = result_from_previous_step
+            print('<<<<<>>>>>>>>>>>>>>>>>', res.pk)
             return await step_context.replace_dialog(MenuDialog.__name__)
 
     @staticmethod

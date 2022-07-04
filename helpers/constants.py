@@ -1,5 +1,6 @@
 from enum import Enum
 from botbuilder.dialogs import WaterfallStepContext
+from botbuilder.schema import ErrorResponseException
 
 from helpers.exceptions import DropReply
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -21,7 +22,10 @@ async def remove_last_message(step_context: WaterfallStepContext, callback_query
         message_id = (
             f"{step_context.context.activity.channel_data['message']['message_id']}"
         )
-    await rm_tg_message(step_context.context, chat_id, message_id)
+    try:
+        await rm_tg_message(step_context.context, chat_id, message_id)
+    except ErrorResponseException as e:
+        print(e)
     return
 
 

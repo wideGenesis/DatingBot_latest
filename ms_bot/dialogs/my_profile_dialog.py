@@ -49,6 +49,9 @@ class MyProfileDialog(ComponentDialog):
             TextPrompt(TextPrompt.__name__, MyProfileDialog.answer_prompt_validator)
         )
         self.add_dialog(
+            TelegramRegistrationDialog(user_state, TelegramRegistrationDialog.__name__)
+        )
+        self.add_dialog(
             WaterfallDialog(
                 "MainMyProfileDialog",
                 [
@@ -69,16 +72,13 @@ class MyProfileDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        # area = str(user_data.area_id).split(":")
-        print('>>>>>>>>lang ', user_data.lang)
+
         message = (
             f"Мова бота: {LANG_CHOICE[int(user_data.lang)]}  \n \n"
             f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
             f"Мій телефон: {user_data.phone}  \n \n"
         )
-
-        # await step_context.context.send_activity(message)
 
         return await step_context.prompt(
             TextPrompt.__name__,

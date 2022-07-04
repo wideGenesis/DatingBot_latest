@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient
 from botbuilder.dialogs import (
@@ -148,19 +149,36 @@ class ReloadCacheDialog(ComponentDialog):
 
     @classmethod
     async def _reload_cache(cls, user_data, customer_instance, user_files):
-        user_data.lang = customer_instance.lang
-        user_data.email = customer_instance.email
-        user_data.phone = customer_instance.phone
+        user_data.pk = customer_instance.id
         user_data.nickname = customer_instance.nickname
+        user_data.phone = customer_instance.phone
+        user_data.email = customer_instance.email
+        user_data.description = customer_instance.description
         user_data.conversation_reference = customer_instance.conversation_reference
         user_data.member_id = customer_instance.member_id
-        user_data.premium_tier = customer_instance.premium_tier_id
-        user_data.is_active = customer_instance.is_active
-        user_data.files_dict = user_files
-        user_data.updated_at = customer_instance.updated_at
-        user_data.pk = customer_instance.id
-        user_data.post_header = customer_instance.post_header
-        user_data.password_hash = customer_instance.password_hash
+        user_data.lang = customer_instance.lang
         user_data.self_sex = customer_instance.self_sex
         user_data.age = customer_instance.age
+        user_data.instagram_link = customer_instance.instagram_link
+        user_data.tiktok_link = customer_instance.tiktok_link
+        user_data.is_active = customer_instance.is_active
+        user_data.is_staff = customer_instance.is_staff
+        user_data.is_superuser = customer_instance.is_superuser
+        user_data.post_header = customer_instance.post_header
+        user_data.password_hash = customer_instance.password_hash
+        user_data.password_hint = customer_instance.password_hint
+        user_data.likes = customer_instance.likes
+        user_data.created_at = customer_instance.created_at
+        user_data.updated_at = customer_instance.updated_at
+        user_data.gps_coordinates = customer_instance.gps_coordinates
+        user_data.city = customer_instance.city
+        user_data.premium_tier = customer_instance.premium_tier_id
+        user_data.redis_channel_id = customer_instance.redis_channel_id
+        user_data.files_dict = user_files
+        user_data.authorised = True
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
+
+
+
+
+

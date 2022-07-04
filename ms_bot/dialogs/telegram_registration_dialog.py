@@ -90,7 +90,8 @@ class TelegramRegistrationDialog(ComponentDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("choose_lang_step %s", TelegramRegistrationDialog.__name__)
-        await remove_last_message(step_context, False)
+
+        await remove_last_message(step_context, True)
 
         return await step_context.prompt(
             TextPrompt.__name__,
