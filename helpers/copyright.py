@@ -48,7 +48,8 @@ BOT_MESSAGES = {
     "reprompt": "Зробіть вибір, натиснувши на відповідну кнопку вище",
     "next": "далі",
     "choose_sex": "Вкажіть вашу стать: ",
-    "looking_for_sex": "Кого шукаємо? (Ця інформація буде прихованою і не буде відображатися у вашому профілі) ",
+    "looking_for_sex": "Кого шукаємо? (Ця інформація буде прихованою і не буде відображатися у вашому профілі) \n  \n"
+                       " Ви можете вказати ту стать, яку ви насправді шукаєте",
     "age": "Надрукуйте цифрами свій вік (у діапазоні 18 - 69) ",
     "age_reprompt": "Ваш фактичний вік має бути в діапазоні 18 - 69 ",
     "prefer_age": "Надрукуйте цифрами вік партнера (в діапазоні 18 - 69) \n  \nНаприклад: 20 - 45 ",
@@ -173,21 +174,12 @@ UPLOAD_FILE_KB = {
     },
 }
 
-PREFER_AGE_KB = {
-    "method": "sendPhoto",
-    "parameters": {
-        "caption": f"{BOT_MESSAGES['prefer_age']}",
-        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
-        "reply_markup": {"force_reply": True},
-    },
-}
-
 LOOKING_FOR_SEX_KB = {
     "method": "sendPhoto",
     "parameters": {
         "caption": f"{BOT_MESSAGES['looking_for_sex']}",
         "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
-                 f"{image_rotation('friends')}.jpg",
+                 f"{image_rotation('friends')[2]}.jpg",
         "protect_content": True,
         "disable_notification": True,
         "reply_markup": {
@@ -202,6 +194,15 @@ LOOKING_FOR_SEX_KB = {
                 ]
             ]
         },
+    },
+}
+
+PREFER_AGE_KB = {
+    "method": "sendPhoto",
+    "parameters": {
+        "caption": f"{BOT_MESSAGES['prefer_age']}",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/3_prefer_age.jpg",
+        "reply_markup": {"force_reply": True},
     },
 }
 

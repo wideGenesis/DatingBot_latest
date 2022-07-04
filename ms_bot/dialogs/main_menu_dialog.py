@@ -130,12 +130,8 @@ class MenuDialog(ComponentDialog):
 
         result_from_previous_step = step_context.result
         if result_from_previous_step == "need_replace_parent":
-            print('>>>>>>>>>>>>', result_from_previous_step)
-
             return await step_context.replace_dialog(MenuDialog.__name__)
         else:
-            res: CustomerProfile = result_from_previous_step
-            print('<<<<<>>>>>>>>>>>>>>>>>', res.pk)
             return await step_context.replace_dialog(MenuDialog.__name__)
 
     @staticmethod

@@ -94,10 +94,10 @@ class AdvMenuDialog(ComponentDialog):
             return await step_context.begin_dialog(CreateAdvDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:matched":
-            # return await step_context.begin_dialog(MyAdvDialog.__name__)
+            # return await step_context.begin_dialog(MatchedAdvDialog.__name__)
             pass
         elif found_choice == "KEY_CALLBACK:review_adv":
-            # return await step_context.begin_dialog(MyAdvDialog.__name__)
+            # return await step_context.begin_dialog(ReviewAdvDialog.__name__)
             pass
         elif found_choice == "KEY_CALLBACK:back":
             return await step_context.end_dialog()

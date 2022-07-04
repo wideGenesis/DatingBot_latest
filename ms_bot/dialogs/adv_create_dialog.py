@@ -18,13 +18,14 @@ from botbuilder.dialogs import (
 )
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
-from botbuilder.schema import Activity, ActivityTypes
+from botbuilder.schema import Activity, ActivityTypes, ErrorResponseException
 import json
 
 # from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer, PremiumTier
+from helpers.constants import remove_last_message
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
@@ -73,7 +74,7 @@ class CreateAdvDialog(ComponentDialog):
             WaterfallDialog(
                 "CreateAdvDialog",
                 [
-                    self.looking_srx_step,
+                    self.looking_sex_step,
                     self.prefer_age_step,
                     self.goals_routing,
                     self.area_step,
@@ -92,20 +93,25 @@ class CreateAdvDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "CreateAdvDialog"
 
-    async def looking_srx_step(
+    async def looking_sex_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("looking_srx_step %s", CreateAdvDialog.__name__)
+        logger.debug("looking_sex_step %s", CreateAdvDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
 
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
+        try:
+            await rm_tg_message(step_context.context, chat_id, message_id)
+        except ErrorResponseException:
+            logger.warning('Bad Request: message to delete not found')
+            pass
 
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.temp = result_from_previous_step[1]
+        # user_data: CustomerProfile = await self.user_profile_accessor.get(
+        #     step_context.context, CustomerProfile
+        # )
+
+        # result_from_previous_step = str(step_context.result).split(":")
+        # user_data.temp = result_from_previous_step[1]
 
         return await step_context.prompt(
             TextPrompt.__name__,
