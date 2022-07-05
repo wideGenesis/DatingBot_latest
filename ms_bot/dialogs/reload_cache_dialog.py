@@ -60,13 +60,6 @@ class ReloadCacheDialog(ComponentDialog):
         threshold = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
         time_now = datetime.datetime.utcnow()
 
-        # try:
-        #     timer = time_now - user_data.updated_at
-        #     # print("timer", timer, time_now, user_data.updated_at)
-        # except Exception:
-        #     logger.exception("USER (%s) DOESN'T EXISTS IN CACHE", member_id)
-        #     return await step_context.next([])
-
         if user_data.updated_at is None:
             logger.debug("USER (%s) DOESN'T EXISTS IN CACHE", member_id)
             return await step_context.next([])
@@ -159,15 +152,13 @@ class ReloadCacheDialog(ComponentDialog):
         user_data.lang = customer_instance.lang
         user_data.self_sex = customer_instance.self_sex
         user_data.age = customer_instance.age
-        user_data.instagram_link = customer_instance.instagram_link
-        user_data.tiktok_link = customer_instance.tiktok_link
         user_data.is_active = customer_instance.is_active
         user_data.is_staff = customer_instance.is_staff
         user_data.is_superuser = customer_instance.is_superuser
         user_data.post_header = customer_instance.post_header
         user_data.password_hash = customer_instance.password_hash
         user_data.password_hint = customer_instance.password_hint
-        user_data.likes = customer_instance.likes
+
         user_data.created_at = customer_instance.created_at
         user_data.updated_at = customer_instance.updated_at
         user_data.gps_coordinates = customer_instance.gps_coordinates
@@ -178,7 +169,7 @@ class ReloadCacheDialog(ComponentDialog):
         user_data.authorised = True
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
 
-
+        # user_data.likes = customer_instance.likes
 
 
 

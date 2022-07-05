@@ -3,90 +3,8 @@ import datetime
 import ormar
 
 from typing import Optional, Union, Dict, List
-from sqlalchemy import text
 from db.engine import METADATA, DATABASE
-from enum import Enum
-
-
-class WhoForWhomEnum(Enum):
-    man_to_woman = 0
-    woman_to_man = 1
-    any_to_both = 2
-    man_to_man = 3
-    woman_to_woman = 4
-    other_to_other = 5
-
-
-class LangEnum(Enum):
-    en = 0
-    ua = 1
-    es = 2
-    ru = 3
-
-
-class SelfSexEnum(Enum):
-    man = 0
-    woman = 1
-
-
-class HasPlaceEnum(Enum):
-    none = 0
-    yours = 1
-    mine = 2
-    fifty_fifty = 3
-
-
-class DatingTime(Enum):
-    morning = 0
-    day = 1
-    evening = 2
-    night = 3
-
-
-class DatingDay(Enum):
-    _any = 0
-    today = 1
-    weekend = 2
-
-
-class AdvGoalEnum(Enum):
-    dating = 0
-    walking = 1
-    talking = 2
-    relationships = 3
-    children = 4
-    petting_jerk = 5
-    oral_for_me = 6
-    oral_for_you = 7
-    classic_man_to_woman = 8
-    anal_for_me = 9
-    anal_for_you = 10
-    rim_for_me = 11
-    rim_for_you = 12
-    fetishes_for_me = 13
-    massage_for_me = 14
-    massage_for_you = 15
-    escorting_for_me = 16
-    escorting_for_you = 17
-
-
-class PremiumTierEnum(Enum):
-    free = 0
-    advanced_1m = 1
-    advanced_12m = 2
-    premium_1m = 3
-    premium_12m = 4
-
-
-class PrivacyTypeEnum(Enum):
-    open = 0
-    hidden = 1
-
-
-class FileTypeEnum(Enum):
-    mp4 = 0
-    jpg = 1
-    png = 2
+from helpers.constants import *
 
 
 class ForOrmarMeta(ormar.ModelMeta):
@@ -146,21 +64,12 @@ class Customer(ormar.Model):
     lang: Optional[int] = ormar.Integer(index=True, choices=list(LangEnum))
     self_sex: Optional[int] = ormar.Integer(choices=list(SelfSexEnum), nullable=True)
     age: Optional[int] = ormar.Integer(nullable=True)
-    instagram_link: Optional[str] = ormar.String(
-        index=True, max_length=50, unique=True, nullable=True
-    )
-    tiktok_link: Optional[str] = ormar.String(
-        index=True, max_length=50, unique=True, nullable=True
-    )
     is_active: bool = ormar.Boolean(nullable=True, default=True)
     is_staff: bool = ormar.Boolean(nullable=True, default=False)
     is_superuser: bool = ormar.Boolean(nullable=True, default=False)
-
     post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     password_hash: Optional[str] = ormar.String(max_length=50, nullable=True)
     password_hint: Optional[str] = ormar.String(max_length=50, nullable=True)
-
-    likes: Optional[int] = ormar.Integer(nullable=True)
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
@@ -179,6 +88,42 @@ class Customer(ormar.Model):
     )
 
 
+class CustomerProfile(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = "customer_profiles"
+
+    id: int = ormar.BigInteger(primary_key=True)
+    hiv_status: Optional[str] = ormar.String(nullable=True, choices=list(HivStatusEnum), max_length=10)
+    alco_status: Optional[str] = ormar.String(nullable=True, choices=list(AlcoStatusEnum), max_length=10)
+    drugs_status: Optional[str] = ormar.String(nullable=True, choices=list(DrugsStatusEnum), max_length=10)
+    safe_sex_status: Optional[str] = ormar.String(nullable=True, choices=list(SafeSexEnum), max_length=10)
+    passion_sex: Optional[bool] = ormar.Boolean(nullable=True)
+    if_same_sex_position: Optional[str] = ormar.String(nullable=True, choices=list(IfSameSexPositionEnum), max_length=10)
+    boobs_cock_size: Optional[str] = ormar.String(nullable=True, choices=list(BoobsCockSizeEnum), max_length=10)
+    is_sport: Optional[str] = ormar.String(nullable=True, choices=list(IsSportEnum), max_length=10)
+    is_home_or_party: Optional[str] = ormar.String(nullable=True, choices=list(IsHomeOrPartyEnum), max_length=10)
+    body_type: Optional[str] = ormar.String(nullable=True, choices=list(BodyTypeEnum), max_length=10)
+    height: int = ormar.Integer(nullable=True)
+    weight: int = ormar.Integer(nullable=True)
+    is_smoker: Optional[bool] = ormar.Boolean(nullable=True)
+    is_tatoo: Optional[bool] = ormar.Boolean(nullable=True)
+    is_piercings: Optional[bool] = ormar.Boolean(nullable=True)
+    likes: Optional[int] = ormar.Integer(nullable=True)
+    instagram_link: Optional[str] = ormar.String(
+        index=True, max_length=50, unique=True, nullable=True
+    )
+    tiktok_link: Optional[str] = ormar.String(
+        index=True, max_length=50, unique=True, nullable=True
+    )
+    created_at: datetime.datetime = ormar.DateTime(
+        default=datetime.datetime.now, nullable=False
+    )
+    updated_at: datetime.datetime = ormar.DateTime(
+        default=datetime.datetime.now, nullable=False
+    )
+    customer: Optional[Customer] = ormar.ForeignKey(Customer)
+
+
 class Advertisement(ormar.Model):
     class Meta(ForOrmarMeta):
         tablename: str = "advertisements"
@@ -187,8 +132,10 @@ class Advertisement(ormar.Model):
     who_for_whom: int = ormar.Integer(index=True, choices=list(WhoForWhomEnum))
     prefer_age: int = ormar.Integer(index=True)
     has_place: int = ormar.Integer(nullable=False, choices=list(HasPlaceEnum))
-    dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTime))
-    dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDay))
+    dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTimeEnum))
+    dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDayEnum))
+
+
     adv_text: str = ormar.Text(nullable=False)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     money_support: bool = ormar.Boolean(nullable=False)

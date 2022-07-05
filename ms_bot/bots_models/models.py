@@ -4,7 +4,7 @@ from typing import Optional
 
 
 @dataclass
-class CustomerProfile:
+class CustomerProfile:  # TODO match to db model
     def __init__(
             self,
             # Customer
