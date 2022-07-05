@@ -24,7 +24,8 @@ from helpers.copyright import (
     LANG_CHOICE,
     SEX_CHOICE,
     LOOKING_GENDER_CHOICE,
-    LOOKING_FOR_CHOICE, BOT_MESSAGES,
+    LOOKING_FOR_CHOICE,
+    BOT_MESSAGES,
 )
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 
@@ -87,9 +88,7 @@ class MyProfileDialog(ComponentDialog):
                     channel_data=json.dumps(profile_kb(message)),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 

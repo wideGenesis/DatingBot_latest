@@ -103,7 +103,7 @@ class CreateAdvDialog(ComponentDialog):
         try:
             await rm_tg_message(step_context.context, chat_id, message_id)
         except ErrorResponseException:
-            logger.warning('Bad Request: message to delete not found')
+            logger.warning("Bad Request: message to delete not found")
             pass
 
         # user_data: CustomerProfile = await self.user_profile_accessor.get(
@@ -120,9 +120,7 @@ class CreateAdvDialog(ComponentDialog):
                     channel_data=json.dumps(LOOKING_FOR_SEX_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 
@@ -180,9 +178,7 @@ class CreateAdvDialog(ComponentDialog):
                     channel_data=json.dumps(CREATE_AREA_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 

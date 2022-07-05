@@ -93,16 +93,34 @@ class CustomerProfile(ormar.Model):
         tablename: str = "customer_profiles"
 
     id: int = ormar.BigInteger(primary_key=True)
-    hiv_status: Optional[str] = ormar.String(nullable=True, choices=list(HivStatusEnum), max_length=10)
-    alco_status: Optional[str] = ormar.String(nullable=True, choices=list(AlcoStatusEnum), max_length=10)
-    drugs_status: Optional[str] = ormar.String(nullable=True, choices=list(DrugsStatusEnum), max_length=10)
-    safe_sex_status: Optional[str] = ormar.String(nullable=True, choices=list(SafeSexEnum), max_length=10)
+    hiv_status: Optional[str] = ormar.String(
+        nullable=True, choices=list(HivStatusEnum), max_length=10
+    )
+    alco_status: Optional[str] = ormar.String(
+        nullable=True, choices=list(AlcoStatusEnum), max_length=10
+    )
+    drugs_status: Optional[str] = ormar.String(
+        nullable=True, choices=list(DrugsStatusEnum), max_length=10
+    )
+    safe_sex_status: Optional[str] = ormar.String(
+        nullable=True, choices=list(SafeSexEnum), max_length=10
+    )
     passion_sex: Optional[bool] = ormar.Boolean(nullable=True)
-    if_same_sex_position: Optional[str] = ormar.String(nullable=True, choices=list(IfSameSexPositionEnum), max_length=10)
-    boobs_cock_size: Optional[str] = ormar.String(nullable=True, choices=list(BoobsCockSizeEnum), max_length=10)
-    is_sport: Optional[str] = ormar.String(nullable=True, choices=list(IsSportEnum), max_length=10)
-    is_home_or_party: Optional[str] = ormar.String(nullable=True, choices=list(IsHomeOrPartyEnum), max_length=10)
-    body_type: Optional[str] = ormar.String(nullable=True, choices=list(BodyTypeEnum), max_length=10)
+    if_same_sex_position: Optional[str] = ormar.String(
+        nullable=True, choices=list(IfSameSexPositionEnum), max_length=10
+    )
+    boobs_cock_size: Optional[str] = ormar.String(
+        nullable=True, choices=list(BoobsCockSizeEnum), max_length=10
+    )
+    is_sport: Optional[str] = ormar.String(
+        nullable=True, choices=list(IsSportEnum), max_length=10
+    )
+    is_home_or_party: Optional[str] = ormar.String(
+        nullable=True, choices=list(IsHomeOrPartyEnum), max_length=10
+    )
+    body_type: Optional[str] = ormar.String(
+        nullable=True, choices=list(BodyTypeEnum), max_length=10
+    )
     height: int = ormar.Integer(nullable=True)
     weight: int = ormar.Integer(nullable=True)
     is_smoker: Optional[bool] = ormar.Boolean(nullable=True)
@@ -134,7 +152,6 @@ class Advertisement(ormar.Model):
     has_place: int = ormar.Integer(nullable=False, choices=list(HasPlaceEnum))
     dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTimeEnum))
     dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDayEnum))
-
 
     adv_text: str = ormar.Text(nullable=False)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)

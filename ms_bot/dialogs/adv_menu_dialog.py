@@ -74,9 +74,7 @@ class AdvMenuDialog(ComponentDialog):
                     channel_data=json.dumps(ADV_MENU_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 
@@ -95,15 +93,15 @@ class AdvMenuDialog(ComponentDialog):
 
         elif found_choice == "KEY_CALLBACK:matched":
             # return await step_context.begin_dialog(MatchedAdvDialog.__name__)
-            await step_context.context.send_activity('Bye!')
+            await step_context.context.send_activity("Bye!")
 
             return await step_context.replace_dialog(AdvMenuDialog.__name__)
         elif found_choice == "KEY_CALLBACK:review_adv":
-            await step_context.context.send_activity('Bye!')
+            await step_context.context.send_activity("Bye!")
 
             return await step_context.replace_dialog(AdvMenuDialog.__name__)
         elif found_choice == "KEY_CALLBACK:back":
-            await step_context.context.send_activity('Bye!')
+            await step_context.context.send_activity("Bye!")
             return await step_context.replace_dialog(AdvMenuDialog.__name__)
 
         else:

@@ -73,9 +73,7 @@ class MyFileDialog(ComponentDialog):
                     channel_data=json.dumps(USER_FILES_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 

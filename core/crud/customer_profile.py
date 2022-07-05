@@ -6,26 +6,26 @@ from core.tables.models import Customer
 
 
 class CustomerProfileService:
-    async def create(self, customer_profile: CustomerProfileCreate) -> models.CustomerProfile:
+    async def create(
+        self, customer_profile: CustomerProfileCreate
+    ) -> models.CustomerProfile:
         return await models.CustomerProfile(**customer_profile.dict()).save()
 
     async def get_by_id(self, _id: int) -> models.CustomerProfile:
-        _customer = (
-            await models.CustomerProfile.objects.get_or_none(id=_id)
-        )
+        _customer = await models.CustomerProfile.objects.get_or_none(id=_id)
         if not _customer:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
 
     async def get_by_customer(self, customer: Customer) -> models.CustomerProfile:
-        _customer = (
-            await models.CustomerProfile.objects.get_or_none(customer=customer)
-        )
+        _customer = await models.CustomerProfile.objects.get_or_none(customer=customer)
         if not _customer:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _customer
 
-    async def update(self, customer_profile: CustomerProfileUpdate) -> models.CustomerProfile:
+    async def update(
+        self, customer_profile: CustomerProfileUpdate
+    ) -> models.CustomerProfile:
         return await models.CustomerProfile(**customer_profile.dict()).update()
 
     async def delete(self, _id: int) -> models.CustomerProfile.id:
@@ -36,7 +36,9 @@ class CustomerProfileService:
     async def list(self, offset: int, limit: int) -> models.CustomerProfile:
         return await models.CustomerProfile.objects.offset(offset).limit(limit).all()
 
-    async def list_by_hiv(self, offset: int, limit: int, hiv_status: int) -> models.CustomerProfile:
+    async def list_by_hiv(
+        self, offset: int, limit: int, hiv_status: int
+    ) -> models.CustomerProfile:
         hiv_status_list = (
             await models.CustomerProfile.objects.offset(offset)
             .limit(limit)

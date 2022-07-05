@@ -170,6 +170,3 @@ class ReloadCacheDialog(ComponentDialog):
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
 
         # user_data.likes = customer_instance.likes
-
-
-

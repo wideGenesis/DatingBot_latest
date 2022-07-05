@@ -26,7 +26,8 @@ from helpers.copyright import (
     sex_buttons,
     relationships_buttons,
     friends_buttons,
-    goals_kb, BOT_MESSAGES,
+    goals_kb,
+    BOT_MESSAGES,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -132,9 +133,7 @@ class CreateAdvGoalsDialog(ComponentDialog):
                     channel_data=json.dumps(LOOKING_FOR_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 
@@ -172,9 +171,7 @@ class CreateAdvGoalsDialog(ComponentDialog):
                     channel_data=json.dumps(goals_kb(buttons, None)),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 

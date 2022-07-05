@@ -277,8 +277,6 @@ class FileAccessDialog(ComponentDialog):
                     channel_data=json.dumps(SEND_MEDIA_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )

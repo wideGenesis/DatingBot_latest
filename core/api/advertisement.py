@@ -3,7 +3,8 @@ from typing import List
 from fastapi import (
     APIRouter,
     Response,
-    status, Depends,
+    status,
+    Depends,
 )
 from fastapi.openapi.models import APIKey
 
@@ -24,37 +25,51 @@ router = APIRouter(
 @router.post(
     "/create", response_model=AdvertisementExpose, status_code=status.HTTP_201_CREATED
 )
-async def create_adv(adv: AdvertisementCreate, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def create_adv(
+    adv: AdvertisementCreate, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().create(adv)
 
 
 @router.get("/list", response_model=List[AdvertisementExpose])
-async def get_adv_list(offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_adv_list(
+    offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().list(offset, limit)
 
 
 @router.get("/advertisement/{area_id}", response_model=AdvertisementExpose)
-async def get_by_area_id(area_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_area_id(
+    area_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().get_by_area(area_id)
 
 
 @router.get("/advertisement/{redis_channel_id}", response_model=AdvertisementExpose)
-async def get_by_redis_channel(redis_channel: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_redis_channel(
+    redis_channel: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().get_by_redis_channel(redis_channel)
 
 
 @router.get("/advertisement/{publisher_id}", response_model=AdvertisementExpose)
-async def get_by_publisher_id(publisher_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def get_by_publisher_id(
+    publisher_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().get_by_publisher_id(publisher_id)
 
 
 @router.put("/update", response_model=AdvertisementExpose)
-async def create_adv(adv: AdvertisementUpdate, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def create_adv(
+    adv: AdvertisementUpdate, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     return await AdvertisementService().update(adv)
 
 
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_adv_by_id(_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)):
+async def delete_adv_by_id(
+    _id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+):
     await AdvertisementService().delete(_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

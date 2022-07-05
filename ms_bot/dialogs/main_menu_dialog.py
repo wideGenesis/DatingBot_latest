@@ -87,9 +87,7 @@ class MenuDialog(ComponentDialog):
                     channel_data=json.dumps(MAIN_MENU_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    BOT_MESSAGES['reprompt']
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 
@@ -116,7 +114,7 @@ class MenuDialog(ComponentDialog):
             return await step_context.begin_dialog(MyFileDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:scrape":
-            await step_context.context.send_activity('Not implemented')
+            await step_context.context.send_activity("Not implemented")
             return await step_context.replace_dialog(MenuDialog.__name__)
 
         else:
