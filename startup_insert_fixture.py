@@ -3,6 +3,8 @@ import uvloop
 from core.tables import models
 import asyncio
 
+from helpers.constants import AlcoStatusEnum, DrugsStatusEnum, SafeSexEnum, HivStatusEnum
+
 
 async def fixture():
     await models.PremiumTier(
@@ -106,7 +108,32 @@ async def fixture():
         is_published=1,
         area_id=1,
         large_city_near_id=2,
-        publisher_id=3,
+        publisher_id=1,
+    ).save()
+
+    await models.CustomerProfile(
+        hiv_status=HivStatusEnum.neg.value,
+        alco_status=AlcoStatusEnum.occasionally.value,
+        drugs_status=DrugsStatusEnum.frequently.value,
+        safe_sex_status=SafeSexEnum.always.value,
+        passion_sex=True,
+        height=180,
+        weight=75,
+        is_smoker=True,
+        is_tatoo=False,
+        customer=1
+    ).save()
+    await models.CustomerProfile(
+        hiv_status=HivStatusEnum.neutral.value,
+        alco_status=AlcoStatusEnum.frequently.value,
+        drugs_status=DrugsStatusEnum.occasionally.value,
+        safe_sex_status=SafeSexEnum.always.value,
+        passion_sex=True,
+        height=180,
+        weight=75,
+        is_smoker=True,
+        is_tatoo=False,
+        customer=2
     ).save()
 
 

@@ -12,7 +12,7 @@ services:
     env_file:
       - settings/prod.env
     volumes:
-          - ../postgres-db:/var/lib/postgresql/data
+          - ../postgres-mlnw:/var/lib/postgresql/data
     ports:
         - "5432:5432"
     networks:

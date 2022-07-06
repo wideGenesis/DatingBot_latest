@@ -88,9 +88,9 @@ class FileTypeEnum(Enum):
 
 
 class HivStatusEnum(Enum):
-    pos = 0
-    neg = 1
-    neutral = 2
+    pos = 'pos'
+    neg = 'neg'
+    neutral = 'neutral'
 
 
 class AlcoStatusEnum(Enum):
@@ -113,9 +113,9 @@ class SafeSexEnum(Enum):
 
 class IfSameSexPositionEnum(Enum):
     always_bottom = 'always_bottom'
-    versatile_common_bottom = 'versatile_common_bottom'
+    versatile_common_bottom = 'vers_common_bottom'
     versatile = 'versatile'
-    versatile_common_top = 'versatile_common_top'
+    versatile_common_top = 'vers_common_top'
     always_top = 'always_top'
 
 

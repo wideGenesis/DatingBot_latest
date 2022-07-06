@@ -36,7 +36,7 @@ class CustomerProfileService:
     async def list(self, offset: int, limit: int) -> models.CustomerProfile:
         return await models.CustomerProfile.objects.offset(offset).limit(limit).all()
 
-    async def list_by_hiv(
+    async def list_by_hiv_status(
         self, offset: int, limit: int, hiv_status: int
     ) -> models.CustomerProfile:
         hiv_status_list = (

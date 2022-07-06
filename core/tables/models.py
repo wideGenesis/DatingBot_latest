@@ -94,32 +94,32 @@ class CustomerProfile(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     hiv_status: Optional[str] = ormar.String(
-        nullable=True, choices=list(HivStatusEnum), max_length=10
+        nullable=True, choices=list(HivStatusEnum), max_length=20
     )
     alco_status: Optional[str] = ormar.String(
-        nullable=True, choices=list(AlcoStatusEnum), max_length=10
+        nullable=True, choices=list(AlcoStatusEnum), max_length=20
     )
     drugs_status: Optional[str] = ormar.String(
-        nullable=True, choices=list(DrugsStatusEnum), max_length=10
+        nullable=True, choices=list(DrugsStatusEnum), max_length=20
     )
     safe_sex_status: Optional[str] = ormar.String(
-        nullable=True, choices=list(SafeSexEnum), max_length=10
+        nullable=True, choices=list(SafeSexEnum), max_length=20
     )
     passion_sex: Optional[bool] = ormar.Boolean(nullable=True)
     if_same_sex_position: Optional[str] = ormar.String(
-        nullable=True, choices=list(IfSameSexPositionEnum), max_length=10
+        nullable=True, choices=list(IfSameSexPositionEnum), max_length=20
     )
     boobs_cock_size: Optional[str] = ormar.String(
-        nullable=True, choices=list(BoobsCockSizeEnum), max_length=10
+        nullable=True, choices=list(BoobsCockSizeEnum), max_length=20
     )
     is_sport: Optional[str] = ormar.String(
-        nullable=True, choices=list(IsSportEnum), max_length=10
+        nullable=True, choices=list(IsSportEnum), max_length=20
     )
     is_home_or_party: Optional[str] = ormar.String(
-        nullable=True, choices=list(IsHomeOrPartyEnum), max_length=10
+        nullable=True, choices=list(IsHomeOrPartyEnum), max_length=20
     )
     body_type: Optional[str] = ormar.String(
-        nullable=True, choices=list(BodyTypeEnum), max_length=10
+        nullable=True, choices=list(BodyTypeEnum), max_length=20
     )
     height: int = ormar.Integer(nullable=True)
     weight: int = ormar.Integer(nullable=True)
@@ -290,29 +290,3 @@ class Commercial(ormar.Model):
         default=(datetime.datetime.now() + datetime.timedelta(days=30)), nullable=False
     )
     is_active: bool = ormar.Boolean(nullable=False)
-
-
-class CommonProfile(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "common_profiles"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_customer_from_common_profile"
-    )
-
-
-class SexProfile(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "sex_profiles"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_customer_from_sex_profile"
-    )
