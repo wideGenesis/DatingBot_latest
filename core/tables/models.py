@@ -139,7 +139,7 @@ class CustomerProfile(ormar.Model):
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    customer: Optional[Customer] = ormar.ForeignKey(Customer)
+    customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=True)
 
 
 class Advertisement(ormar.Model):

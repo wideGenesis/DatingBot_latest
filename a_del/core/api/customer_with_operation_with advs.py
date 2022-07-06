@@ -7,7 +7,7 @@ from fastapi import (
     status,
 )
 
-from core import schemas
+from a_del.core import schemas
 
 # from crud.auth import get_current_user
 from core.crud.customer import CustomerService

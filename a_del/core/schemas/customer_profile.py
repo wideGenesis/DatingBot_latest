@@ -25,21 +25,24 @@ class BaseCustomerProfile(BaseModel):
     likes: Optional[int]
     instagram_link: Optional[str]
     tiktok_link: Optional[str]
+    customer: Optional[Customer]
+
+
+class CustomerProfileCreate(BaseCustomerProfile):
     created_at: datetime
     updated_at: datetime
 
 
-class CustomerProfileCreate(BaseCustomerProfile):
-    pass
-
-
 class CustomerProfileUpdate(BaseCustomerProfile):
-    pass
+    id: int
+    created_at: datetime
+    updated_at: datetime
 
 
 class CustomerProfileExpose(BaseCustomerProfile):
     id: int
-    customer: Optional[Customer]
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

@@ -1,48 +1,65 @@
-from fastapi import HTTPException, status
-
-from core.schemas.customer_profile import CustomerProfileCreate, CustomerProfileUpdate
+from typing import Union
+from fastapi import status, Response
 from core.tables import models
-from core.tables.models import Customer
+from asyncpg.exceptions import ForeignKeyViolationError
+from settings.logger import CustomLogger
+
+
+logger = CustomLogger.get_logger("bot")
 
 
 class CustomerProfileService:
     async def create(
-        self, customer_profile: CustomerProfileCreate
+            self, customer_profile: models.CustomerProfile
     ) -> models.CustomerProfile:
         return await models.CustomerProfile(**customer_profile.dict()).save()
 
-    async def get_by_id(self, _id: int) -> models.CustomerProfile:
-        _customer = await models.CustomerProfile.objects.get_or_none(id=_id)
-        if not _customer:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return _customer
+    async def list(self, offset: int, limit: int) -> Union[models.CustomerProfile, Response]:
+        profiles = await models.CustomerProfile.objects.offset(offset).limit(limit).all()
+        if not profiles:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return profiles
 
-    async def get_by_customer(self, customer: Customer) -> models.CustomerProfile:
-        _customer = await models.CustomerProfile.objects.get_or_none(customer=customer)
-        if not _customer:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return _customer
+    async def list_by_hiv_status(
+            self, offset: int, limit: int, hiv_status: str) -> Union[models.CustomerProfile, Response]:
+        customer_hiv_status = await models.CustomerProfile.objects.offset(offset).limit(limit).filter(
+            hiv_status=hiv_status).all()
+        if not customer_hiv_status:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer_hiv_status
+
+    async def get_by_id(self, _id: int) -> Union[models.CustomerProfile, Response]:
+        profile = await models.CustomerProfile.objects.get_or_none(id=_id)
+        if not profile:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return profile
+
+    async def get_by_member_id(self, member_id: int) -> Union[models.CustomerProfile, Response]:
+        customer = await models.Customer.objects.get_or_none(member_id=member_id)
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        profile = await models.CustomerProfile.objects.get_or_none(customer=customer.id)
+
+        if not profile:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return profile
 
     async def update(
-        self, customer_profile: CustomerProfileUpdate
+            self, customer_profile: models.CustomerProfile
     ) -> models.CustomerProfile:
         return await models.CustomerProfile(**customer_profile.dict()).update()
 
     async def delete(self, _id: int) -> models.CustomerProfile.id:
-        _customer = await models.CustomerProfile.objects.get(id=_id)
-        deleted_id = await _customer.delete()
-        return deleted_id
+        profile = await models.CustomerProfile.objects.get_or_none(id=_id)
 
-    async def list(self, offset: int, limit: int) -> models.CustomerProfile:
-        return await models.CustomerProfile.objects.offset(offset).limit(limit).all()
+        if not profile:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            await profile.delete()
 
-    async def list_by_hiv_status(
-        self, offset: int, limit: int, hiv_status: int
-    ) -> models.CustomerProfile:
-        hiv_status_list = (
-            await models.CustomerProfile.objects.offset(offset)
-            .limit(limit)
-            .filter(hiv_status=hiv_status)
-            .all()
-        )
-        return hiv_status_list
+        except ForeignKeyViolationError:
+            return Response(status_code=status.HTTP_424_FAILED_DEPENDENCY)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+

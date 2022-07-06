@@ -77,14 +77,14 @@ class PremiumTierEnum(Enum):
 
 
 class PrivacyTypeEnum(Enum):
-    open = 0
-    hidden = 1
+    open = 'open'
+    hidden = 'hidden'
 
 
 class FileTypeEnum(Enum):
-    mp4 = 0
-    jpg = 1
-    png = 2
+    mp4 = 'mp4'
+    jpg = 'jpg'
+    png = 'png'  # TODO ??
 
 
 class HivStatusEnum(Enum):
@@ -127,7 +127,7 @@ class BoobsCockSizeEnum(Enum):
 
 
 class IsSportEnum(Enum):
-    systemic = 'systemic'
+    systemic = 'systematic'
     occasionally = 'occasionally'
     no = 'no'
 

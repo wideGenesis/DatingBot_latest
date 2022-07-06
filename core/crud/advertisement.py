@@ -1,25 +1,15 @@
-from typing import (
-    List,
-    Optional,
-    Union,
-    Dict,
-)
-
 from fastapi import (
-    Depends,
     HTTPException,
     status,
 )
-from sqlalchemy.orm import Session
 
-from core.schemas.advertisement import AdvertisementUpdate, AdvertisementCreate
+
 from core.tables import models
-from core.tables.models import RedisChannel, Customer, Area
-from db.engine import get_session
+from core.tables.models import Advertisement
 
 
 class AdvertisementService:
-    async def create(self, advertisement: AdvertisementCreate) -> models.Advertisement:
+    async def create(self, advertisement: Advertisement) -> models.Advertisement:
         return await models.Advertisement(**advertisement.dict()).save()
 
     async def get_by_area(self, area_id: int) -> models.Advertisement:
@@ -72,7 +62,7 @@ class AdvertisementService:
             raise HTTPException(status.HTTP_404_NOT_FOUND)
         return _advertisement
 
-    async def update(self, advertisement: AdvertisementUpdate) -> models.Advertisement:
+    async def update(self, advertisement: Advertisement) -> models.Advertisement:
         return await models.Advertisement(**advertisement.dict()).update()
 
     async def delete(self, _id: int) -> models.Advertisement.id:

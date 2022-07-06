@@ -1,6 +1,6 @@
 from fastapi_crudrouter import OrmarCRUDRouter
 from core.tables import models
-from core.schemas import area
+from a_del.core.schemas import area
 
 # https://fastapi-crudrouter.awtkns.com/
 

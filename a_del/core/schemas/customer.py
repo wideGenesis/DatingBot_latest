@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 # from core.tables.models import RedisChannel
-from core.schemas.redis_and_tiers import PremiumTierExpose, RedisChannelExpose
+from a_del.core.schemas.redis_and_tiers import PremiumTierExpose, RedisChannelExpose
 
 
 class BaseCustomer(BaseModel):

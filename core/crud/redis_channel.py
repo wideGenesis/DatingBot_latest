@@ -1,21 +1,10 @@
-from typing import (
-    List,
-    Optional,
-    Union,
-    Dict,
-)
-
 from fastapi import (
-    Depends,
     HTTPException,
     status,
 )
-from sqlalchemy.orm import Session
 
-from core.schemas.advertisement import AdvertisementUpdate, AdvertisementCreate
+from a_del.core.schemas import AdvertisementUpdate, AdvertisementCreate
 from core.tables import models
-from core.tables.models import RedisChannel, Customer, Area
-from db.engine import get_session
 
 
 class AdvertisementService:

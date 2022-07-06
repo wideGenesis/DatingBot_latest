@@ -1,12 +1,11 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict
 
 from pydantic import BaseModel
 
-from core.schemas.customer import CustomerExpose
-from core.schemas.area import AreaExpose
-from core.schemas.redis_and_tiers import RedisChannelExpose
+from a_del.core.schemas.customer import CustomerExpose
+from a_del.core.schemas.redis_and_tiers import RedisChannelExpose
 
 
 class WhoForWhomOptions(int, Enum):
