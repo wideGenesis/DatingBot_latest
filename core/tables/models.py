@@ -38,8 +38,7 @@ class PremiumTier(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     tier: str = ormar.String(
-        unique=True, nullable=False, max_length=30
-    )  # , choices=list(PremiumTierEnum)
+        unique=True, nullable=False, max_length=30, choices=list(PremiumTierEnum))
 
 
 class RedisChannel(ormar.Model):
@@ -61,7 +60,7 @@ class Customer(ormar.Model):
     description: Optional[str] = ormar.String(max_length=300, nullable=True)
     conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
-    lang: Optional[int] = ormar.Integer(index=True, choices=list(LangEnum))
+    lang: Optional[int] = ormar.String(max_length=10, choices=list(LangEnum))
     self_sex: Optional[int] = ormar.Integer(choices=list(SelfSexEnum), nullable=True)
     age: Optional[int] = ormar.Integer(nullable=True)
     is_active: bool = ormar.Boolean(nullable=True, default=True)
@@ -80,7 +79,7 @@ class Customer(ormar.Model):
         Area, related_name="rel_gps_coordinates"
     )
     city: Optional[Union[Area, Dict]] = ormar.ForeignKey(Area, related_name="rel_city")
-    premium_tier_id: Optional[Union[PremiumTier, Dict]] = ormar.ForeignKey(
+    premium_tier_id: Optional[PremiumTier] = ormar.ForeignKey(
         PremiumTier, related_name="rel_premium_tier"
     )
     redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
@@ -147,11 +146,11 @@ class Advertisement(ormar.Model):
         tablename: str = "advertisements"
 
     id: int = ormar.BigInteger(primary_key=True)
-    who_for_whom: int = ormar.Integer(index=True, choices=list(WhoForWhomEnum))
+    who_for_whom: int = ormar.String(max_length=50, choices=list(WhoForWhomEnum))
     prefer_age: int = ormar.Integer(index=True)
-    has_place: int = ormar.Integer(nullable=False, choices=list(HasPlaceEnum))
-    dating_time: int = ormar.Integer(nullable=False, choices=list(DatingTimeEnum))
-    dating_day: int = ormar.Integer(nullable=False, choices=list(DatingDayEnum))
+    has_place: int = ormar.String(max_length=50, nullable=False, choices=list(HasPlaceEnum))
+    dating_time: int = ormar.String(max_length=50, nullable=False, choices=list(DatingTimeEnum))
+    dating_day: int = ormar.String(nullable=False, max_length=50, choices=list(DatingDayEnum))
 
     adv_text: str = ormar.Text(nullable=False)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
@@ -201,8 +200,8 @@ class UserMediaFile(ormar.Model):
     id: int = ormar.BigInteger(primary_key=True)
     # member_id: int = ormar.BigInteger(index=True)
     file: str = ormar.String(max_length=200, nullable=False)
-    file_type: int = ormar.Integer(choices=list(FileTypeEnum))
-    privacy_type: int = ormar.Integer(choices=list(PrivacyTypeEnum))
+    file_type: int = ormar.String(max_length=20, choices=list(FileTypeEnum))
+    privacy_type: int = ormar.String(max_length=20, choices=list(PrivacyTypeEnum))
     is_archived: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
@@ -255,14 +254,14 @@ class AdvGoal(ormar.Model):
         tablename: str = "adv_goals"
 
     id: int = ormar.BigInteger(primary_key=True)
-    goals_1: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_2: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_3: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_4: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_5: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_6: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_7: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_8: Optional[int] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_1: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_2: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_3: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_4: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_5: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_6: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_7: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
+    goals_8: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )

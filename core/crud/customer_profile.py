@@ -47,7 +47,15 @@ class CustomerProfileService:
     async def update(
             self, customer_profile: models.CustomerProfile
     ) -> models.CustomerProfile:
-        return await models.CustomerProfile(**customer_profile.dict()).update()
+        intersection = {}
+        update_customer_profile = customer_profile.dict()
+
+        for k, v in update_customer_profile.items():
+            if v is None:
+                continue
+            intersection[k] = v
+
+        return await models.CustomerProfile.objects.update_or_create(**intersection)
 
     async def delete(self, _id: int) -> models.CustomerProfile.id:
         profile = await models.CustomerProfile.objects.get_or_none(id=_id)

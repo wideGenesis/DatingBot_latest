@@ -7,19 +7,19 @@ from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 
 class WhoForWhomEnum(Enum):
-    man_to_woman = 0
-    woman_to_man = 1
-    any_to_both = 2
-    man_to_man = 3
-    woman_to_woman = 4
-    other_to_other = 5
+    man_to_woman = 'man_to_woman'
+    woman_to_man = 'woman_to_man'
+    any_to_both = 'any_to_both'
+    man_to_man = 'man_to_man'
+    woman_to_woman = 'woman_to_woman'
+    other_to_other = 'other_to_other'
 
 
 class LangEnum(Enum):
-    en = 0
-    ua = 1
-    es = 2
-    ru = 3
+    en = 'en'
+    ua = 'ua'
+    es = 'es'
+    ru = 'ru'
 
 
 class SelfSexEnum(Enum):
@@ -28,52 +28,52 @@ class SelfSexEnum(Enum):
 
 
 class HasPlaceEnum(Enum):
-    none = 0
-    yours = 1
-    mine = 2
-    fifty_fifty = 3
+    none = 'none'
+    yours = 'yours'
+    mine = 'mine'
+    fifty_fifty = 'fifty_fifty'
 
 
 class DatingTimeEnum(Enum):
-    morning = 0
-    day = 1
-    evening = 2
-    night = 3
+    morning = 'morning'
+    day = 'day'
+    evening = 'evening'
+    night = 'night'
 
 
 class DatingDayEnum(Enum):
-    _any = 0
-    today = 1
-    weekend = 2
+    _any = '_any'
+    today = 'today'
+    weekend = 'weekend'
 
 
 class AdvGoalEnum(Enum):
-    dating = 0
-    walking = 1
-    talking = 2
-    relationships = 3
-    children = 4
-    petting_jerk = 5
-    oral_for_me = 6
-    oral_for_you = 7
-    classic_man_to_woman = 8
-    anal_for_me = 9
-    anal_for_you = 10
-    rim_for_me = 11
-    rim_for_you = 12
-    fetishes_for_me = 13
-    massage_for_me = 14
-    massage_for_you = 15
-    escorting_for_me = 16
-    escorting_for_you = 17
+    dating = 'dating'
+    walking = 'walking'
+    talking = 'talking'
+    relationships = 'relationships'
+    children = 'children'
+    petting_jerk = 'petting_jerk'
+    oral_for_me = 'oral_for_me'
+    oral_for_you = 'oral_for_you'
+    classic_man_to_woman = 'classic_man_to_woman'
+    anal_for_me = 'anal_for_me'
+    anal_for_you = 'anal_for_you'
+    rim_for_me = 'rim_for_me'
+    rim_for_you = 'rim_for_you'
+    fetishes = 'fetishes'
+    massage_for_me = 'massage_for_me'
+    massage_for_you = 'massage_for_you'
+    escorting_for_me = 'escorting_for_me'
+    escorting_for_you = 'escorting_for_you'
 
 
 class PremiumTierEnum(Enum):
-    free = 0
-    advanced_1m = 1
-    advanced_12m = 2
-    premium_1m = 3
-    premium_12m = 4
+    free = 'free'
+    advanced_1m = 'advanced_1m'
+    advanced_12m = 'advanced_12m'
+    premium_1m = 'premium_1m'
+    premium_12m = 'premium_12m'
 
 
 class PrivacyTypeEnum(Enum):
@@ -84,7 +84,7 @@ class PrivacyTypeEnum(Enum):
 class FileTypeEnum(Enum):
     mp4 = 'mp4'
     jpg = 'jpg'
-    png = 'png'  # TODO ??
+    png = 'png'
 
 
 class HivStatusEnum(Enum):

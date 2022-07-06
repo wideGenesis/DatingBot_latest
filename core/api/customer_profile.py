@@ -82,7 +82,10 @@ async def get_by_member_id(
     return await CustomerProfileService().get_by_member_id(member_id)
 
 
-@router.put("/update/", response_model=CustomerProfile)
+@router.put("/update/",
+            response_model=CustomerProfile,
+            status_code=status.HTTP_201_CREATED,
+            )
 async def update_profile(
         profile: CustomerProfile,
         api_key: APIKey = Depends(ApiKeyService.get_api_key)

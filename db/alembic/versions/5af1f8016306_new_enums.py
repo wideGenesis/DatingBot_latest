@@ -1,8 +1,8 @@
-"""one
+"""new enums
 
-Revision ID: 8b5c433e6bc7
+Revision ID: 5af1f8016306
 Revises: 
-Create Date: 2022-07-06 07:38:24.512474
+Create Date: 2022-07-06 22:37:06.744703
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8b5c433e6bc7'
+revision = '5af1f8016306'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,11 +62,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('redis_channel')
     )
-    op.create_table('temps',
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('conversation_name', sa.String(length=20), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('customers',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('nickname', sa.String(length=50), nullable=False),
@@ -75,7 +70,7 @@ def upgrade() -> None:
     sa.Column('description', sa.String(length=300), nullable=True),
     sa.Column('conversation_reference', sa.LargeBinary(length=10000), nullable=False),
     sa.Column('member_id', sa.BigInteger(), nullable=False),
-    sa.Column('lang', sa.Integer(), nullable=False),
+    sa.Column('lang', sa.String(length=10), nullable=False),
     sa.Column('self_sex', sa.Integer(), nullable=True),
     sa.Column('age', sa.Integer(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
@@ -100,14 +95,13 @@ def upgrade() -> None:
     sa.UniqueConstraint('nickname'),
     sa.UniqueConstraint('phone')
     )
-    op.create_index(op.f('ix_customers_lang'), 'customers', ['lang'], unique=False)
     op.create_table('advertisements',
     sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('who_for_whom', sa.Integer(), nullable=False),
+    sa.Column('who_for_whom', sa.String(length=50), nullable=False),
     sa.Column('prefer_age', sa.Integer(), nullable=False),
-    sa.Column('has_place', sa.Integer(), nullable=False),
-    sa.Column('dating_time', sa.Integer(), nullable=False),
-    sa.Column('dating_day', sa.Integer(), nullable=False),
+    sa.Column('has_place', sa.String(length=50), nullable=False),
+    sa.Column('dating_time', sa.String(length=50), nullable=False),
+    sa.Column('dating_day', sa.String(length=50), nullable=False),
     sa.Column('adv_text', sa.Text(), nullable=False),
     sa.Column('phone_is_hidden', sa.Boolean(), nullable=False),
     sa.Column('money_support', sa.Boolean(), nullable=False),
@@ -126,7 +120,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_advertisements_prefer_age'), 'advertisements', ['prefer_age'], unique=False)
-    op.create_index(op.f('ix_advertisements_who_for_whom'), 'advertisements', ['who_for_whom'], unique=False)
     op.create_table('blacklists',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('banned_member_id', sa.Integer(), nullable=False),
@@ -160,7 +153,8 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('customer', sa.BigInteger(), nullable=True),
     sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_customer_profiles_customers_id_customer'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('customer')
     )
     op.create_index(op.f('ix_customer_profiles_instagram_link'), 'customer_profiles', ['instagram_link'], unique=True)
     op.create_index(op.f('ix_customer_profiles_tiktok_link'), 'customer_profiles', ['tiktok_link'], unique=True)
@@ -187,8 +181,8 @@ def upgrade() -> None:
     op.create_table('user_media_files',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('file', sa.String(length=200), nullable=False),
-    sa.Column('file_type', sa.Integer(), nullable=False),
-    sa.Column('privacy_type', sa.Integer(), nullable=False),
+    sa.Column('file_type', sa.String(length=20), nullable=False),
+    sa.Column('privacy_type', sa.String(length=20), nullable=False),
     sa.Column('is_archived', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -226,12 +220,9 @@ def downgrade() -> None:
     op.drop_table('customer_profiles')
     op.drop_index(op.f('ix_blacklists_banned_member_id'), table_name='blacklists')
     op.drop_table('blacklists')
-    op.drop_index(op.f('ix_advertisements_who_for_whom'), table_name='advertisements')
     op.drop_index(op.f('ix_advertisements_prefer_age'), table_name='advertisements')
     op.drop_table('advertisements')
-    op.drop_index(op.f('ix_customers_lang'), table_name='customers')
     op.drop_table('customers')
-    op.drop_table('temps')
     op.drop_table('redis_channels')
     op.drop_table('premium_tiers')
     op.drop_table('conversations')
