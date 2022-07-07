@@ -1,4 +1,6 @@
 from typing import Union
+
+from asyncpg import ForeignKeyViolationError
 from fastapi import status, Response
 
 from core.tables import models
@@ -35,12 +37,12 @@ class CustomerService:
             self,
             offset: int,
             limit: int,
-            city: str
+            city_id: int
     ) -> Union[models.Customer, Response]:
         customer_city_list = (
             await models.Customer.objects.offset(offset)
             .limit(limit)
-            .filter(city=city)
+            .filter(city=city_id)
             .all()
         )
         if not customer_city_list:
@@ -85,13 +87,35 @@ class CustomerService:
             return Response(status_code=status.HTTP_404_NOT_FOUND)
         return customer
 
-    async def update(self, customer: Customer) -> models.Customer:
-        return await models.Customer(**customer.dict()).update()
+    async def update(
+            self,
+            customer: Customer
+    ) -> models.Customer:
+        intersection = {}
+        update_customer = customer.dict()
 
-    async def delete(self, member_id: int) -> models.Customer.id:
-        _customer = await models.Customer.objects.get(member_id=member_id)
-        deleted_id = await _customer.delete()
-        return deleted_id
+        for k, v in update_customer.items():
+            if v is None:
+                continue
+            intersection[k] = v
+
+        return await models.Customer.objects.update_or_create(**intersection)
+
+    async def delete(
+            self,
+            _id: int
+    ) -> models.Customer.id:
+        customer = await models.Customer.objects.get_or_none(id=_id)
+
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        try:
+            await customer.delete()
+
+        except ForeignKeyViolationError:
+            return Response(status_code=status.HTTP_424_FAILED_DEPENDENCY)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 EXCLUDE_FOR_LIST = {

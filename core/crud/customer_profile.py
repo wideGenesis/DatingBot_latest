@@ -82,7 +82,10 @@ class CustomerProfileService:
 
         return await models.CustomerProfile.objects.update_or_create(**intersection)
 
-    async def delete(self, _id: int) -> models.CustomerProfile.id:
+    async def delete(
+            self,
+            _id: int
+    ) -> models.CustomerProfile.id:
         profile = await models.CustomerProfile.objects.get_or_none(id=_id)
 
         if not profile:

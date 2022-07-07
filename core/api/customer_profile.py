@@ -8,7 +8,7 @@ from fastapi import (
 from fastapi.openapi.models import APIKey
 from core.crud.customer_profile import CustomerProfileService
 from core.services.api_service import ApiKeyService
-from core.tables.models import CustomerProfile, Customer
+from core.tables.models import CustomerProfile
 
 router = APIRouter(
     prefix="/customer-profile",
@@ -36,13 +36,15 @@ async def create_customer_profile(
     status_code=status.HTTP_201_CREATED,
 )
 async def list_profiles(
-    offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+        offset: int,
+        limit: int,
+        api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().list(offset, limit)
 
 
 @router.get(
-    "/list/{hiv-status}",
+    "/list-by/{hiv-status}",
     response_model=List[CustomerProfile],
     status_code=status.HTTP_201_CREATED,
 )
@@ -61,7 +63,8 @@ async def list_profiles_by_hiv_status(
     status_code=status.HTTP_201_CREATED,
 )
 async def get_profile_by_id(
-    _id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+        _id: int,
+        api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().get_by_id(_id)
 
@@ -72,7 +75,8 @@ async def get_profile_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def get_by_member_id(
-    member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+        member_id: int,
+        api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().get_by_member_id(member_id)
 
@@ -83,13 +87,15 @@ async def get_by_member_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def update_profile(
-    profile: CustomerProfile, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+        profile: CustomerProfile,
+        api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().update(profile)
 
 
 @router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_customer_by_member_id(
-    _id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
+async def delete_customer_by_id(
+        _id: int,
+        api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().delete(_id)
