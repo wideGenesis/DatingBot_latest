@@ -48,8 +48,8 @@ WORKDIR $APP_ROOT
 
 # copy whole project to docker home directory.
 COPY .. $APP_ROOT
-COPY ../static_assets/favicon/favicon.ico $APP_ROOT/staticfiles/favicon/
-COPY ../static_assets/robots.txt $APP_ROOT/staticfiles/robots.txt
+COPY ../static/favicon/favicon.ico $APP_ROOT/staticfiles/favicon/
+COPY ../static/robots.txt $APP_ROOT/staticfiles/robots.txt
 RUN rm -rf $APP_ROOT/static_assets
 
 # Install dependencies:
@@ -66,5 +66,6 @@ RUN chown -R app:app $HOME
 USER app
 
 # run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/mlnw/entrypoints/entrypoint_postgresql.sh"]
+#ENTRYPOINT ["/home/app/mlnw/entrypoints/entrypoint_postgresql.sh"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 

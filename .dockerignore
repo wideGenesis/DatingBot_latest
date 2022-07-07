@@ -12,3 +12,4 @@
 /__pycache__
 Dockerfile
 docker-compose.yml
+/a-del
