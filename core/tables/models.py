@@ -181,9 +181,7 @@ class Advertisement(ormar.Model):
     large_city_near_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
         Area, related_name="rel_large_city_near_id"
     )
-    publisher_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_publisher"
-    )
+    customer: Optional[Customer] = ormar.ForeignKey(Customer)
 
 
 class Blacklist(ormar.Model):
