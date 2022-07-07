@@ -1,42 +1,89 @@
-from fastapi import HTTPException, status
+from typing import Union
+from fastapi import status, Response
 
 from core.tables import models
 from core.tables.models import Customer
+from settings.logger import CustomLogger
+
+logger = CustomLogger.get_logger("bot")
 
 
 class CustomerService:
-    async def create(self, customer: Customer) -> models.Customer:
-        return await models.Customer(**customer.dict()).save()
+    async def create(
+            self,
+            customer: Customer
+    ) -> Union[models.Customer, Response]:
+        try:
+            return await models.Customer(**customer.dict()).save()
+        except Exception:
+            logger.exception('Something went wrong!')
+            return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    async def get_by_member_id(self, member_id: int) -> models.Customer:
-        _customer = (
-            await models.Customer.objects.select_related("premium_tier_id")
-            .select_related("redis_channel_id")
-            .get_or_none(member_id=member_id)
+    async def list(
+            self,
+            offset: int,
+            limit: int
+    ) -> Union[models.Customer, Response]:
+        customers = (
+            await models.Customer.objects.offset(offset).limit(limit).all()
         )
-        if not _customer:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return _customer
+        if not customers:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customers
 
-    async def get_by_phone(self, phone: int) -> models.Customer:
-        _customer = (
-            await models.Customer.objects.select_related("premium_tier_id")
-            .select_related("redis_channel_id")
-            .get_or_none(phone=phone)
+    async def list_by_city(
+            self,
+            offset: int,
+            limit: int,
+            city: str
+    ) -> Union[models.Customer, Response]:
+        customer_city_list = (
+            await models.Customer.objects.offset(offset)
+            .limit(limit)
+            .filter(city=city)
+            .all()
         )
-        if not _customer:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return _customer
+        if not customer_city_list:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer_city_list
 
-    async def get_by_nickname(self, nickname: str) -> models.Customer:
-        _customer = (
-            await models.Customer.objects.select_related("premium_tier_id")
-            .select_related("redis_channel_id")
-            .get_or_none(nickname=nickname)
-        )
-        if not _customer:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-        return _customer
+    async def get_by_id(
+            self,
+            _id: int
+    ) -> Union[models.CustomerProfile, Response]:
+        customer = await models.Customer.objects.get_or_none(id=_id)
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer
+
+    async def get_by_member_id(
+            self,
+            member_id: int
+    ) -> Union[models.Customer, Response]:
+        customer = await models.Customer.objects.get_or_none(member_id=member_id)
+
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer
+
+    async def get_by_phone(
+            self,
+            phone: int
+    ) -> Union[models.Customer, Response]:
+        customer = await models.Customer.objects.get_or_none(phone=phone)
+
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer
+
+    async def get_by_nickname(
+        self,
+        nickname: str
+    ) -> Union[models.Customer, Response]:
+        customer = await models.Customer.objects.get_or_none(nickname=nickname)
+        if not customer:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+        return customer
 
     async def update(self, customer: Customer) -> models.Customer:
         return await models.Customer(**customer.dict()).update()
@@ -45,25 +92,6 @@ class CustomerService:
         _customer = await models.Customer.objects.get(member_id=member_id)
         deleted_id = await _customer.delete()
         return deleted_id
-
-    async def list(self, offset: int, limit: int) -> models.Customer:
-        return (
-            await models.Customer.objects.offset(offset)
-            .limit(limit)
-            .select_related("premium_tier_id")
-            .select_related("redis_channel_id")
-            .all()
-        )
-
-    async def list_by_city(self, offset: int, limit: int, city: str) -> models.Customer:
-        city_list = (
-            await models.Area.objects.offset(offset)
-            .limit(limit)
-            .filter(city=city)
-            .all()
-        )
-        print("city_list", city_list)
-        return city_list
 
 
 EXCLUDE_FOR_LIST = {

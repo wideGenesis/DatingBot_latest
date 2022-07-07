@@ -38,7 +38,8 @@ class PremiumTier(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     tier: str = ormar.String(
-        unique=True, nullable=False, max_length=30, choices=list(PremiumTierEnum))
+        unique=True, nullable=False, max_length=30, choices=list(PremiumTierEnum)
+    )
 
 
 class RedisChannel(ormar.Model):
@@ -148,9 +149,15 @@ class Advertisement(ormar.Model):
     id: int = ormar.BigInteger(primary_key=True)
     who_for_whom: int = ormar.String(max_length=50, choices=list(WhoForWhomEnum))
     prefer_age: int = ormar.Integer(index=True)
-    has_place: int = ormar.String(max_length=50, nullable=False, choices=list(HasPlaceEnum))
-    dating_time: int = ormar.String(max_length=50, nullable=False, choices=list(DatingTimeEnum))
-    dating_day: int = ormar.String(nullable=False, max_length=50, choices=list(DatingDayEnum))
+    has_place: int = ormar.String(
+        max_length=50, nullable=False, choices=list(HasPlaceEnum)
+    )
+    dating_time: int = ormar.String(
+        max_length=50, nullable=False, choices=list(DatingTimeEnum)
+    )
+    dating_day: int = ormar.String(
+        nullable=False, max_length=50, choices=list(DatingDayEnum)
+    )
 
     adv_text: str = ormar.Text(nullable=False)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)

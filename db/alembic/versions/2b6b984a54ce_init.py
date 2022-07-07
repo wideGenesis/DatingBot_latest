@@ -1,8 +1,8 @@
-"""new enums
+"""init
 
-Revision ID: 5af1f8016306
+Revision ID: 2b6b984a54ce
 Revises: 
-Create Date: 2022-07-06 22:37:06.744703
+Create Date: 2022-07-07 06:54:37.458109
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5af1f8016306'
+revision = '2b6b984a54ce'
 down_revision = None
 branch_labels = None
 depends_on = None

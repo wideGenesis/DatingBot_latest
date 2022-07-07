@@ -2,7 +2,6 @@ from typing import List
 
 from fastapi import (
     APIRouter,
-    Response,
     status,
     Depends,
 )
@@ -24,8 +23,8 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_customer_profile(
-        customer_profile: CustomerProfile,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    customer_profile: CustomerProfile,
+    api_key: APIKey = Depends(ApiKeyService.get_api_key),
 ):
     return await CustomerProfileService().create(customer_profile)
 
@@ -37,9 +36,7 @@ async def create_customer_profile(
     status_code=status.HTTP_201_CREATED,
 )
 async def list_profiles(
-        offset: int,
-        limit: int,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    offset: int, limit: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().list(offset, limit)
 
@@ -50,10 +47,10 @@ async def list_profiles(
     status_code=status.HTTP_201_CREATED,
 )
 async def list_profiles_by_hiv_status(
-        offset: int,
-        limit: int,
-        hiv_status: str,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key),
+    offset: int,
+    limit: int,
+    hiv_status: str,
+    api_key: APIKey = Depends(ApiKeyService.get_api_key),
 ):
     return await CustomerProfileService().list_by_hiv_status(offset, limit, hiv_status)
 
@@ -64,8 +61,7 @@ async def list_profiles_by_hiv_status(
     status_code=status.HTTP_201_CREATED,
 )
 async def get_profile_by_id(
-        _id: int,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    _id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().get_by_id(_id)
 
@@ -76,26 +72,24 @@ async def get_profile_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def get_by_member_id(
-        member_id: int,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    member_id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().get_by_member_id(member_id)
 
 
-@router.put("/update/",
-            response_model=CustomerProfile,
-            status_code=status.HTTP_201_CREATED,
-            )
+@router.put(
+    "/update/",
+    response_model=CustomerProfile,
+    status_code=status.HTTP_201_CREATED,
+)
 async def update_profile(
-        profile: CustomerProfile,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    profile: CustomerProfile, api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().update(profile)
 
 
 @router.delete("/delete/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_customer_by_member_id(
-        _id: int,
-        api_key: APIKey = Depends(ApiKeyService.get_api_key)
+    _id: int, api_key: APIKey = Depends(ApiKeyService.get_api_key)
 ):
     return await CustomerProfileService().delete(_id)

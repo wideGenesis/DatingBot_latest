@@ -7,77 +7,77 @@ from helpers.constants import AlcoStatusEnum, DrugsStatusEnum, SafeSexEnum, HivS
 
 
 async def fixture():
-    # await models.PremiumTier(
-    #     tier='free'
-    # ).save()
-    #
-    # await models.PremiumTier(
-    #     tier='advanced_1m'
-    # ).save()
-    #
-    # await models.PremiumTier(
-    #     tier='advanced_12m'
-    # ).save()
-    #
-    # await models.PremiumTier(
-    #     tier='premium_1m'
-    # ).save()
-    #
-    # await models.PremiumTier(
-    #     tier='premium_12m'
-    # ).save()
-    #
-    # await models.RedisChannel(
-    #     redis_channel='україна:одеська область:одеса'
-    # ).save()
-    #
-    # await models.RedisChannel(
-    #     redis_channel='україна:київська область:київ'
-    # ).save()
-    #
-    # await models.Area(
-    #     area='україна:київська область:київ',
-    #     city='київ',
-    #     state='київська область',
-    #     country='україна',
-    #     is_administrative_center=True
-    # ).save()
-    #
-    # await models.Area(
-    #     area='україна:одеська область:одеса',
-    #     city='одеса',
-    #     state='одеська область',
-    #     country='україна',
-    #     is_administrative_center=True
-    # ).save()
-    #
-    # await models.Area(
-    #     area='україна:львівська область:львів',
-    #     city='львів',
-    #     state='львівська область',
-    #     country='україна',
-    #     is_administrative_center=True
-    # ).save()
+    await models.PremiumTier(
+        tier='free'
+    ).save()
 
-    # await models.Customer(
-    #     nickname='test_nickname3333',
-    #     phone=380951117676,
-    #     premium_tier_id=1,
-    #     conversation_reference=bytes('jjhjh hgj hgjk loil;;;es esarsersese strjdfjyhlkgfl', 'utf-8'),
-    #     member_id=8111456789,
-    #     lang='en',
-    #     is_active=1,
-    # ).save()
-    #
-    # await models.Customer(
-    #     nickname='test_nickname4444',
-    #     phone=380951114545,
-    #     conversation_reference=bytes('6str yruiyikuoluiolfjf dftgrtysrdhf,klhf xcbnbvm ', 'utf-8'),
-    #     member_id=1111200030,
-    #     lang='ua',
-    #     is_active=0,
-    #     premium_tier_id=1
-    # ).save()
+    await models.PremiumTier(
+        tier='advanced_1m'
+    ).save()
+
+    await models.PremiumTier(
+        tier='advanced_12m'
+    ).save()
+
+    await models.PremiumTier(
+        tier='premium_1m'
+    ).save()
+
+    await models.PremiumTier(
+        tier='premium_12m'
+    ).save()
+
+    await models.RedisChannel(
+        redis_channel='україна:одеська область:одеса'
+    ).save()
+
+    await models.RedisChannel(
+        redis_channel='україна:київська область:київ'
+    ).save()
+
+    await models.Area(
+        area='україна:київська область:київ',
+        city='київ',
+        state='київська область',
+        country='україна',
+        is_administrative_center=True
+    ).save()
+
+    await models.Area(
+        area='україна:одеська область:одеса',
+        city='одеса',
+        state='одеська область',
+        country='україна',
+        is_administrative_center=True
+    ).save()
+
+    await models.Area(
+        area='україна:львівська область:львів',
+        city='львів',
+        state='львівська область',
+        country='україна',
+        is_administrative_center=True
+    ).save()
+
+    await models.Customer(
+        nickname='test_nickname3333',
+        phone=380951117676,
+        premium_tier_id=1,
+        conversation_reference=bytes('jjhjh hgj hgjk loil;;;es esarsersese strjdfjyhlkgfl', 'utf-8'),
+        member_id=8111456789,
+        lang='en',
+        is_active=1,
+    ).save()
+
+    await models.Customer(
+        nickname='test_nickname4444',
+        phone=380951114545,
+        conversation_reference=bytes('6str yruiyikuoluiolfjf dftgrtysrdhf,klhf xcbnbvm ', 'utf-8'),
+        member_id=1111200030,
+        lang='ua',
+        is_active=0,
+        premium_tier_id=1
+    ).save()
 
     await models.Advertisement(
         who_for_whom='man_to_woman',
