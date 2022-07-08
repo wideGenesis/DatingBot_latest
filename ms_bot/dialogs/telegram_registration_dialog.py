@@ -263,10 +263,10 @@ class TelegramRegistrationDialog(ComponentDialog):
         _value = prompt_context.context.activity.text
 
         if _value in [
-            "KEY_CALLBACK:0",
-            "KEY_CALLBACK:1",
-            "KEY_CALLBACK:2",
-            "KEY_CALLBACK:3",
+            "KEY_CALLBACK:en",
+            "KEY_CALLBACK:ua",
+            "KEY_CALLBACK:es",
+            "KEY_CALLBACK:ru",
             "KEY_CALLBACK:Man",
             "KEY_CALLBACK:Woman",
         ]:

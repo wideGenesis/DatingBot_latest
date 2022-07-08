@@ -37,8 +37,8 @@ RUN apt-get update \
 # create directory for the app user
 RUN mkdir -p $HOME \
     && mkdir -p $APP_ROOT \
-    && mkdir -p $APP_ROOT/staticfiles \
-    && mkdir -p $APP_ROOT/mediafiles \
+    && mkdir -p $APP_ROOT/static \
+    && mkdir -p $APP_ROOT/media \
     && mkdir -p $HOME/.cache/mc \
     && mkdir -p $APP_ROOT/logs/ \
     && touch $APP_ROOT/logs/debug_logs.log
@@ -48,8 +48,8 @@ WORKDIR $APP_ROOT
 
 # copy whole project to docker home directory.
 COPY . $APP_ROOT
-COPY ./static/favicon/favicon.ico $APP_ROOT/staticfiles/favicon/
-COPY ./static/robots.txt $APP_ROOT/staticfiles/robots.txt
+COPY ./static/favicon/favicon.ico $APP_ROOT/static/favicon/
+COPY ./static/robots.txt $APP_ROOT/static/robots.txt
 RUN rm -rf $APP_ROOT/static_assets
 
 # Install dependencies:

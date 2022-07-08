@@ -3,10 +3,10 @@ import random
 from settings.conf import AZURE_STORAGE_CONF
 
 LANG_CHOICE = {
-    0: "English",
-    1: "Українська",
-    2: "Español",
-    3: "російська",
+    'en': "English",
+    'ua': "Українська",
+    'es': "Español",
+    'ru': "російська",
 }
 
 SEX_CHOICE = {
