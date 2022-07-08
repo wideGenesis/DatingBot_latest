@@ -91,7 +91,12 @@ class TelegramRegistrationDialog(ComponentDialog):
     ) -> DialogTurnResult:
         logger.debug("choose_lang_step %s", TelegramRegistrationDialog.__name__)
 
-        await remove_last_message(step_context, True)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
 
         return await step_context.prompt(
             TextPrompt.__name__,

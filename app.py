@@ -11,7 +11,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from core import api
 from db.engine import DATABASE
-from settings.conf import FAST_API_CONF
+from settings.conf import FAST_API_CONF, IS_LOCAL_ENV
 from settings.logger import CustomLogger
 from startup_insert_fixture import fixture
 
@@ -25,32 +25,38 @@ app = FastAPI(
     redoc_url=None
 )
 
-origins = [
+origins = [  # TODO Add valid origins on prod
     "http://127.0.0.1",
     "https://127.0.0.1",
     "http://localhost",
     "http://localhost:8080"
     "http://mysite.localtest.me:3978/"
-    "http://mysite.localtest.me:3978/docs",  # TODO Add valid origins on prod
+    "https://mysite.localtest.me:3978/",
+    "https://mysite.localtest.me:8000/",
+    "https://mysite.localtest.me:8000/",
+    "http://mysite.localtest.me:8080/",
+    "https://mysite.localtest.me:8080/",
 ]
-# if os.enviton.get('IS_LOCAL_ENV', ''):
-#
-# app.add_middleware(HTTPSRedirectMiddleware)  # TODO Uncomment on prod
-app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=[
-        "localhost",
-        "127.0.0.1",
-        "*.example.com",  # TODO Add domain on prod
-    ]
-)
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# if IS_LOCAL_ENV == 0:
+#     app.add_middleware(HTTPSRedirectMiddleware)  # TODO Uncomment on prod
+#     app.add_middleware(
+#         TrustedHostMiddleware, allowed_hosts=[
+#             "localhost",
+#             "127.0.0.1",
+#             "https://fast-love.azurewebsites.net/",
+#             "fast-love.azurewebsites.net/",
+#             "*.azurewebsites.net/",
+#         ]
+#     )
+#     app.add_middleware(GZipMiddleware, minimum_size=1000)
+#     app.add_middleware(
+#         CORSMiddleware,
+#         allow_origins=origins,
+#         allow_credentials=True,
+#         allow_methods=["*"],
+#         allow_headers=["*"],
+#     )
+
 
 app.include_router(api.router)
 

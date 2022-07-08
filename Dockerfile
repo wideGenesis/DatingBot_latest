@@ -20,13 +20,13 @@ ENV PYTHONFAULTHANDLER=1 \
   # appropriate directories:
 ENV HOME=/home/app
 ENV APP_ROOT=$HOME/mlnw
+ENV PORT 8000
 
 #Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libpq-dev \
         build-essential \
-        curl \
         htop  \
         mc \
         nano \
@@ -47,17 +47,17 @@ RUN mkdir -p $HOME \
 WORKDIR $APP_ROOT
 
 # copy whole project to docker home directory.
-COPY .. $APP_ROOT
-COPY ../static/favicon/favicon.ico $APP_ROOT/staticfiles/favicon/
-COPY ../static/robots.txt $APP_ROOT/staticfiles/robots.txt
+COPY . $APP_ROOT
+COPY ./static/favicon/favicon.ico $APP_ROOT/staticfiles/favicon/
+COPY ./static/robots.txt $APP_ROOT/staticfiles/robots.txt
 RUN rm -rf $APP_ROOT/static_assets
 
 # Install dependencies:
 RUN poetry install
 
 # copy entrypoint.prod.sh
-RUN sed -i 's/\r$//g'  $APP_ROOT/entrypoints/entrypoint_postgresql.sh
-RUN chmod +x  $APP_ROOT/entrypoints/entrypoint_postgresql.sh
+#RUN sed -i 's/\r$//g'  $APP_ROOT/entrypoints/entrypoint_postgresql.sh
+#RUN chmod +x  $APP_ROOT/entrypoints/entrypoint_postgresql.sh
 
 # chown all the files to the app user
 RUN chown -R app:app $HOME
@@ -65,6 +65,7 @@ RUN chown -R app:app $HOME
 # change to the app user
 USER app
 
+EXPOSE 8000
 # run entrypoint.prod.sh
 #ENTRYPOINT ["/home/app/mlnw/entrypoints/entrypoint_postgresql.sh"]
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
