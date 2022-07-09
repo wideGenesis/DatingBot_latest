@@ -75,7 +75,7 @@ class MyProfileDialog(ComponentDialog):
         )
 
         message = (
-            f"Мова бота: {LANG_CHOICE[int(user_data.lang)]}  \n \n"
+            f"Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n"
             f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
             f"Мій телефон: {user_data.phone}  \n \n"

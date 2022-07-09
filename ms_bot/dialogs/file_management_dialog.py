@@ -69,21 +69,36 @@ class FileManagementDialog(ComponentDialog):
         logger.debug("show_file_step %s", FileManagementDialog.__name__)
         member_id = str(step_context.context.activity.from_property.id)
         self.file = step_context.options
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(
-                        send_file_kb(
-                            member_id, self.file["file"], self.file["privacy_type"]
-                        )
-                    ),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
-            ),
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
         )
+        archive_accum = []
+        for file in user_data.files_dict:
+            if not file['is_archived']:
+                archive_accum.append(True)
+
+        if all(archive_accum):
+            await step_context.context.send_activity(BOT_MESSAGES['files_not_found'])
+            return await step_context.end_dialog()
+
+        for file in user_data.files_dict:
+            if not file['is_archived']:
+                continue
+            else:
+                return await step_context.prompt(
+                    TextPrompt.__name__,
+                    PromptOptions(
+                        prompt=Activity(
+                            channel_data=json.dumps(
+                                send_file_kb(
+                                    member_id, self.file["file"], self.file["privacy_type"]
+                                )
+                            ),
+                            type=ActivityTypes.message,
+                        ),
+                        retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
+                    ),
+                )
 
     async def parse_choice_step(
         self, step_context: WaterfallStepContext
@@ -112,7 +127,7 @@ class FileManagementDialog(ComponentDialog):
                 pk,
             )
 
-            privacy_type = 1 if privacy_type == 0 else 0
+            privacy_type = "hidden" if privacy_type == "open" else "open"
             logger.warning("privacy_type: %s", privacy_type)
 
             await get_file.update(
@@ -128,7 +143,7 @@ class FileManagementDialog(ComponentDialog):
 
         else:
             await step_context.context.send_activity("Bye!")
-            return await step_context.cancel_all_dialogs(True)
+            return await step_context.end_dialog(True)
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
@@ -199,4 +214,4 @@ class FileManagementDialog(ComponentDialog):
 
         else:
             await step_context.context.send_activity("buy")
-            return await step_context.cancel_all_dialogs(True)
+            return await step_context.end_dialog(True)

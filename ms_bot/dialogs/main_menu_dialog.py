@@ -102,10 +102,14 @@ class MenuDialog(ComponentDialog):
         found_choice = step_context.result
 
         if found_choice == "KEY_CALLBACK:nearby_people":
-            return await step_context.begin_dialog(NearbySearchDialog.__name__)
+            # return await step_context.begin_dialog(NearbySearchDialog.__name__)
+            await step_context.context.send_activity('Not implemented')
+            return await step_context.replace_dialog(MenuDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:adv_search":
-            return await step_context.begin_dialog(AdvMenuDialog.__name__)
+            # return await step_context.begin_dialog(AdvMenuDialog.__name__)
+            await step_context.context.send_activity('Not implemented')
+            return await step_context.replace_dialog(MenuDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:my_profile":
             return await step_context.begin_dialog(MyProfileDialog.__name__)
@@ -115,6 +119,8 @@ class MenuDialog(ComponentDialog):
 
         elif found_choice == "KEY_CALLBACK:scrape":
             await step_context.context.send_activity("Not implemented")
+            # return await step_context.replace_dialog(MenuDialog.__name__)
+            await step_context.context.send_activity('Not implemented')
             return await step_context.replace_dialog(MenuDialog.__name__)
 
         else:

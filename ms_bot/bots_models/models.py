@@ -99,7 +99,7 @@ class CustomerProfile:  # TODO match to db model
         self.instagram_link: Optional[str] = instagram_link
         self.age: Optional[int] = age
         self.self_sex: Optional[int] = self_sex
-        self.lang: Optional[int] = lang
+        self.lang: Optional[str] = lang
         self.member_id: int = member_id
         self.conversation_reference = conversation_reference
         self.description: Optional[str] = description

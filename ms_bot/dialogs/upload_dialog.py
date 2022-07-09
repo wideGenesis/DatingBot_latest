@@ -160,13 +160,13 @@ class UploadDialog(ComponentDialog):
             return BOT_MESSAGES["file_limit_reached"]
 
         if content_type == "video/mp4":
-            _file_type = 0
+            _file_type = 'mp4'
             suffix = ".mp4"
         elif content_type == "image/jpeg":
-            _file_type = 1
+            _file_type = 'jpg'
             suffix = ".jpg"
         elif content_type == "image/png":
-            _file_type = 2
+            _file_type = 'png'
             suffix = ".png"
         else:
             return BOT_MESSAGES["file_bad_format"]
@@ -194,7 +194,7 @@ class UploadDialog(ComponentDialog):
             customer_id=customer_id.id,
             file=_file_name,
             file_type=_file_type,
-            privacy_type=1,
+            privacy_type='hidden',
             is_archived=False,
         )
 
@@ -205,21 +205,3 @@ class UploadDialog(ComponentDialog):
 
         return BOT_MESSAGES["file_uploaded"]
 
-
-# def save(self, *args, **kwargs):
-#     file_tmp = NamedTemporaryFile(delete=True)
-#
-#     _file_name = file_tmp.name.split('/')
-#     _file_name = str(uuid.uuid4()).replace('-', '') + suffix
-#
-#     result = requests.get(self.file_temp_url)
-#     if result.status_code == 200:
-#         file_tmp.write(result.content)
-#         file_tmp.flush()
-#         _f = File(file_tmp, name=_file_name)
-#         if _f.size > 4194304:
-#             logger.warning('UserMediaFiles has not been saved. File size: %s', _f.size)
-#             return
-#
-#         self.file = _f
-#         self.file_temp_url = None

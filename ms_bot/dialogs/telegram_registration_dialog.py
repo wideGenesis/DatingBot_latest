@@ -267,6 +267,8 @@ class TelegramRegistrationDialog(ComponentDialog):
             "KEY_CALLBACK:ua",
             "KEY_CALLBACK:es",
             "KEY_CALLBACK:ru",
+            "KEY_CALLBACK:0",
+            "KEY_CALLBACK:1",
             "KEY_CALLBACK:Man",
             "KEY_CALLBACK:Woman",
         ]:
@@ -290,7 +292,7 @@ class TelegramRegistrationDialog(ComponentDialog):
             premium_tier_id=premium_tier_id,
             conversation_reference=user_data.conversation_reference,
             member_id=int(user_data.member_id),
-            lang=int(user_data.lang),
+            lang=user_data.lang,
             self_sex=int(user_data.self_sex),
             age=int(user_data.age),
             is_active=int(user_data.is_active),

@@ -93,4 +93,4 @@ class FileLoopDialog(ComponentDialog):
         if user_data.file_number >= length:
             user_data.file_number = 0
             await step_context.context.send_activity("Bye!")
-            return await step_context.cancel_all_dialogs(True)
+            return await step_context.end_dialog(True)

@@ -124,10 +124,25 @@ CHOOSE_LANG = {
         "reply_markup": {
             "inline_keyboard": [
                 [
-                    {"text": "English", "callback_data": "KEY_CALLBACK:0"},
-                    {"text": "Українська", "callback_data": "KEY_CALLBACK:1"},
-                    {"text": "Español", "callback_data": "KEY_CALLBACK:2"},
-                    {"text": "російська", "callback_data": "KEY_CALLBACK:3"},
+                    {
+                        "text": "English", "callback_data": "KEY_CALLBACK:en"
+                    }
+
+                ],
+                [
+                    {
+                        "text": "Українська", "callback_data": "KEY_CALLBACK:ua"
+                    }
+                ],
+                [
+                    {
+                        "text": "Español", "callback_data": "KEY_CALLBACK:es"
+                    }
+                ],
+                [
+                    {
+                        "text": "російська", "callback_data": "KEY_CALLBACK:ru"
+                    }
                 ],
             ]
         },
@@ -145,8 +160,12 @@ CHOOSE_SEX_KB = {
         "reply_markup": {
             "inline_keyboard": [
                 [
-                    {"text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:0"},
-                    {"text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:1"},
+                    {
+                        "text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:0"
+                    },
+                    {
+                        "text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:1"
+                    },
                 ],
             ]
         },
@@ -335,16 +354,16 @@ REQUEST_GEO = {
 
 
 def send_file_kb(member_id: str, file: str, privacy_type: int) -> dict:
-    if privacy_type == 1:
+    if privacy_type == "hidden":
         msg = "Приватний файл"
     else:
         msg = "Файл доступний користувачам"
-
+    file = f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{member_id}/{file}"
     return {
         "method": "sendPhoto",
         "parameters": {
             "caption": f"{msg}",
-            "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{member_id}/{file}",
+            "photo": file,
             "protect_content": True,
             "disable_notification": True,
             "reply_markup": {
