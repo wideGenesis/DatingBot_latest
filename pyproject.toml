@@ -36,6 +36,7 @@ python-dotenv = "^0.20.0"
 black = "^22.6.0"
 prospector = "^1.7.7"
 vulture = "^2.4"
+Faker = "^13.15.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

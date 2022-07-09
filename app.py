@@ -13,7 +13,7 @@ from core import api
 from db.engine import DATABASE
 from settings.conf import FAST_API_CONF, IS_LOCAL_ENV
 from settings.logger import CustomLogger
-from startup_insert_fixture import fixture
+from db.fixtures.startup_insert_fixture import fixture
 
 logger = CustomLogger.get_logger("bot")
 
