@@ -48,8 +48,8 @@ WORKDIR $APP_ROOT
 
 # copy whole project to docker home directory.
 COPY . $APP_ROOT
-COPY ./static/favicon/favicon.ico $APP_ROOT/static/favicon/
-COPY ./static/robots.txt $APP_ROOT/static/robots.txt
+COPY templates/static/favicon/favicon.ico $APP_ROOT/static/favicon/
+COPY templates/static/robots.txt $APP_ROOT/static/robots.txt
 RUN rm -rf $APP_ROOT/static_assets
 
 # Install dependencies:
