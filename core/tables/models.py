@@ -76,9 +76,8 @@ class Customer(ormar.Model):
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    gps_coordinates: Optional[str] = ormar.ForeignKey(
-        Area, related_name="rel_gps_coordinates"
-    )
+    gps_coordinates: Optional[str] = ormar.String(max_length=50, nullable=True)
+
     city: Optional[Union[Area, Dict]] = ormar.ForeignKey(Area, related_name="rel_city")
     premium_tier_id: Optional[PremiumTier] = ormar.ForeignKey(
         PremiumTier, related_name="rel_premium_tier"
@@ -147,19 +146,20 @@ class Advertisement(ormar.Model):
         tablename: str = "advertisements"
 
     id: int = ormar.BigInteger(primary_key=True)
-    who_for_whom: int = ormar.String(max_length=50, choices=list(WhoForWhomEnum))
+    who_for_whom: str = ormar.String(max_length=50, choices=list(WhoForWhomEnum))
     prefer_age: int = ormar.Integer(index=True)
-    has_place: int = ormar.String(
+    has_place: str = ormar.String(
         max_length=50, nullable=False, choices=list(HasPlaceEnum)
     )
-    dating_time: int = ormar.String(
+    dating_time: str = ormar.String(
         max_length=50, nullable=False, choices=list(DatingTimeEnum)
     )
-    dating_day: int = ormar.String(
+    dating_day: str = ormar.String(
         nullable=False, max_length=50, choices=list(DatingDayEnum)
     )
 
     adv_text: str = ormar.Text(nullable=False)
+    goals: str = ormar.String(nullable=False, max_length=1000)
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     money_support: bool = ormar.Boolean(nullable=False)
     is_published: bool = ormar.Boolean(nullable=False)
@@ -181,7 +181,7 @@ class Advertisement(ormar.Model):
     large_city_near_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
         Area, related_name="rel_large_city_near_id"
     )
-    customer: Optional[Customer] = ormar.ForeignKey(Customer)
+    customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=False, related_name="rel_customer_from_adv")
 
 
 class Blacklist(ormar.Model):
@@ -254,25 +254,26 @@ class Conversation(ormar.Model):
     conversation_name: str = ormar.String(max_length=20, nullable=False)
 
 
-class AdvGoal(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "adv_goals"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    goals_1: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_2: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_3: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_4: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_5: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_6: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_7: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    goals_8: Optional[str] = ormar.Integer(choices=list(AdvGoalEnum))
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Advertisement, related_name="rel_adv"
-    )
+# class AdvGoal(ormar.Model):
+#     class Meta(ForOrmarMeta):
+#         tablename: str = "adv_goals"
+#
+#     id: int = ormar.BigInteger(primary_key=True)
+#
+#     goals_1: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_2: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_3: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_4: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_5: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_6: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_7: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     goals_8: Optional[str] = ormar.String(max_length=50, choices=list(AdvGoalEnum))
+#     created_at: datetime.datetime = ormar.DateTime(
+#         default=datetime.datetime.now, nullable=False
+#     )
+#     adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
+#         Advertisement, related_name="rel_adv"
+#     )
 
 
 class Commercial(ormar.Model):

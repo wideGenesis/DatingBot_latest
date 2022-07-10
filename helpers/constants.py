@@ -40,7 +40,7 @@ class DatingTimeEnum(Enum):
 
 
 class DatingDayEnum(Enum):
-    _any = "_any"
+    _any = "any"
     today = "today"
     weekend = "weekend"
 
@@ -132,7 +132,7 @@ class IsSportEnum(Enum):
 
 class IsHomeOrPartyEnum(Enum):
     homester = "homester"
-    gadabout = "homester"
+    gadabout = "gadabout"
 
 
 class BodyTypeEnum(Enum):

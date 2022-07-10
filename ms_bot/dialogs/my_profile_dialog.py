@@ -17,7 +17,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 from ms_bot.bots_models.models import CustomerProfile
-
+from core.tables import models as tables
 from settings.logger import CustomLogger
 from helpers.copyright import (
     profile_kb,
@@ -73,12 +73,15 @@ class MyProfileDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-
+        member_id = int(step_context.context.activity.from_property.id)
+        profile = await tables.CustomerProfile.objects.get_or_none(member_id=member_id)
+        if profile is None:
+            return await step_context.end_dialog()
         message = (
             f"Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n"
             f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
-            f"Мій телефон: {user_data.phone}  \n \n"
+            f"Мій телефон: {user_data.phone} (прихований від усіх)  \n \n"
         )
 
         return await step_context.prompt(

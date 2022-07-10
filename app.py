@@ -17,7 +17,7 @@ from fastapi.responses import HTMLResponse
 
 from core import api
 from db.engine import DATABASE
-from fake_fixtures import db_fill_customer
+from fake_fixtures import db_fill_customer, premium_tier
 from settings.conf import FAST_API_CONF, IS_LOCAL_ENV
 from settings.logger import CustomLogger
 from db.fixtures.startup_insert_fixture import fixture
@@ -79,7 +79,7 @@ async def startup() -> None:
         logger.info(
             f"Connection to database {DATABASE.url.hostname} has been established"
         )
-        # await fixture()  # TODO Uncomment when need a fill DB
+        # await premium_tier()  # TODO Uncomment when need a fill DB
         # await db_fill_customer(50)
 
 
