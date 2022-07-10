@@ -18,15 +18,12 @@ class CustomerProfile:  # TODO match to db model
         lang=None,
         self_sex=None,
         age=None,
-        instagram_link=None,
-        tiktok_link=None,
         is_active=None,
         is_staff=None,
         is_superuser=None,
         post_header=None,
         password_hash=None,
         password_hint=None,
-        likes=None,
         created_at=None,
         updated_at=None,
         gps_coordinates=None,
@@ -35,7 +32,25 @@ class CustomerProfile:  # TODO match to db model
         redis_channel_id=None,
         personal_profile_dict=None,
         sex_profile_dict=None,
-        # Adv
+        
+        # Profile
+        hiv_status=None,
+        alco_status=None,
+        drugs_status=None,
+        safe_sex_status=None,
+        passion_sex=None,
+        boobs_cock_size=None,
+        is_sport=None,
+        is_home_or_party=None,
+        body_type=None,
+        is_smoker=None,
+        is_tatoo=None,
+        is_piercings=None,
+        instagram_link=None,
+        tiktok_link=None,
+        likes=None,
+
+            # Adv
         adv_dict=None,
         adv_pk=None,
         who_for_whom=None,
@@ -60,6 +75,21 @@ class CustomerProfile:  # TODO match to db model
         otp=None,
         temp=None,
     ):
+        self.is_piercings = is_piercings
+        self.is_tatoo = is_tatoo
+        self.is_smoker = is_smoker
+        self.body_type = body_type
+        self.is_home_or_party = is_home_or_party
+        self.is_sport = is_sport
+        self.boobs_cock_size = boobs_cock_size
+        self.passion_sex = passion_sex
+        self.safe_sex_status = safe_sex_status
+        self.drugs_status = drugs_status
+        self.alco_status = alco_status
+        self.hiv_status = hiv_status
+        self.likes: Optional[int] = likes
+        self.tiktok_link: Optional[str] = tiktok_link
+        self.instagram_link: Optional[str] = instagram_link
         self.temp = temp
         self.otp = otp
         self.authorised = authorised
@@ -88,15 +118,12 @@ class CustomerProfile:  # TODO match to db model
         self.gps_coordinates: Optional[str] = gps_coordinates
         self.updated_at: datetime.datetime = updated_at
         self.created_at: datetime.datetime = created_at
-        self.likes: Optional[int] = likes
         self.password_hint: Optional[str] = password_hint
         self.password_hash: Optional[str] = password_hash
         self.post_header: Optional[bytes] = post_header
         self.is_superuser: bool = is_superuser
         self.is_staff: bool = is_staff
         self.is_active: bool = is_active
-        self.tiktok_link: Optional[str] = tiktok_link
-        self.instagram_link: Optional[str] = instagram_link
         self.age: Optional[int] = age
         self.self_sex: Optional[int] = self_sex
         self.lang: Optional[str] = lang

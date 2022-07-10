@@ -75,14 +75,30 @@ class MyProfileDialog(ComponentDialog):
         )
         member_id = int(step_context.context.activity.from_property.id)
         profile = await tables.CustomerProfile.objects.get_or_none(member_id=member_id)
-        if profile is None:
-            return await step_context.end_dialog()
+
         message = (
             f"Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n"
             f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
             f"Мій телефон: {user_data.phone} (прихований від усіх)  \n \n"
         )
+
+        if profile is not None:  # TODO Internalize
+            message += f"HIV Status (прихований від усіх): {user_data.hiv_status}  \n \n" \
+                       f"Алкоголь: {user_data.alco_status}  \n \n" \
+                       f"Наркотики: {user_data.drugs_status}  \n \n" \
+                       f"Безопастный секс: {user_data.safe_sex_status}  \n \n" \
+                       f"Страстный секс: {user_data.passion_sex}  \n \n" \
+                       f"Размер: {user_data.boobs_cock_size}  \n \n" \
+                       f"Спорт: {user_data.is_sport}  \n \n" \
+                       f"Домашний/Вечеринки: {user_data.is_home_or_party}  \n \n" \
+                       f"Тело: {user_data.body_type}  \n \n" \
+                       f"Курение: {user_data.is_smoker}  \n \n" \
+                       f"Тату: {user_data.is_tatoo}  \n \n" \
+                       f"Пирсинг: {user_data.is_piercings}  \n \n" \
+                       f"Лайки: {user_data.likes}  \n \n" \
+                       f"Инстаграм: {user_data.instagram_link}  \n \n" \
+                       f"ТикТок: {user_data.tiktok_link}  \n \n"
 
         return await step_context.prompt(
             TextPrompt.__name__,

@@ -32,16 +32,6 @@ class Area(ormar.Model):
     is_administrative_center: Optional[bool] = ormar.Boolean(nullable=True)
 
 
-class PremiumTier(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "premium_tiers"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    tier: str = ormar.String(
-        unique=True, nullable=False, max_length=30, choices=list(PremiumTierEnum)
-    )
-
-
 class RedisChannel(ormar.Model):
     class Meta(ForOrmarMeta):
         tablename: str = "redis_channels"
@@ -70,28 +60,6 @@ class Customer(ormar.Model):
     post_header: Optional[bytes] = ormar.LargeBinary(max_length=10000, nullable=True)
     password_hash: Optional[str] = ormar.String(max_length=50, nullable=True)
     password_hint: Optional[str] = ormar.String(max_length=50, nullable=True)
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    updated_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    gps_coordinates: Optional[str] = ormar.String(max_length=50, nullable=True)
-
-    city: Optional[Union[Area, Dict]] = ormar.ForeignKey(Area, related_name="rel_city")
-    premium_tier_id: Optional[PremiumTier] = ormar.ForeignKey(
-        PremiumTier, related_name="rel_premium_tier"
-    )
-    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
-        RedisChannel, related_name="rel_redis_channel_from_customer"
-    )
-
-
-class CustomerProfile(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "customer_profiles"
-
-    id: int = ormar.BigInteger(primary_key=True)
     hiv_status: Optional[str] = ormar.String(
         nullable=True, choices=list(HivStatusEnum), max_length=20
     )
@@ -132,13 +100,19 @@ class CustomerProfile(ormar.Model):
     tiktok_link: Optional[str] = ormar.String(
         index=True, max_length=50, unique=True, nullable=True
     )
+    ####
+    gps_coordinates_for_nearby: Optional[str] = ormar.String(max_length=50, nullable=True)
+    area_for_nearby: Optional[Area] = ormar.ForeignKey(Area)
+    ####
+    premium_tier: Optional[str] = ormar.String(
+        nullable=True, choices=list(PremiumTierEnum), max_length=30
+    )
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=True)
 
 
 class Advertisement(ormar.Model):
@@ -160,26 +134,29 @@ class Advertisement(ormar.Model):
 
     adv_text: str = ormar.Text(nullable=False)
     goals: str = ormar.String(nullable=False, max_length=1000)
+
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
+    tg_nickname_is_hidden: bool = ormar.Boolean(nullable=False)
+
     money_support: bool = ormar.Boolean(nullable=False)
     is_published: bool = ormar.Boolean(nullable=False)
+    valid_until_date: datetime.datetime = ormar.DateTime(
+        default=(datetime.datetime.now() + datetime.timedelta(days=7)), nullable=False
+    )
+
+    ####
+    gps_coordinates_for_adv: Optional[str] = ormar.String(max_length=50, nullable=True)
+    area_for_adv: Optional[Area] = ormar.ForeignKey(Area)
+    redis_channel_id: Optional[RedisChannel] = ormar.ForeignKey(
+        RedisChannel, related_name="rel_redis_channel_from_adv"
+    )  # redis channel = area + who_for_whom 'ua:kyivskaya:kyiv:man_for_woman'
+    ####
+
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
-    )
-    valid_until_date: datetime.datetime = ormar.DateTime(
-        default=(datetime.datetime.now() + datetime.timedelta(days=30)), nullable=False
-    )
-    redis_channel_id: Optional[Union[RedisChannel, Dict]] = ormar.ForeignKey(
-        RedisChannel, related_name="rel_redis_channel_from_adv"
-    )
-    area_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
-        Area, related_name="rel_area_id"
-    )
-    large_city_near_id: Optional[Union[Area, Dict]] = ormar.ForeignKey(
-        Area, related_name="rel_large_city_near_id"
     )
     customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=False, related_name="rel_customer_from_adv")
 

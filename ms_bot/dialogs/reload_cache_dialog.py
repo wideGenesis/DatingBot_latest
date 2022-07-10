@@ -167,6 +167,19 @@ class ReloadCacheDialog(ComponentDialog):
         user_data.redis_channel_id = customer_instance.redis_channel_id
         user_data.files_dict = user_files
         user_data.authorised = True
+
+        user_data.is_piercings = is_piercings
+        user_data.is_tatoo = is_tatoo
+        user_data.is_smoker = is_smoker
+        user_data.body_type = body_type
+        user_data.is_home_or_party = is_home_or_party
+        user_data.is_sport = is_sport
+        user_data.boobs_cock_size = boobs_cock_size
+        user_data.passion_sex = passion_sex
+        user_data.safe_sex_status = safe_sex_status
+        user_data.drugs_status = drugs_status
+        user_data.alco_status = alco_status
+        user_data.hiv_status = hiv_status
         logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
 
         # user_data.likes = customer_instance.likes
