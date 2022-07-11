@@ -52,7 +52,7 @@ class CustomerService:
     async def get_by_id(
             self,
             _id: int
-    ) -> Union[models.CustomerProfile, Response]:
+    ) -> Union[models.Customer, Response]:
         customer = await models.Customer.objects.get_or_none(id=_id)
         if not customer:
             return Response(status_code=status.HTTP_404_NOT_FOUND)

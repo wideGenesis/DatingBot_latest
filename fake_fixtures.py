@@ -3,32 +3,10 @@ import random
 
 from asyncpg.exceptions import UniqueViolationError
 from faker import Faker
-from core.tables.models import Customer, Area, RedisChannel, CustomerProfile, Advertisement, PremiumTier
+from core.tables.models import Customer, Area, RedisChannel, Advertisement
 
 # fake = Faker('ua_UA')
 fake = Faker('en_US')
-
-
-async def premium_tier():
-    await PremiumTier(
-        tier='free'
-    ).save()
-
-    await PremiumTier(
-        tier='advanced_1m'
-    ).save()
-
-    await PremiumTier(
-        tier='advanced_12m'
-    ).save()
-
-    await PremiumTier(
-        tier='premium_1m'
-    ).save()
-
-    await PremiumTier(
-        tier='premium_12m'
-    ).save()
 
 
 async def db_fill_customer(qty):
@@ -40,7 +18,7 @@ async def db_fill_customer(qty):
         else:
             sex = 1
 
-        ############ Area ############
+        # ############ Area ############
         print('>>> Area #', i)
 
         geo = fake.local_latlng()
@@ -69,18 +47,22 @@ async def db_fill_customer(qty):
         except UniqueViolationError:
             area_id = await Area.objects.get(area=channel)
 
-        ############ RedisChannel ############
+        # ############ RedisChannel ############
         print('>>> RedisChannel #', i)
 
         redis_channel = RedisChannel(
-            redis_channel=channel
+            redis_channel=f""
+                          f"{channel}:"
+                          f"{random.choice(['man_to_woman', 'woman_to_man', 'any_to_both', 'man_to_man', 'woman_to_woman', 'other_to_other'])}",
         )
         try:
             redis_channel_id = await redis_channel.save()
         except UniqueViolationError:
             redis_channel_id = await RedisChannel.objects.get(redis_channel=channel)
+        except Exception:
+            redis_channel_id = await RedisChannel.objects.get(redis_channel=channel)
 
-        ############ Customer ############
+        # ############ Customer ############
         print('>>> Customer #', i)
 
         customer = Customer(
@@ -92,34 +74,17 @@ async def db_fill_customer(qty):
             member_id=member_id,
             lang=random.choice(['en', 'ua', 'es', 'ru']),
             self_sex=sex,
-            age=str(random.randint(18, 69)),
+            age=random.randint(18, 69),
             is_active=fake.pybool(),
             is_staff=fake.pybool(),
             is_superuser=fake.pybool(),
-            gps_coordinates=geo,
-            city=area_id.id,
-            premium_tier_id=random.choice([1, 2, 3, 4, 5]),
-            redis_channel_id=redis_channel_id.id,
-            created_at=datetime.datetime.utcnow(),
-            updated_at=datetime.datetime.utcnow()
-        )
-
-        try:
-            customer = await customer.save()
-        except UniqueViolationError:
-            customer = await Customer.objects.get(member_id=member_id)
-
-        ############ Customer Profile ############
-        print('>>> Customer Profile #', i)
-
-        customer_profile = CustomerProfile(
             hiv_status=random.choice(['pos', 'neg', 'neutral']),
             alco_status=random.choice(['frequently', 'occasionally', 'no']),
             drugs_status=random.choice(['frequently', 'occasionally', 'no']),
             safe_sex_status=random.choice(['always', 'occasionally', 'no']),
             passion_sex=fake.pybool(),
             if_same_sex_position=random.choice(
-                ['always_bottom', 'vers_common_bottom', 'versatile', 'vers_common_top', 'always_top']
+                ['always_bottom', 'vers_common_bottom', 'versatile', 'vers_common_top', 'always_top', 'straight', 'bi']
             ),
             boobs_cock_size=random.choice(['small', 'middle', 'large', 'extra_large']),
             is_sport=random.choice(['systematic', 'occasionally', 'no']),
@@ -132,16 +97,19 @@ async def db_fill_customer(qty):
             is_piercings=fake.pybool(),
             likes=random.randint(10, 1000),
 
+            gps_coordinates_for_nearby=geo,
+            area_for_nearby=area_id.id,
+            premium_tier=random.choice(['free', 'advanced_1m', 'advanced_12m', 'premium_1m', 'premium_12m']),
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow(),
-            customer=customer.id
         )
-        try:
-            profile = await customer_profile.save()
-        except UniqueViolationError:
-            profile = await CustomerProfile.objects.get(customer=customer.id)
 
-        ############ Advertisement ############
+        try:
+            customer = await customer.save()
+        except UniqueViolationError:
+            customer = await Customer.objects.get(member_id=member_id)
+
+        #  ############ Advertisement ############
         print('>>> Advertisement #', i)
 
         adv_obj = Advertisement(
@@ -154,15 +122,18 @@ async def db_fill_customer(qty):
             adv_text=fake.paragraph(nb_sentences=1),
             goals=f'{fake.paragraph(nb_sentences=1)}:{fake.paragraph(nb_sentences=1)}',
             phone_is_hidden=fake.pybool(),
+            tg_nickname_is_hidden=fake.pybool(),
             money_support=fake.pybool(),
             is_published=fake.pybool(),
+
+            valid_until_date=(datetime.datetime.now() + datetime.timedelta(days=30)),
+            gps_coordinates_for_adv=geo,
+            area_for_adv=area_id.id,
+            redis_channel=redis_channel_id.id,
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow(),
-            valid_until_date=(datetime.datetime.now() + datetime.timedelta(days=30)),
-            redis_channel_id=redis_channel_id.id,
-            area_id=area_id.id,
-            large_city_near_id=area_id.id,
-            customer=customer.id
+            customer=customer.id,
+
         )
 
         try:

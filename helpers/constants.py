@@ -115,6 +115,8 @@ class IfSameSexPositionEnum(Enum):
     versatile = "versatile"
     versatile_common_top = "vers_common_top"
     always_top = "always_top"
+    straight = "straight"
+    bi = "bi"
 
 
 class BoobsCockSizeEnum(Enum):

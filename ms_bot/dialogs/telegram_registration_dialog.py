@@ -29,7 +29,7 @@ from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.dialogs.upload_dialog import UploadDialog
-from core.tables.models import Customer, PremiumTier
+from core.tables.models import Customer
 
 logger = CustomLogger.get_logger("bot")
 

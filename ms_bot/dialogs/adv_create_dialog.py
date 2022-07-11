@@ -24,7 +24,7 @@ import json
 # from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
-from core.tables.models import Area, Customer, PremiumTier
+from core.tables.models import Area, Customer
 from helpers.constants import remove_last_message, remove_last_dropped_message
 from settings.logger import CustomLogger
 from helpers.copyright import (

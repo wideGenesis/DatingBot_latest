@@ -49,9 +49,9 @@ class Customer(ormar.Model):
     phone: int = ormar.BigInteger(unique=True)
     email: Optional[str] = ormar.String(max_length=100, unique=True, nullable=True)
     description: Optional[str] = ormar.String(max_length=300, nullable=True)
-    conversation_reference: Optional[bytes] = ormar.LargeBinary(max_length=10000)
+    conversation_reference: bytes = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
-    lang: Optional[int] = ormar.String(max_length=10, choices=list(LangEnum))
+    lang: Optional[str] = ormar.String(max_length=10, choices=list(LangEnum))
     self_sex: Optional[int] = ormar.Integer(choices=list(SelfSexEnum), nullable=True)
     age: Optional[int] = ormar.Integer(nullable=True)
     is_active: bool = ormar.Boolean(nullable=True, default=True)
@@ -88,8 +88,8 @@ class Customer(ormar.Model):
     body_type: Optional[str] = ormar.String(
         nullable=True, choices=list(BodyTypeEnum), max_length=20
     )
-    height: int = ormar.Integer(nullable=True)
-    weight: int = ormar.Integer(nullable=True)
+    height: Optional[int] = ormar.Integer(nullable=True)
+    weight: Optional[int] = ormar.Integer(nullable=True)
     is_smoker: Optional[bool] = ormar.Boolean(nullable=True)
     is_tatoo: Optional[bool] = ormar.Boolean(nullable=True)
     is_piercings: Optional[bool] = ormar.Boolean(nullable=True)
@@ -133,7 +133,7 @@ class Advertisement(ormar.Model):
     )
 
     adv_text: str = ormar.Text(nullable=False)
-    goals: str = ormar.String(nullable=False, max_length=1000)
+    goals: str = ormar.String(nullable=False, max_length=2000)
 
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     tg_nickname_is_hidden: bool = ormar.Boolean(nullable=False)
@@ -147,9 +147,8 @@ class Advertisement(ormar.Model):
     ####
     gps_coordinates_for_adv: Optional[str] = ormar.String(max_length=50, nullable=True)
     area_for_adv: Optional[Area] = ormar.ForeignKey(Area)
-    redis_channel_id: Optional[RedisChannel] = ormar.ForeignKey(
-        RedisChannel, related_name="rel_redis_channel_from_adv"
-    )  # redis channel = area + who_for_whom 'ua:kyivskaya:kyiv:man_for_woman'
+    redis_channel: Optional[RedisChannel] = ormar.ForeignKey(RedisChannel)
+    # redis channel = area + who_for_whom 'ua:kyivskaya:kyiv:man_for_woman'
     ####
 
     created_at: datetime.datetime = ormar.DateTime(
@@ -158,7 +157,7 @@ class Advertisement(ormar.Model):
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=False, related_name="rel_customer_from_adv")
+    customer: Optional[Customer] = ormar.ForeignKey(Customer, unique=False)
 
 
 class Blacklist(ormar.Model):
@@ -170,9 +169,7 @@ class Blacklist(ormar.Model):
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_customer_from_blacklist"
-    )
+    customer: Optional[Union[Customer, Dict]] = ormar.ForeignKey(Customer)
 
 
 class UserMediaFile(ormar.Model):
@@ -180,10 +177,9 @@ class UserMediaFile(ormar.Model):
         tablename: str = "user_media_files"
 
     id: int = ormar.BigInteger(primary_key=True)
-    # member_id: int = ormar.BigInteger(index=True)
     file: str = ormar.String(max_length=200, nullable=False)
-    file_type: int = ormar.String(max_length=20, choices=list(FileTypeEnum))
-    privacy_type: int = ormar.String(max_length=20, choices=list(PrivacyTypeEnum))
+    file_type: str = ormar.String(max_length=20, choices=list(FileTypeEnum))
+    privacy_type: str = ormar.String(max_length=20, choices=list(PrivacyTypeEnum))
     is_archived: bool = ormar.Boolean(nullable=False)
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
@@ -191,9 +187,7 @@ class UserMediaFile(ormar.Model):
     updated_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=True
     )
-    customer_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_customer_from_usermediafile"
-    )
+    customer: Optional[Customer] = ormar.ForeignKey(Customer)
 
 
 class Message(ormar.Model):
@@ -208,19 +202,11 @@ class Message(ormar.Model):
     send_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )
-    sender_id: Union[Customer, Dict] = ormar.ForeignKey(
-        Customer, related_name="rel_sender_id"
-    )
-    recipient_id: Union[Customer, Dict] = ormar.ForeignKey(
-        Customer, related_name="rel_recipient_id"
-    )
     is_seen: bool = ormar.Boolean(nullable=False)
-    sender_avatar: Optional[Union[UserMediaFile, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_sender_avatar"
-    )
-    recipient_avatar: Optional[Union[UserMediaFile, Dict]] = ormar.ForeignKey(
-        Customer, related_name="rel_recipient_avatar"
-    )
+    sender_id: Union[Customer, Dict] = ormar.ForeignKey(Customer, related_name='sender_id')
+    recipient_id: Union[Customer, Dict] = ormar.ForeignKey(Customer, related_name='recipient_id')
+    sender_avatar: Optional[UserMediaFile] = ormar.ForeignKey(UserMediaFile, related_name='sender_avatar')
+    recipient_avatar: Optional[UserMediaFile] = ormar.ForeignKey(UserMediaFile, related_name='recipient_avatar')
 
 
 class Conversation(ormar.Model):
@@ -229,6 +215,27 @@ class Conversation(ormar.Model):
 
     id: int = ormar.BigInteger(primary_key=True)
     conversation_name: str = ormar.String(max_length=20, nullable=False)
+
+
+class Commercial(ormar.Model):
+    class Meta(ForOrmarMeta):
+        tablename: str = "commercial"
+
+    id: int = ormar.BigInteger(primary_key=True)
+    title: str = ormar.String(max_length=1000, nullable=False)
+    description: str = ormar.String(max_length=1000, nullable=False)
+    img: Optional[str] = ormar.String(max_length=100, nullable=False)
+    owner: str = ormar.String(max_length=100, nullable=False)
+    created_at: datetime.datetime = ormar.DateTime(
+        default=datetime.datetime.now, nullable=False
+    )
+    updated_at: datetime.datetime = ormar.DateTime(
+        default=datetime.datetime.now, nullable=False
+    )
+    valid_to_date: datetime.datetime = ormar.DateTime(
+        default=(datetime.datetime.now() + datetime.timedelta(days=30)), nullable=False
+    )
+    is_active: bool = ormar.Boolean(nullable=False)
 
 
 # class AdvGoal(ormar.Model):
@@ -251,24 +258,3 @@ class Conversation(ormar.Model):
 #     adv_id: Optional[Union[Customer, Dict]] = ormar.ForeignKey(
 #         Advertisement, related_name="rel_adv"
 #     )
-
-
-class Commercial(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "commercial"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    title: str = ormar.String(max_length=1000, nullable=False)
-    description: str = ormar.String(max_length=1000, nullable=False)
-    img: Optional[str] = ormar.String(max_length=100, nullable=False)
-    owner: str = ormar.String(max_length=100, nullable=False)
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    updated_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-    valid_to_date: datetime.datetime = ormar.DateTime(
-        default=(datetime.datetime.now() + datetime.timedelta(days=30)), nullable=False
-    )
-    is_active: bool = ormar.Boolean(nullable=False)

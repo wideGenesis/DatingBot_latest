@@ -1,8 +1,8 @@
-"""models updated_fixtires upd
+"""models updated_fixtures upd
 
-Revision ID: c984cfb32d00
+Revision ID: 2227238f2f08
 Revises: 
-Create Date: 2022-07-10 16:20:23.864022
+Create Date: 2022-07-11 06:53:02.874028
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c984cfb32d00'
+revision = '2227238f2f08'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -50,12 +50,6 @@ def upgrade() -> None:
     sa.Column('conversation_name', sa.String(length=20), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('premium_tiers',
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('tier', sa.String(length=30), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('tier')
-    )
     op.create_table('redis_channels',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('redis_channel', sa.String(length=200), nullable=False),
@@ -79,58 +73,6 @@ def upgrade() -> None:
     sa.Column('post_header', sa.LargeBinary(length=10000), nullable=True),
     sa.Column('password_hash', sa.String(length=50), nullable=True),
     sa.Column('password_hint', sa.String(length=50), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('gps_coordinates', sa.String(length=50), nullable=True),
-    sa.Column('city', sa.BigInteger(), nullable=True),
-    sa.Column('premium_tier_id', sa.BigInteger(), nullable=True),
-    sa.Column('redis_channel_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['city'], ['areas.id'], name='fk_customers_areas_id_city'),
-    sa.ForeignKeyConstraint(['premium_tier_id'], ['premium_tiers.id'], name='fk_customers_premium_tiers_id_premium_tier_id'),
-    sa.ForeignKeyConstraint(['redis_channel_id'], ['redis_channels.id'], name='fk_customers_redis_channels_id_redis_channel_id'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('member_id'),
-    sa.UniqueConstraint('nickname'),
-    sa.UniqueConstraint('phone')
-    )
-    op.create_table('advertisements',
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('who_for_whom', sa.String(length=50), nullable=False),
-    sa.Column('prefer_age', sa.Integer(), nullable=False),
-    sa.Column('has_place', sa.String(length=50), nullable=False),
-    sa.Column('dating_time', sa.String(length=50), nullable=False),
-    sa.Column('dating_day', sa.String(length=50), nullable=False),
-    sa.Column('adv_text', sa.Text(), nullable=False),
-    sa.Column('goals', sa.String(length=1000), nullable=False),
-    sa.Column('phone_is_hidden', sa.Boolean(), nullable=False),
-    sa.Column('money_support', sa.Boolean(), nullable=False),
-    sa.Column('is_published', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('valid_until_date', sa.DateTime(), nullable=False),
-    sa.Column('redis_channel_id', sa.BigInteger(), nullable=True),
-    sa.Column('area_id', sa.BigInteger(), nullable=True),
-    sa.Column('large_city_near_id', sa.BigInteger(), nullable=True),
-    sa.Column('customer', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['area_id'], ['areas.id'], name='fk_advertisements_areas_id_area_id'),
-    sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_advertisements_customers_id_customer'),
-    sa.ForeignKeyConstraint(['large_city_near_id'], ['areas.id'], name='fk_advertisements_areas_id_large_city_near_id'),
-    sa.ForeignKeyConstraint(['redis_channel_id'], ['redis_channels.id'], name='fk_advertisements_redis_channels_id_redis_channel_id'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_advertisements_prefer_age'), 'advertisements', ['prefer_age'], unique=False)
-    op.create_table('blacklists',
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('banned_member_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('customer_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], name='fk_blacklists_customers_id_customer_id'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_blacklists_banned_member_id'), 'blacklists', ['banned_member_id'], unique=False)
-    op.create_table('customer_profiles',
-    sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('hiv_status', sa.String(length=20), nullable=True),
     sa.Column('alco_status', sa.String(length=20), nullable=True),
     sa.Column('drugs_status', sa.String(length=20), nullable=True),
@@ -149,35 +91,55 @@ def upgrade() -> None:
     sa.Column('likes', sa.Integer(), nullable=True),
     sa.Column('instagram_link', sa.String(length=50), nullable=True),
     sa.Column('tiktok_link', sa.String(length=50), nullable=True),
+    sa.Column('gps_coordinates_for_nearby', sa.String(length=50), nullable=True),
+    sa.Column('area_for_nearby', sa.BigInteger(), nullable=True),
+    sa.Column('premium_tier', sa.String(length=30), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['area_for_nearby'], ['areas.id'], name='fk_customers_areas_id_area_for_nearby'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('member_id'),
+    sa.UniqueConstraint('nickname'),
+    sa.UniqueConstraint('phone')
+    )
+    op.create_index(op.f('ix_customers_instagram_link'), 'customers', ['instagram_link'], unique=True)
+    op.create_index(op.f('ix_customers_tiktok_link'), 'customers', ['tiktok_link'], unique=True)
+    op.create_table('advertisements',
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('who_for_whom', sa.String(length=50), nullable=False),
+    sa.Column('prefer_age', sa.Integer(), nullable=False),
+    sa.Column('has_place', sa.String(length=50), nullable=False),
+    sa.Column('dating_time', sa.String(length=50), nullable=False),
+    sa.Column('dating_day', sa.String(length=50), nullable=False),
+    sa.Column('adv_text', sa.Text(), nullable=False),
+    sa.Column('goals', sa.String(length=2000), nullable=False),
+    sa.Column('phone_is_hidden', sa.Boolean(), nullable=False),
+    sa.Column('tg_nickname_is_hidden', sa.Boolean(), nullable=False),
+    sa.Column('money_support', sa.Boolean(), nullable=False),
+    sa.Column('is_published', sa.Boolean(), nullable=False),
+    sa.Column('valid_until_date', sa.DateTime(), nullable=False),
+    sa.Column('gps_coordinates_for_adv', sa.String(length=50), nullable=True),
+    sa.Column('area_for_adv', sa.BigInteger(), nullable=True),
+    sa.Column('redis_channel', sa.BigInteger(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('customer', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_customer_profiles_customers_id_customer'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('customer')
-    )
-    op.create_index(op.f('ix_customer_profiles_instagram_link'), 'customer_profiles', ['instagram_link'], unique=True)
-    op.create_index(op.f('ix_customer_profiles_tiktok_link'), 'customer_profiles', ['tiktok_link'], unique=True)
-    op.create_table('messages',
-    sa.Column('id', sa.BigInteger(), nullable=False),
-    sa.Column('from_member_id', sa.BigInteger(), nullable=False),
-    sa.Column('to_member_id', sa.BigInteger(), nullable=False),
-    sa.Column('message_text', sa.String(length=1000), nullable=False),
-    sa.Column('is_read', sa.Boolean(), nullable=False),
-    sa.Column('send_at', sa.DateTime(), nullable=False),
-    sa.Column('sender_id', sa.BigInteger(), nullable=True),
-    sa.Column('recipient_id', sa.BigInteger(), nullable=True),
-    sa.Column('is_seen', sa.Boolean(), nullable=False),
-    sa.Column('sender_avatar', sa.BigInteger(), nullable=True),
-    sa.Column('recipient_avatar', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['recipient_avatar'], ['customers.id'], name='fk_messages_customers_id_recipient_avatar'),
-    sa.ForeignKeyConstraint(['recipient_id'], ['customers.id'], name='fk_messages_customers_id_recipient_id'),
-    sa.ForeignKeyConstraint(['sender_avatar'], ['customers.id'], name='fk_messages_customers_id_sender_avatar'),
-    sa.ForeignKeyConstraint(['sender_id'], ['customers.id'], name='fk_messages_customers_id_sender_id'),
+    sa.ForeignKeyConstraint(['area_for_adv'], ['areas.id'], name='fk_advertisements_areas_id_area_for_adv'),
+    sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_advertisements_customers_id_customer'),
+    sa.ForeignKeyConstraint(['redis_channel'], ['redis_channels.id'], name='fk_advertisements_redis_channels_id_redis_channel'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_messages_from_member_id'), 'messages', ['from_member_id'], unique=False)
-    op.create_index(op.f('ix_messages_to_member_id'), 'messages', ['to_member_id'], unique=False)
+    op.create_index(op.f('ix_advertisements_prefer_age'), 'advertisements', ['prefer_age'], unique=False)
+    op.create_table('blacklists',
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('banned_member_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('customer', sa.BigInteger(), nullable=True),
+    sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_blacklists_customers_id_customer'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_blacklists_banned_member_id'), 'blacklists', ['banned_member_id'], unique=False)
     op.create_table('user_media_files',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('file', sa.String(length=200), nullable=False),
@@ -186,29 +148,47 @@ def upgrade() -> None:
     sa.Column('is_archived', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('customer_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], name='fk_user_media_files_customers_id_customer_id'),
+    sa.Column('customer', sa.BigInteger(), nullable=True),
+    sa.ForeignKeyConstraint(['customer'], ['customers.id'], name='fk_user_media_files_customers_id_customer'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('messages',
+    sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('from_member_id', sa.BigInteger(), nullable=False),
+    sa.Column('to_member_id', sa.BigInteger(), nullable=False),
+    sa.Column('message_text', sa.String(length=1000), nullable=False),
+    sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.Column('send_at', sa.DateTime(), nullable=False),
+    sa.Column('is_seen', sa.Boolean(), nullable=False),
+    sa.Column('sender_id', sa.BigInteger(), nullable=True),
+    sa.Column('recipient_id', sa.BigInteger(), nullable=True),
+    sa.Column('sender_avatar', sa.BigInteger(), nullable=True),
+    sa.Column('recipient_avatar', sa.BigInteger(), nullable=True),
+    sa.ForeignKeyConstraint(['recipient_avatar'], ['user_media_files.id'], name='fk_messages_user_media_files_id_recipient_avatar'),
+    sa.ForeignKeyConstraint(['recipient_id'], ['customers.id'], name='fk_messages_customers_id_recipient_id'),
+    sa.ForeignKeyConstraint(['sender_avatar'], ['user_media_files.id'], name='fk_messages_user_media_files_id_sender_avatar'),
+    sa.ForeignKeyConstraint(['sender_id'], ['customers.id'], name='fk_messages_customers_id_sender_id'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_messages_from_member_id'), 'messages', ['from_member_id'], unique=False)
+    op.create_index(op.f('ix_messages_to_member_id'), 'messages', ['to_member_id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('user_media_files')
     op.drop_index(op.f('ix_messages_to_member_id'), table_name='messages')
     op.drop_index(op.f('ix_messages_from_member_id'), table_name='messages')
     op.drop_table('messages')
-    op.drop_index(op.f('ix_customer_profiles_tiktok_link'), table_name='customer_profiles')
-    op.drop_index(op.f('ix_customer_profiles_instagram_link'), table_name='customer_profiles')
-    op.drop_table('customer_profiles')
+    op.drop_table('user_media_files')
     op.drop_index(op.f('ix_blacklists_banned_member_id'), table_name='blacklists')
     op.drop_table('blacklists')
     op.drop_index(op.f('ix_advertisements_prefer_age'), table_name='advertisements')
     op.drop_table('advertisements')
+    op.drop_index(op.f('ix_customers_tiktok_link'), table_name='customers')
+    op.drop_index(op.f('ix_customers_instagram_link'), table_name='customers')
     op.drop_table('customers')
     op.drop_table('redis_channels')
-    op.drop_table('premium_tiers')
     op.drop_table('conversations')
     op.drop_table('commercial')
     op.drop_table('areas')
