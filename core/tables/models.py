@@ -107,6 +107,7 @@ class Customer(ormar.Model):
     premium_tier: Optional[str] = ormar.String(
         nullable=True, choices=list(PremiumTierEnum), max_length=30
     )
+    adv_list: Optional[str] = ormar.JSON(nullable=True)
     created_at: datetime.datetime = ormar.DateTime(
         default=datetime.datetime.now, nullable=False
     )

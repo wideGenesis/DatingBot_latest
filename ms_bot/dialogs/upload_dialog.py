@@ -191,7 +191,7 @@ class UploadDialog(ComponentDialog):
         customer_id = await Customer.objects.get(member_id=member_id)
 
         customer_photo = UserMediaFile(
-            customer_id=customer_id.id,
+            customer=customer_id.id,
             file=_file_name,
             file_type=_file_type,
             privacy_type='hidden',

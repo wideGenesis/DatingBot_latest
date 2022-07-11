@@ -6,75 +6,74 @@ from typing import Optional
 @dataclass
 class CustomerProfile:  # TODO match to db model
     def __init__(
-        self,
-        # Customer
-        pk=None,
-        nickname=None,
-        phone=None,
-        email=None,
-        description=None,
-        conversation_reference=None,
-        member_id=None,
-        lang=None,
-        self_sex=None,
-        age=None,
-        is_active=None,
-        is_staff=None,
-        is_superuser=None,
-        post_header=None,
-        password_hash=None,
-        password_hint=None,
-        created_at=None,
-        updated_at=None,
-        gps_coordinates=None,
-        city=None,
-        premium_tier=None,
-        redis_channel_id=None,
-        personal_profile_dict=None,
-        sex_profile_dict=None,
-        
-        # Profile
-        hiv_status=None,
-        alco_status=None,
-        drugs_status=None,
-        safe_sex_status=None,
-        passion_sex=None,
-        boobs_cock_size=None,
-        is_sport=None,
-        is_home_or_party=None,
-        body_type=None,
-        is_smoker=None,
-        is_tatoo=None,
-        is_piercings=None,
-        instagram_link=None,
-        tiktok_link=None,
-        likes=None,
-
+            self,
+            # Customer
+            pk=None,
+            nickname=None,
+            phone=None,
+            email=None,
+            description=None,
+            conversation_reference=None,
+            member_id=None,
+            lang=None,
+            self_sex=None,
+            age=None,
+            is_active=None,
+            is_staff=None,
+            is_superuser=None,
+            post_header=None,
+            password_hash=None,
+            password_hint=None,
+            gps_coordinates_for_nearby=None,
+            area_for_nearby=None,
+            premium_tier=None,
+            # Profile
+            hiv_status=None,
+            alco_status=None,
+            drugs_status=None,
+            safe_sex_status=None,
+            passion_sex=None,
+            if_same_sex_position=None,
+            boobs_cock_size=None,
+            is_sport=None,
+            is_home_or_party=None,
+            body_type=None,
+            is_smoker=None,
+            is_tatoo=None,
+            is_piercings=None,
+            instagram_link=None,
+            tiktok_link=None,
+            likes=None,
+            created_at=None,
+            updated_at=None,
+            adv_list=None,  # For adv iter
             # Adv
-        adv_dict=None,
-        adv_pk=None,
-        who_for_whom=None,
-        prefer_age=None,
-        has_place=None,
-        dating_time=None,
-        dating_day=None,
-        adv_text=None,
-        location=None,
-        area_id=None,
-        large_city_near_id=None,
-        phone_is_hidden=None,
-        money_support=None,
-        redis_channel=None,
-        # Ban
-        ban_list=None,
-        # Files
-        files_dict=None,
-        file_number=0,
-        # Other
-        authorised=None,
-        otp=None,
-        temp=None,
+            adv_dict=None,
+            adv_pk=None,
+            who_for_whom=None,
+            prefer_age=None,
+            has_place=None,
+            dating_time=None,
+            dating_day=None,
+            adv_text=None,
+            location=None,
+            area_id=None,
+            large_city_near_id=None,
+            phone_is_hidden=None,
+            money_support=None,
+            redis_channel=None,
+            # Ban
+            ban_list=None,
+            # Files
+            files_dict=None,
+            file_number=0,
+            # Other
+            authorised=None,
+            otp=None,
+            temp=None,
     ):
+        self.adv_list = adv_list
+        self.if_same_sex_position = if_same_sex_position
         self.is_piercings = is_piercings
         self.is_tatoo = is_tatoo
         self.is_smoker = is_smoker
@@ -110,12 +109,9 @@ class CustomerProfile:  # TODO match to db model
         self.who_for_whom = who_for_whom
         self.adv_pk = adv_pk
         self.adv_dict = adv_dict
-        self.sex_profile_dict = sex_profile_dict
-        self.personal_profile_dict = personal_profile_dict
-        self.redis_channel_id = redis_channel_id
         self.premium_tier = premium_tier
-        self.city = city
-        self.gps_coordinates: Optional[str] = gps_coordinates
+        self.city = area_for_nearby
+        self.gps_coordinates: Optional[str] = gps_coordinates_for_nearby
         self.updated_at: datetime.datetime = updated_at
         self.created_at: datetime.datetime = created_at
         self.password_hint: Optional[str] = password_hint

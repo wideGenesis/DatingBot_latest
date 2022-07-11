@@ -20,7 +20,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes
 import json
 
-from helpers.constants import remove_last_message, remove_last_dropped_message
+from helpers.constants import remove_last_message, remove_last_dropped_message, PremiumTierEnum
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 from settings.logger import CustomLogger
 from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, MY_AGE_KB, BOT_MESSAGES
@@ -279,17 +279,11 @@ class TelegramRegistrationDialog(ComponentDialog):
 
     @classmethod
     async def _save_customer(cls, user_data):
-        try:
-            premium_tier_id = await PremiumTier.objects.get_or_none(tier="free")
-            premium_tier_id = premium_tier_id.__dict__
-            premium_tier_id = premium_tier_id["id"]
-        except Exception as e:
-            raise Exception("Something went wrong! %s" % e)
 
         customer = Customer(
             nickname=user_data.nickname,
             phone=int(user_data.phone),
-            premium_tier_id=premium_tier_id,
+            premium_tier=PremiumTierEnum.free.value,
             conversation_reference=user_data.conversation_reference,
             member_id=int(user_data.member_id),
             lang=user_data.lang,
@@ -303,7 +297,7 @@ class TelegramRegistrationDialog(ComponentDialog):
             await Customer.objects.filter(member_id=int(user_data.member_id)).update(
                 nickname=user_data.nickname,
                 phone=int(user_data.phone),
-                premium_tier_id=premium_tier_id,
+                premium_tier=PremiumTierEnum.free.value,
                 conversation_reference=user_data.conversation_reference,
                 member_id=int(user_data.member_id),
                 lang=user_data.lang,

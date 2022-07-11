@@ -21,10 +21,10 @@ logger = CustomLogger.get_logger("bot")
 
 class ReloadCacheDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(ReloadCacheDialog, self).__init__(dialog_id or ReloadCacheDialog.__name__)
         self.telemetry_client = telemetry_client
@@ -48,7 +48,7 @@ class ReloadCacheDialog(ComponentDialog):
         self.customer = None
 
     async def is_user_exists_in_blob(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
@@ -74,7 +74,7 @@ class ReloadCacheDialog(ComponentDialog):
         return await step_context.next([])
 
     async def user_exists_in_db(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("user_exists_in_db %s", ReloadCacheDialog.__name__)
 
@@ -136,50 +136,52 @@ class ReloadCacheDialog(ComponentDialog):
                 "USER FILES (%s) NOT FOUND IN DB", self.customer_instance.member_id
             )
 
-        await self._reload_cache(user_data, self.customer_instance, files_in_storage)
+        await _reload_cache(user_data, self.customer_instance, files_in_storage)
 
         return await step_context.end_dialog(self.customer_exists)
 
-    @classmethod
-    async def _reload_cache(cls, user_data, customer_instance, user_files):
-        user_data.pk = customer_instance.id
-        user_data.nickname = customer_instance.nickname
-        user_data.phone = customer_instance.phone
-        user_data.email = customer_instance.email
-        user_data.description = customer_instance.description
-        user_data.conversation_reference = customer_instance.conversation_reference
-        user_data.member_id = customer_instance.member_id
-        user_data.lang = customer_instance.lang
-        user_data.self_sex = customer_instance.self_sex
-        user_data.age = customer_instance.age
-        user_data.is_active = customer_instance.is_active
-        user_data.is_staff = customer_instance.is_staff
-        user_data.is_superuser = customer_instance.is_superuser
-        user_data.post_header = customer_instance.post_header
-        user_data.password_hash = customer_instance.password_hash
-        user_data.password_hint = customer_instance.password_hint
 
-        user_data.created_at = customer_instance.created_at
-        user_data.updated_at = customer_instance.updated_at
-        user_data.gps_coordinates = customer_instance.gps_coordinates
-        user_data.city = customer_instance.city
-        user_data.premium_tier = customer_instance.premium_tier_id
-        user_data.redis_channel_id = customer_instance.redis_channel_id
-        user_data.files_dict = user_files
-        user_data.authorised = True
+async def _reload_cache(user_data, customer_instance, user_files):
+    user_data.pk = customer_instance.id
+    user_data.nickname = customer_instance.nickname
+    user_data.phone = customer_instance.phone
+    user_data.email = customer_instance.email
+    user_data.description = customer_instance.description
+    user_data.conversation_reference = customer_instance.conversation_reference
+    user_data.member_id = customer_instance.member_id
+    user_data.lang = customer_instance.lang
+    user_data.self_sex = customer_instance.self_sex
+    user_data.age = customer_instance.age
+    user_data.is_active = customer_instance.is_active
+    user_data.is_staff = customer_instance.is_staff
+    user_data.is_superuser = customer_instance.is_superuser
+    user_data.post_header = customer_instance.post_header
+    user_data.password_hash = customer_instance.password_hash
+    user_data.password_hint = customer_instance.password_hint
+    user_data.gps_coordinates_for_nearby = customer_instance.gps_coordinates_for_nearby
+    user_data.area_for_nearby = customer_instance.area_for_nearby
+    user_data.premium_tier = customer_instance.premium_tier
+    user_data.hiv_status = customer_instance.hiv_status
+    user_data.alco_status = customer_instance.alco_status
+    user_data.drugs_status = customer_instance.drugs_status
+    user_data.safe_sex_status = customer_instance.safe_sex_status
+    user_data.passion_sex = customer_instance.passion_sex
+    user_data.if_same_sex_position = customer_instance.if_same_sex_position
+    user_data.boobs_cock_size = customer_instance.boobs_cock_size
+    user_data.is_sport = customer_instance.is_sport
+    user_data.is_home_or_party = customer_instance.is_home_or_party
+    user_data.body_type = customer_instance.body_type
+    user_data.is_smoker = customer_instance.is_smoker
+    user_data.is_tatoo = customer_instance.is_tatoo
+    user_data.is_piercings = customer_instance.is_piercings
+    user_data.instagram_link = customer_instance.instagram_link
+    user_data.tiktok_link = customer_instance.tiktok_link
+    user_data.likes = customer_instance.likes
+    user_data.created_at = customer_instance.created_at
+    user_data.updated_at = customer_instance.updated_at
 
-        user_data.is_piercings = is_piercings
-        user_data.is_tatoo = is_tatoo
-        user_data.is_smoker = is_smoker
-        user_data.body_type = body_type
-        user_data.is_home_or_party = is_home_or_party
-        user_data.is_sport = is_sport
-        user_data.boobs_cock_size = boobs_cock_size
-        user_data.passion_sex = passion_sex
-        user_data.safe_sex_status = safe_sex_status
-        user_data.drugs_status = drugs_status
-        user_data.alco_status = alco_status
-        user_data.hiv_status = hiv_status
-        logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
+    user_data.files_dict = user_files
+    user_data.adv_list = customer_instance.adv_list
+    user_data.authorised = True
 
-        # user_data.likes = customer_instance.likes
+    logger.debug("Cache for %s reloaded successfully!", customer_instance.member_id)
