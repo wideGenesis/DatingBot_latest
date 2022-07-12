@@ -117,7 +117,7 @@ async def db_fill_customer(qty):
             who_for_whom=random.choice(
                 ['man_to_woman', 'woman_to_man', 'any_to_both', 'man_to_man', 'woman_to_woman', 'other_to_other']),
             prefer_age=random.randint(1818, 6969),
-            has_place=random.choice(['none', 'yours', 'mine', 'fifty_fifty']),
+            has_place=random.choice(['mine', 'sometimes', 'yours', 'fifty_fifty']),
             dating_time=random.choice(['morning', 'day', 'evening', 'night']),
             dating_day=random.choice(['any', 'today', 'weekend']),
             adv_text=fake.paragraph(nb_sentences=1),

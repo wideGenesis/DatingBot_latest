@@ -28,10 +28,11 @@ class SelfSexEnum(Enum):
 
 
 class HasPlaceEnum(Enum):
-    none = "none"
-    yours = "yours"
     mine = "mine"
+    sometimes = "sometimes"
+    yours = "yours"
     fifty_fifty = "fifty_fifty"
+    other = "other"
 
 
 class DatingTimeEnum(Enum):

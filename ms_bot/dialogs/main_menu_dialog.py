@@ -1,5 +1,4 @@
 import json
-import pickle
 
 from botbuilder.core import (
     MessageFactory,
@@ -18,7 +17,7 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from ms_bot.bots_models import CustomerProfile
+from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
@@ -33,10 +32,10 @@ logger = CustomLogger.get_logger("bot")
 
 class MenuDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(MenuDialog, self).__init__(dialog_id or MenuDialog.__name__)
         self.telemetry_client = telemetry_client
@@ -49,6 +48,7 @@ class MenuDialog(ComponentDialog):
         self.add_dialog(MyProfileDialog(user_state, MyProfileDialog.__name__))
         self.add_dialog(MyFileDialog(user_state, MyFileDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
+        self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -66,13 +66,13 @@ class MenuDialog(ComponentDialog):
         self.initial_dialog_id = "MainMenuDialog"
 
     async def reload_cache_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("reload_cache_step %s", MenuDialog.__name__)
         return await step_context.begin_dialog(ReloadCacheDialog.__name__)
 
     async def show_menu_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("show_menu_step %s", MenuDialog.__name__)
 
@@ -88,7 +88,7 @@ class MenuDialog(ComponentDialog):
         )
 
     async def parse_choice_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("parse_choice_step %s", MenuDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
@@ -98,8 +98,7 @@ class MenuDialog(ComponentDialog):
         found_choice = step_context.result
 
         if found_choice == "KEY_CALLBACK:create_adv":
-            await step_context.context.send_activity('Not implemented')
-            return await step_context.replace_dialog(MenuDialog.__name__)
+            return await step_context.begin_dialog(CreateAdvDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:review_adv":
             await step_context.context.send_activity('Not implemented')
@@ -118,9 +117,8 @@ class MenuDialog(ComponentDialog):
         else:
             return await step_context.replace_dialog(MenuDialog.__name__)
 
-
     async def loop_menu_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("loop_menu_step %s", MenuDialog.__name__)
 

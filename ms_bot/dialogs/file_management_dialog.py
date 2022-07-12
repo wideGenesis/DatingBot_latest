@@ -139,66 +139,11 @@ class FileManagementDialog(ComponentDialog):
 
         return prompt_context.recognized.succeeded and condition
 
-    # @staticmethod
-    # async def choice_route(
-    #     step_context: WaterfallStepContext,
-    #     found_choice,
-    #     user_data: CustomerProfile,
-    #     list_id: int,
-    # ) -> DialogTurnResult:
-    #     try:
-    #         item = user_data.files_dict[list_id]
-    #         pk = item["id"]
-    #     except Exception:
-    #         return await step_context.end_dialog("need_replace_parent")
-    #
-    #     if found_choice == "KEY_CALLBACK:file_open_hidden":
-    #         try:
-    #             user_media_files = UserMediaFile.objects.get(id=pk)
-    #             logger.warning(
-    #                 "Obj: %s, privacy_type: %s, pk: %s",
-    #                 user_media_files,
-    #                 user_media_files.privacy_type,
-    #                 pk,
-    #             )
-    #             user_media_files.privacy_type = (
-    #                 1 if user_media_files.privacy_type == 0 else 0
-    #             )
-    #             user_media_files.save()
-    #         except Exception:
-    #             logger.exception("Get Customer from bd error")
-    #         user_data.last_seen = datetime.datetime.utcnow()
-    #         user_data.files_dict.pop(list_id)
-    #         return await step_context.next([])
-    #
-    #     elif found_choice == "KEY_CALLBACK:file_rm":
-    #         try:
-    #             user_media_files = UserMediaFile.objects.get(id=pk)
-    #             user_media_files.is_archived = 1
-    #             user_media_files.save()
-    #         except Exception:
-    #             logger.exception("Get Customer from bd error")
-    #         user_data.last_seen = datetime.datetime.utcnow()
-    #         user_data.files_dict.pop(list_id)
-    #
-    #         return await step_context.next([])
-    #
-    #     elif found_choice == "KEY_CALLBACK:next":
-    #         return await step_context.next([])
-    #
-    #     elif found_choice == "KEY_CALLBACK:back":
-    #         return await step_context.end_dialog("need_replace_parent")
-    #
-    #     else:
-    #         return await step_context.end_dialog(True)
-
     @staticmethod
     async def _file_update_open_hidden(step_context: WaterfallStepContext, file_property):
         pk = file_property['id']
         file = file_property['file']
-        file_type = file_property['file_type']
         privacy_type = file_property['privacy_type']
-        is_archived = file_property['is_archived']
 
         db_file = await UserMediaFile.objects.get_or_none(id=pk)
         if db_file is None:

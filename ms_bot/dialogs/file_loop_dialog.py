@@ -1,8 +1,4 @@
-import datetime
-import json
-
 from botbuilder.core import (
-    MessageFactory,
     BotTelemetryClient,
     NullTelemetryClient,
     UserState,
@@ -12,13 +8,10 @@ from botbuilder.dialogs import (
     DialogTurnResult,
     WaterfallStepContext,
     ComponentDialog,
-    PromptValidatorContext,
 )
 
-from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
-from botbuilder.schema import ActivityTypes, Activity
+from botbuilder.dialogs.prompts import TextPrompt, ChoicePrompt
 
-from core.tables.models import UserMediaFile
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.file_management_dialog import FileManagementDialog
 
@@ -26,7 +19,6 @@ from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES
 from ms_bot.dialogs.upload_dialog import UploadDialog
 
-from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 logger = CustomLogger.get_logger("bot")
 
@@ -69,12 +61,11 @@ class FileLoopDialog(ComponentDialog):
         print("file_number", file_number)
 
         if len(files) == 0:
-            print('1111')
             await step_context.context.send_activity(BOT_MESSAGES["files_not_found"])
             return await step_context.end_dialog("need_replace_parent")
 
         item = files[file_number]
-        print('file', item)
+        # print('file', item)
         return await step_context.begin_dialog(FileManagementDialog.__name__, item)
 
     async def post_loop_step(
@@ -93,5 +84,4 @@ class FileLoopDialog(ComponentDialog):
 
         if user_data.file_number >= length:
             user_data.file_number = 0
-            await step_context.context.send_activity("Bye!")
-            return await step_context.end_dialog(True)
+            return await step_context.end_dialog('need_replace_parent')

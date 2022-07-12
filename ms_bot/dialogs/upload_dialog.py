@@ -214,5 +214,5 @@ class UploadDialog(ComponentDialog):
         except Exception:
             logger.exception("Save customer_photo to db error %s", member_id)
 
-        return BOT_MESSAGES["file_uploaded"]
+        return BOT_MESSAGES["file_uploaded_success"]
 

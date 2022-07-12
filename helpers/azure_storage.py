@@ -1,6 +1,6 @@
 import os
 
-from azure.storage.blob import BlobServiceClient, BlobClient
+from azure.storage.blob import BlobServiceClient, BlobClient, PartialBatchErrorException
 from settings.conf import AZURE_STORAGE_CONF
 from settings.logger import CustomLogger
 
@@ -43,6 +43,9 @@ def rm_user_blobs(member_id: str):
     try:
         client.delete_blobs(*blobsToDelete)
         blobsToDelete.clear()
+    except PartialBatchErrorException:
+        logger.warning('Nothing to drop! Cache standard error, dont care about it')
+
     except Exception:
         logger.exception("Error while deleting blobs")
         blobsToDelete.clear()

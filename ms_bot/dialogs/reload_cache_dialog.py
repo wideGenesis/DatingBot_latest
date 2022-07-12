@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient
+from botbuilder.core import UserState, BotTelemetryClient, NullTelemetryClient, TurnContext
 from botbuilder.dialogs import (
     WaterfallDialog,
     DialogTurnResult,
@@ -9,6 +9,7 @@ from botbuilder.dialogs import (
     ComponentDialog,
 )
 
+from helpers.azure_storage import rm_user_blobs
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from settings.logger import CustomLogger
 from ms_bot.bots_models.models import CustomerProfile
@@ -136,12 +137,19 @@ class ReloadCacheDialog(ComponentDialog):
                 "USER {{{ FILES }}} (%s) NOT FOUND IN DB", self.customer_instance.member_id
             )
 
-        await _reload_cache(user_data, self.customer_instance, files_in_storage)
+        await _reload_cache(user_data, self.customer_instance, files_in_storage, step_context.context)
 
         return await step_context.end_dialog(self.customer_exists)
 
 
-async def _reload_cache(user_data, customer_instance, user_files):
+async def _reload_cache(user_data, customer_instance, user_files, turn_context: TurnContext):
+    member_id = turn_context.activity.from_property.id
+    logger.debug('Drop cache before reload')
+    try:
+        rm_user_blobs(member_id)
+    except Exception as e:
+        logger.warning('Cache standard error, dont care about it')
+
     user_data.pk = customer_instance.id
     user_data.nickname = customer_instance.nickname
     user_data.phone = customer_instance.phone

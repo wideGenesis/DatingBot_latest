@@ -55,7 +55,9 @@ BOT_MESSAGES = {
     "age_reprompt": "Ваш фактичний вік має бути в діапазоні 18 - 69 ",
     "prefer_age": "Надрукуйте цифрами вік партнера (в діапазоні 18 - 69) \n  \nНаприклад: 20 - 45 ",
     "prefer_age_reprompt": "Фактичний вік має бути в діапазоні 18 - 69",
-    "looking_for": "Мене цікавить: ",
+    "looking_for": "Мене цікавлять: ",
+    "date_place": "Місце для зустрічей: ",
+    "date_time": "У мене є час для зустрічей:: ",
     "phone_request": "🤖 ➡️ ❌ Підтвердьте, що ви людина за допомогою телефонного номера, натиснувши кнопку нижче ⬇️",
     "phone_error": "Підтвердіть свою особу, натиснувши кнопку Підтвердити на клавіатурі нижче",
     "phone_verified": "🙊 Ваш номер телефону не буде доступний іншим користувачам \n  \nДякуємо!",
@@ -71,6 +73,7 @@ BOT_MESSAGES = {
                    "Будь ласка, додайте зображення/відео, натисніть на скріпку та виберіть файл"
                    " (або введіть будь-яке повідомлення, щоб пропустити цей крок)",
     "file_uploaded": "✅ Файл завантажено",
+    "file_uploaded_success": "✅ Файл завантажено! Обробка у процесі",
     "file_bad_format": "❌ Можна завантажити лише файли форматів: jpg, png, mp4",
     "file_limit_reached": "❌ Ви завантажили максимальну кількість файлів (4)  \n  \n"
                           "Видаліть непотрібні файли та спробуйте ще раз",
@@ -106,7 +109,8 @@ def image_rotation(category: str) -> list:
     elif category == "gay":
         c_list = ["g1", "g2", "g3", "g4", "g5", "g6," "g7", "g8", "g9", "g10"]
     elif category == "friends":
-        c_list = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10"]
+        c_list = ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11",
+                  "f12", "f13", "f14", "f15", "f16", "f17", "f18"]
     elif category == "lesbian":
         c_list = ["l1", "l2", "l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10"]
     else:
@@ -194,24 +198,60 @@ UPLOAD_FILE_KB = {
     },
 }
 
-LOOKING_FOR_SEX_KB = {
+LOOKING_FOR_KB = {
     "method": "sendPhoto",
     "parameters": {
-        "caption": f"{BOT_MESSAGES['looking_for_sex']}",
+        "caption": f"{BOT_MESSAGES['looking_for']}",
         "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
                  f"{image_rotation('friends')[2]}.jpg",
         "protect_content": True,
         "disable_notification": True,
         "reply_markup": {
             "inline_keyboard": [
-                [{"text": "👱🏻‍♂️ Чоловіків", "callback_data": "KEY_CALLBACK:Man"}],
-                [{"text": "👩🏼‍🦱 Жінок", "callback_data": "KEY_CALLBACK:Woman"}],
-                [
-                    {
-                        "text": "👱🏻‍♂️ 👩🏼‍🦱 Чоловіків та Жінок",
-                        "callback_data": "KEY_CALLBACK:Both",
-                    }
-                ],
+                [{"text": "👱🏻‍♂️ Чоловіки", "callback_data": "KEY_CALLBACK:man"}],
+                [{"text": "👩🏼‍🦱 Жінки", "callback_data": "KEY_CALLBACK:woman"}],
+                [{"text": "🧔‍♂️ 👩‍🦰 Чоловіки та Жінки", "callback_data": "KEY_CALLBACK:both"}],
+                [{"text": "🎭 Компанія (розваги, спілкування)", "callback_data": "KEY_CALLBACK:fun"}],
+            ]
+        },
+    },
+}
+
+HAS_PLACE_KB = {
+    "method": "sendPhoto",
+    "parameters": {
+        "caption": f"{BOT_MESSAGES['date_place']}",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[2]}.jpg",
+        "protect_content": True,
+        "disable_notification": True,
+        "reply_markup": {
+            "inline_keyboard": [
+                [{"text": "🟢 У мене", "callback_data": "KEY_CALLBACK:mine"}],
+                [{"text": "🟡 Швидше за все, у мене", "callback_data": "KEY_CALLBACK:sometimes"}],
+                [{"text": "❓ У тебе", "callback_data": "KEY_CALLBACK:yours"}],
+                [{"text": "🏩 Знімемо (50/50)", "callback_data": "KEY_CALLBACK:fifty_fifty"}],
+                [{"text": "🍕 Iнше", "callback_data": "KEY_CALLBACK:other"}],
+            ]
+        },
+    },
+}
+
+
+DATING_TIME = {
+    "method": "sendPhoto",
+    "parameters": {
+        "caption": f"{BOT_MESSAGES['date_place']}",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[3]}.jpg",
+        "protect_content": True,
+        "disable_notification": True,
+        "reply_markup": {
+            "inline_keyboard": [
+                [{"text": "☕️ Вранці", "callback_data": "KEY_CALLBACK:morning"}],
+                [{"text": "🌞 Вдень", "callback_data": "KEY_CALLBACK:day"}],
+                [{"text": "🍷 Увечері", "callback_data": "KEY_CALLBACK:evening"}],
+                [{"text": "🌔 Вночі", "callback_data": "KEY_CALLBACK:night"}],
             ]
         },
     },
@@ -222,50 +262,8 @@ PREFER_AGE_KB = {
     "parameters": {
         "caption": f"{BOT_MESSAGES['prefer_age']}",
         "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
-                 f"{image_rotation('friends')[2]}.jpg",
+                 f"{image_rotation('friends')[3]}.jpg",
         "reply_markup": {"force_reply": True},
-    },
-}
-
-LOOKING_FOR_KB = {
-    "method": "sendPhoto",
-    "parameters": {
-        "caption": f"{BOT_MESSAGES['looking_for']}",
-        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/4_looking_for_a.jpg",
-        "reply_markup": {
-            "inline_keyboard": [
-                # [
-                #     {
-                #         "text": "🥰 Відносини, сім'я",
-                #         "callback_data": "KEY_CALLBACK:relationships",
-                #     }
-                # ],
-                [
-                    {
-                        "text": "😏 Секс без зобов'язань",
-                        "callback_data": "KEY_CALLBACK:sex_fun",
-                    }
-                ],
-                [
-                    {
-                        "text": "🤗 Спілкування, пошук друзів",
-                        "callback_data": "KEY_CALLBACK:talking_friends",
-                    }
-                ],
-                # [
-                #     {
-                #         "text": "😉 Усе по трохи",
-                #         "callback_data": "KEY_CALLBACK:all_in_one",
-                #     }
-                # ],
-                [
-                    {
-                        "text": "😉 Компанію",
-                        "callback_data": "KEY_CALLBACK:all_in_one",
-                    }
-                ],
-            ]
-        },
     },
 }
 

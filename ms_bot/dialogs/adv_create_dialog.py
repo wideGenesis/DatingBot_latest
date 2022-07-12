@@ -21,18 +21,16 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, ErrorResponseException
 import json
 
-# from profanity_filter import ProfanityFilter
 from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer
-from helpers.constants import remove_last_message, remove_last_dropped_message
+from helpers.constants import remove_last_message
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
-    CHOOSE_SEX_KB,
-    LOOKING_FOR_SEX_KB,
     PREFER_AGE_KB,
     CREATE_AREA_KB,
+    LOOKING_FOR_KB, HAS_PLACE_KB, DATING_TIME,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -46,10 +44,10 @@ logger = CustomLogger.get_logger("bot")
 
 class CreateAdvDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(CreateAdvDialog, self).__init__(dialog_id or CreateAdvDialog.__name__)
 
@@ -74,11 +72,13 @@ class CreateAdvDialog(ComponentDialog):
             WaterfallDialog(
                 "CreateAdvDialog",
                 [
-                    self.looking_sex_step,
+                    self.who_for_whom,
                     self.prefer_age_step,
-                    self.goals_routing,
-                    self.area_step,
-                    self.parse_area_choice_step,
+                    self.has_place,
+                    self.dating_time,
+                    # self.goals_routing,
+                    # self.area_step,
+                    # self.parse_area_choice_step,
                     # self.member_step,
                     # self.request_phone_step,
                     # self.request_location_step,
@@ -93,10 +93,10 @@ class CreateAdvDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "CreateAdvDialog"
 
-    async def looking_sex_step(
-        self, step_context: WaterfallStepContext
+    async def who_for_whom(
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("looking_sex_step %s", CreateAdvDialog.__name__)
+        logger.debug("who_for_whom %s", CreateAdvDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
         message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
 
@@ -106,18 +106,11 @@ class CreateAdvDialog(ComponentDialog):
             logger.warning("Bad Request: message to delete not found")
             pass
 
-        # user_data: CustomerProfile = await self.user_profile_accessor.get(
-        #     step_context.context, CustomerProfile
-        # )
-
-        # result_from_previous_step = str(step_context.result).split(":")
-        # user_data.temp = result_from_previous_step[1]
-
         return await step_context.prompt(
             TextPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(LOOKING_FOR_SEX_KB),
+                    channel_data=json.dumps(LOOKING_FOR_KB),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
@@ -125,7 +118,7 @@ class CreateAdvDialog(ComponentDialog):
         )
 
     async def prefer_age_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("prefer_age_step %s", CreateAdvDialog.__name__)
 
@@ -136,7 +129,7 @@ class CreateAdvDialog(ComponentDialog):
         #     f"{step_context.context.activity.channel_data['message']['message_id']}"
         # )
         # await rm_tg_message(step_context.context, chat_id, message_id)
-        #
+
         # try:
         #     message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
         #     await rm_tg_message(step_context.context, chat_id, message_id_1)
@@ -162,8 +155,52 @@ class CreateAdvDialog(ComponentDialog):
             ),
         )
 
+    async def has_place(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("has_place %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(HAS_PLACE_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def dating_time(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("dating_time %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
     async def goals_routing(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("goals_routing %s", CreateAdvDialog.__name__)
         return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__)
@@ -183,7 +220,7 @@ class CreateAdvDialog(ComponentDialog):
         )
 
     async def parse_area_choice_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("parse_area_choice_step %s", CreateAdvDialog.__name__)
 
@@ -231,13 +268,13 @@ class CreateAdvDialog(ComponentDialog):
         return await step_context.next([])
 
     async def request_location_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("request_location_step %s", RequestLocationDialog.__name__)
         return await step_context.begin_dialog(RequestLocationDialog.__name__)
 
     async def save_new_customer(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("save_new_customer %s", CreateAdvDialog.__name__)
 
@@ -270,7 +307,7 @@ class CreateAdvDialog(ComponentDialog):
         return await step_context.next([])
 
     async def back_to_parent(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug(f"back_to_main from %s", CreateAdvDialog.__name__)
 
@@ -303,14 +340,19 @@ class CreateAdvDialog(ComponentDialog):
         if _value in [
             "KEY_CALLBACK:profile_region",
             "KEY_CALLBACK:find_region",
-            "KEY_CALLBACK:Man",
-            "KEY_CALLBACK:Woman",
-            "KEY_CALLBACK:Both",
-            "KEY_CALLBACK:Other to Other",
-            "KEY_CALLBACK:relationships",
-            "KEY_CALLBACK:sex_fun",
-            "KEY_CALLBACK:talking_friends",
-            "KEY_CALLBACK:all_in_one",
+            "KEY_CALLBACK:man",
+            "KEY_CALLBACK:woman",
+            "KEY_CALLBACK:both",
+            "KEY_CALLBACK:fun",
+            "KEY_CALLBACK:mine",
+            "KEY_CALLBACK:sometimes",
+            "KEY_CALLBACK:yours",
+            "KEY_CALLBACK:fifty_fifty",
+            "KEY_CALLBACK:other",
+            "KEY_CALLBACK:morning",
+            "KEY_CALLBACK:day",
+            "KEY_CALLBACK:evening",
+            "KEY_CALLBACK:night",
         ]:
             condition = True
         else:
