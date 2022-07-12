@@ -9,7 +9,7 @@ from fastapi import (
 from asyncpg.exceptions import ForeignKeyViolationError
 from fastapi.openapi.models import APIKey
 from core.services.api_service import ApiKeyService
-from core.tables.models import Customer, Area, RedisChannel
+from core.tables.models import Customer, Area
 
 
 from core.crud.customer import (

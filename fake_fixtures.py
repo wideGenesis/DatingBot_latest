@@ -3,7 +3,7 @@ import random
 
 from asyncpg.exceptions import UniqueViolationError
 from faker import Faker
-from core.tables.models import Customer, Area, RedisChannel, Advertisement
+from core.tables.models import Customer, Area, Advertisement, Conversation, Message
 
 # fake = Faker('ua_UA')
 fake = Faker('en_US')
@@ -19,7 +19,6 @@ async def db_fill_customer(qty):
             sex = 1
 
         # ############ Area ############
-        print('>>> Area #', i)
 
         geo = fake.local_latlng()
         country = geo[3]
@@ -30,7 +29,17 @@ async def db_fill_customer(qty):
         city.replace(' ', '_')
         channel = f'{country}:{state}:{city}'.lower()
         geo = f'{geo[0]}:{geo[1]}'.lower()
-
+        who_for_whom = random.choice(
+            [
+                'man_to_woman',
+                'woman_to_man',
+                'any_to_both',
+                'man_to_man',
+                'woman_to_woman',
+                'other_to_other',
+                'doesnt_matter',
+                'other_to_other']
+        )
         area = Area(
             area=channel,
             area_en=channel,
@@ -40,30 +49,16 @@ async def db_fill_customer(qty):
             state_en=state,
             country=country,
             country_en=country,
-            is_administrative_center=fake.pybool()
+            is_administrative_center=fake.pybool(),
+            gps_coordinates_for_adv=geo,
+            redis_channel=f"{channel}:{who_for_whom}"
         )
         try:
             area_id = await area.save()
         except UniqueViolationError:
             area_id = await Area.objects.get(area=channel)
 
-        # ############ RedisChannel ############
-        print('>>> RedisChannel #', i)
-
-        redis_channel = RedisChannel(
-            redis_channel=f""
-                          f"{channel}:"
-                          f"{random.choice(['man_to_woman', 'woman_to_man', 'any_to_both', 'man_to_man', 'woman_to_woman', 'other_to_other'])}",
-        )
-        try:
-            redis_channel_id = await redis_channel.save()
-        except UniqueViolationError:
-            redis_channel_id = await RedisChannel.objects.get(redis_channel=channel)
-        except Exception:
-            redis_channel_id = await RedisChannel.objects.get(redis_channel=channel)
-
         # ############ Customer ############
-        print('>>> Customer #', i)
 
         customer = Customer(
             nickname=profile['username'],
@@ -76,41 +71,47 @@ async def db_fill_customer(qty):
             self_sex=sex,
             age=random.randint(18, 69),
             is_active=fake.pybool(),
-            is_staff=fake.pybool(),
-            is_superuser=fake.pybool(),
+
             hiv_status=random.choice(['pos', 'neg', 'neutral']),
             alco_status=random.choice(['frequently', 'occasionally', 'no']),
             drugs_status=random.choice(['frequently', 'occasionally', 'no']),
             safe_sex_status=random.choice(['always', 'occasionally', 'no']),
             passion_sex=fake.pybool(),
             if_same_sex_position=random.choice(
-                ['always_bottom', 'vers_common_bottom', 'versatile', 'vers_common_top', 'always_top', 'straight', 'bi']
+                ['always_bottom',
+                 'vers_common_bottom',
+                 'versatile',
+                 'vers_common_top',
+                 'always_top',
+                 'straight',
+                 'bi'
+                 ]
             ),
             boobs_cock_size=random.choice(['small', 'middle', 'large', 'extra_large']),
+            height=random.randint(150, 190),
+            weight=random.randint(60, 90),
+            premium_tier=random.choice(['free', 'advanced_1m', 'advanced_12m', 'premium_1m', 'premium_12m']),
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
+
+
+            is_staff=fake.pybool(),
+            is_superuser=fake.pybool(),
             is_sport=random.choice(['systematic', 'occasionally', 'no']),
             is_home_or_party=random.choice(['homester', 'gadabout']),
             body_type=random.choice(['slim', 'average', 'fat', 'fitness', 'bodybuilder']),
-            height=random.randint(150, 190),
-            weight=random.randint(60, 90),
             is_smoker=fake.pybool(),
             is_tatoo=fake.pybool(),
             is_piercings=fake.pybool(),
             likes=random.randint(10, 1000),
-
-            gps_coordinates_for_nearby=geo,
-            area_for_nearby=area_id.id,
-            premium_tier=random.choice(['free', 'advanced_1m', 'advanced_12m', 'premium_1m', 'premium_12m']),
-            created_at=datetime.datetime.utcnow(),
-            updated_at=datetime.datetime.utcnow(),
         )
 
         try:
             customer = await customer.save()
         except UniqueViolationError:
-            customer = await Customer.objects.get(member_id=member_id)
+            continue
 
         #  ############ Advertisement ############
-        print('>>> Advertisement #', i)
 
         adv_obj = Advertisement(
             who_for_whom=random.choice(
@@ -123,22 +124,50 @@ async def db_fill_customer(qty):
             goals=f'{fake.paragraph(nb_sentences=1)}:{fake.paragraph(nb_sentences=1)}',
             phone_is_hidden=fake.pybool(),
             tg_nickname_is_hidden=fake.pybool(),
+            email_is_hidden=fake.pybool(),
             money_support=fake.pybool(),
             is_published=fake.pybool(),
-
             valid_until_date=(datetime.datetime.now() + datetime.timedelta(days=30)),
-            gps_coordinates_for_adv=geo,
-            area_for_adv=area_id.id,
-            redis_channel=redis_channel_id.id,
+            redis_channel=area_id.id,
+            customer=customer.id,
+
             created_at=datetime.datetime.utcnow(),
             updated_at=datetime.datetime.utcnow(),
-            customer=customer.id,
 
         )
 
         try:
             adv = await adv_obj.save()
         except UniqueViolationError:
-            adv = await Advertisement.objects.get(customer=customer.id)
+            continue
 
+        #  ############ Conversation ############
+
+        conv_obj = Conversation(
+            user_one_id=customer.id,
+            user_two_id=customer.id - 1,
+            created_at=datetime.datetime.utcnow(),
+        )
+
+        if i != 1:
+            try:
+                conv = await conv_obj.save()
+            except UniqueViolationError:
+
+                continue
+        else:
+            conv = 0
+        #  ############ Message ############
+
+        if i != 1:
+            msg_obj = Message(
+                message_text=fake.paragraph(nb_sentences=1),
+                sender_id=customer.id,
+                conversation=conv.id,
+                created_at=datetime.datetime.utcnow(),
+            )
+            try:
+                msg = await msg_obj.save()
+            except UniqueViolationError:
+                continue
         print('>>> iteration #', i)

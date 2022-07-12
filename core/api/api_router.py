@@ -41,9 +41,7 @@ area_router = OrmarCRUDRouter(
 #     )
 #
 #     try:
-redis_channel_router = OrmarCRUDRouter(
-    schema=models.RedisChannel,
-)
+
 customer_router = OrmarCRUDRouter(
     schema=models.Customer,
 )

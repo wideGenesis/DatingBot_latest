@@ -10,6 +10,8 @@ class WhoForWhomEnum(Enum):
     any_to_both = "any_to_both"
     man_to_man = "man_to_man"
     woman_to_woman = "woman_to_woman"
+    company = "company"
+    doesnt_matter = "doesnt_matter"
     other_to_other = "other_to_other"
 
 
