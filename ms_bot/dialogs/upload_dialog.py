@@ -84,19 +84,30 @@ class UploadDialog(ComponentDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug(f"back_to_main from %s", UploadDialog.__name__)
-        chat_id = (
-            f"{step_context.context.activity.channel_data['message']['chat']['id']}"
-        )
-        message_id = (
-            f"{step_context.context.activity.channel_data['message']['message_id']}"
-        )
-        await rm_tg_message(step_context.context, chat_id, message_id)
+        try:
+            chat_id = f"{step_context.context.activity.channel_data['message']['chat']['id']}"
+        except Exception:
+            chat_id = None
+
+        try:
+            message_id = f"{step_context.context.activity.channel_data['message']['message_id']}"
+        except Exception:
+            message_id = None
+
+        try:
+            await rm_tg_message(step_context.context, chat_id, message_id)
+        except Exception as e:
+            logger.warning('Something went Wrong %s', e)
 
         try:
             message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
-            await rm_tg_message(step_context.context, chat_id, message_id_1)
         except Exception:
-            logger.debug("Customer drop reply and make direct answer")
+            message_id_1 = None
+
+        try:
+            await rm_tg_message(step_context.context, chat_id, message_id_1)
+        except Exception as e:
+            logger.warning("Customer drop reply and make direct answer %s", e)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile

@@ -100,7 +100,7 @@ class ReloadCacheDialog(ComponentDialog):
         try:
             user_files = (
                 await UserMediaFile.objects.filter(
-                    customer_id=self.customer_instance.id
+                    customer=self.customer_instance.id
                 )
                 .fields(
                     [
@@ -133,7 +133,7 @@ class ReloadCacheDialog(ComponentDialog):
             logger.debug("USER FILES (%s) FOUND IN DB", member_id)
         except Exception:
             logger.exception(
-                "USER FILES (%s) NOT FOUND IN DB", self.customer_instance.member_id
+                "USER {{{ FILES }}} (%s) NOT FOUND IN DB", self.customer_instance.member_id
             )
 
         await _reload_cache(user_data, self.customer_instance, files_in_storage)
@@ -158,8 +158,6 @@ async def _reload_cache(user_data, customer_instance, user_files):
     user_data.post_header = customer_instance.post_header
     user_data.password_hash = customer_instance.password_hash
     user_data.password_hint = customer_instance.password_hint
-    user_data.gps_coordinates_for_nearby = customer_instance.gps_coordinates_for_nearby
-    user_data.area_for_nearby = customer_instance.area_for_nearby
     user_data.premium_tier = customer_instance.premium_tier
     user_data.hiv_status = customer_instance.hiv_status
     user_data.alco_status = customer_instance.alco_status

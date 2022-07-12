@@ -23,10 +23,8 @@ from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
-from ms_bot.dialogs.adv_menu_dialog import AdvMenuDialog
 from ms_bot.dialogs.my_file_dialog import MyFileDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
-from ms_bot.dialogs.nearby_search_dialog import NearbySearchDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
@@ -50,9 +48,7 @@ class MenuDialog(ComponentDialog):
         )
         self.add_dialog(MyProfileDialog(user_state, MyProfileDialog.__name__))
         self.add_dialog(MyFileDialog(user_state, MyFileDialog.__name__))
-        self.add_dialog(AdvMenuDialog(user_state, AdvMenuDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
-        self.add_dialog(NearbySearchDialog(user_state, NearbySearchDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -101,13 +97,15 @@ class MenuDialog(ComponentDialog):
 
         found_choice = step_context.result
 
-        if found_choice == "KEY_CALLBACK:nearby_people":
-            # return await step_context.begin_dialog(NearbySearchDialog.__name__)
+        if found_choice == "KEY_CALLBACK:create_adv":
             await step_context.context.send_activity('Not implemented')
             return await step_context.replace_dialog(MenuDialog.__name__)
 
-        elif found_choice == "KEY_CALLBACK:adv_search":
-            # return await step_context.begin_dialog(AdvMenuDialog.__name__)
+        elif found_choice == "KEY_CALLBACK:review_adv":
+            await step_context.context.send_activity('Not implemented')
+            return await step_context.replace_dialog(MenuDialog.__name__)
+
+        elif found_choice == "KEY_CALLBACK:conversations":
             await step_context.context.send_activity('Not implemented')
             return await step_context.replace_dialog(MenuDialog.__name__)
 
@@ -117,15 +115,9 @@ class MenuDialog(ComponentDialog):
         elif found_choice == "KEY_CALLBACK:files":
             return await step_context.begin_dialog(MyFileDialog.__name__)
 
-        elif found_choice == "KEY_CALLBACK:scrape":
-            await step_context.context.send_activity("Not implemented")
-            # return await step_context.replace_dialog(MenuDialog.__name__)
-            await step_context.context.send_activity('Not implemented')
+        else:
             return await step_context.replace_dialog(MenuDialog.__name__)
 
-        else:
-            await step_context.context.send_activity("bye!")
-            return await step_context.cancel_all_dialogs(True)
 
     async def loop_menu_step(
         self, step_context: WaterfallStepContext
@@ -143,12 +135,11 @@ class MenuDialog(ComponentDialog):
         _value = prompt_context.context.activity.text
 
         if _value in [
-            "KEY_CALLBACK:nearby_people",
-            "KEY_CALLBACK:adv_search",
+            "KEY_CALLBACK:create_adv",
+            "KEY_CALLBACK:review_adv",
+            "KEY_CALLBACK:conversations",
             "KEY_CALLBACK:my_profile",
             "KEY_CALLBACK:files",
-            "KEY_CALLBACK:settings",
-            "KEY_CALLBACK: scrape",
         ]:
             condition = True
         else:

@@ -17,14 +17,11 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 from ms_bot.bots_models.models import CustomerProfile
-from core.tables import models as tables
 from settings.logger import CustomLogger
 from helpers.copyright import (
     profile_kb,
     LANG_CHOICE,
     SEX_CHOICE,
-    LOOKING_GENDER_CHOICE,
-    LOOKING_FOR_CHOICE,
     BOT_MESSAGES,
 )
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
@@ -36,10 +33,10 @@ logger = CustomLogger.get_logger("bot")
 
 class MyProfileDialog(ComponentDialog):
     def __init__(
-        self,
-        user_state: UserState,
-        dialog_id: str = None,
-        telemetry_client: BotTelemetryClient = NullTelemetryClient(),
+            self,
+            user_state: UserState,
+            dialog_id: str = None,
+            telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
         super(MyProfileDialog, self).__init__(dialog_id or MyProfileDialog.__name__)
         self.telemetry_client = telemetry_client
@@ -58,7 +55,6 @@ class MyProfileDialog(ComponentDialog):
                 [
                     self.show_menu_step,
                     self.parse_choice_step,
-                    # self.back_to_parent
                 ],
             )
         )
@@ -67,38 +63,25 @@ class MyProfileDialog(ComponentDialog):
         self.initial_dialog_id = "MainMyProfileDialog"
 
     async def show_menu_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("show_menu_step %s", MyProfileDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
         member_id = int(step_context.context.activity.from_property.id)
-        profile = await tables.CustomerProfile.objects.get_or_none(member_id=member_id)
 
-        message = (
+        message = (  # TODO Internalize
             f"Мова бота: {LANG_CHOICE[user_data.lang]}  \n \n"
             f"Моя стать: {SEX_CHOICE[int(user_data.self_sex)]}  \n \n"
             f"Мій вік: {user_data.age}  \n \n"
             f"Мій телефон: {user_data.phone} (прихований від усіх)  \n \n"
+            f"Мій email: {user_data.email} (прихований від усіх)  \n \n"
+            f"Мій telegram: {user_data.nickname} (прихований від усіх)  \n \n"
+            f"HIV Status (прихований від усіх): {user_data.hiv_status}  \n \n" 
+            f"Алкоголь: {user_data.alco_status}  \n \n"
+            f"Наркотики: {user_data.drugs_status}  \n \n"
         )
-
-        if profile is not None:  # TODO Internalize
-            message += f"HIV Status (прихований від усіх): {user_data.hiv_status}  \n \n" \
-                       f"Алкоголь: {user_data.alco_status}  \n \n" \
-                       f"Наркотики: {user_data.drugs_status}  \n \n" \
-                       f"Безопастный секс: {user_data.safe_sex_status}  \n \n" \
-                       f"Страстный секс: {user_data.passion_sex}  \n \n" \
-                       f"Размер: {user_data.boobs_cock_size}  \n \n" \
-                       f"Спорт: {user_data.is_sport}  \n \n" \
-                       f"Домашний/Вечеринки: {user_data.is_home_or_party}  \n \n" \
-                       f"Тело: {user_data.body_type}  \n \n" \
-                       f"Курение: {user_data.is_smoker}  \n \n" \
-                       f"Тату: {user_data.is_tatoo}  \n \n" \
-                       f"Пирсинг: {user_data.is_piercings}  \n \n" \
-                       f"Лайки: {user_data.likes}  \n \n" \
-                       f"Инстаграм: {user_data.instagram_link}  \n \n" \
-                       f"ТикТок: {user_data.tiktok_link}  \n \n"
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -112,7 +95,7 @@ class MyProfileDialog(ComponentDialog):
         )
 
     async def parse_choice_step(
-        self, step_context: WaterfallStepContext
+            self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("parse_choice_step %s", MyProfileDialog.__name__)
         chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
@@ -121,19 +104,21 @@ class MyProfileDialog(ComponentDialog):
 
         found_choice = step_context.result
 
-        if found_choice == "KEY_CALLBACK:Редагувати профіль":
+        if found_choice == "KEY_CALLBACK:edit_profile":
             return await step_context.begin_dialog(TelegramRegistrationDialog.__name__)
-        elif found_choice == "KEY_CALLBACK:Назад":
+        elif found_choice == "KEY_CALLBACK:back":
             return await step_context.end_dialog("need_replace_parent")
         else:
-            await step_context.context.send_activity("buy")
-            return await step_context.cancel_all_dialogs(True)
+            return await step_context.end_dialog("need_replace_parent")
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
         _value = prompt_context.context.activity.text
 
-        if _value in ["KEY_CALLBACK:Редагувати профіль", "KEY_CALLBACK:Назад"]:
+        if _value in [
+            "KEY_CALLBACK:edit_profile",
+            "KEY_CALLBACK:back"
+        ]:
             condition = True
         else:
             condition = False

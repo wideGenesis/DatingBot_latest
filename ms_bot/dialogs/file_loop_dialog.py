@@ -23,8 +23,7 @@ from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.file_management_dialog import FileManagementDialog
 
 from settings.logger import CustomLogger
-from helpers.copyright import send_file_kb, SEND_MEDIA_KB, BOT_MESSAGES
-from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
+from helpers.copyright import BOT_MESSAGES
 from ms_bot.dialogs.upload_dialog import UploadDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -70,10 +69,12 @@ class FileLoopDialog(ComponentDialog):
         print("file_number", file_number)
 
         if len(files) == 0:
+            print('1111')
             await step_context.context.send_activity(BOT_MESSAGES["files_not_found"])
             return await step_context.end_dialog("need_replace_parent")
 
         item = files[file_number]
+        print('file', item)
         return await step_context.begin_dialog(FileManagementDialog.__name__, item)
 
     async def post_loop_step(
