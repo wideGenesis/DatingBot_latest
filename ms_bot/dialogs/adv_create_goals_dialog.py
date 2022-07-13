@@ -18,11 +18,10 @@ from botbuilder.schema import Activity, ActivityTypes
 import json
 
 # from profanity_filter import ProfanityFilter
-
+from helpers.constants import remove_last_message
 from settings.logger import CustomLogger
 from helpers.copyright import (
     LOOKING_FOR_KB,
-    sex_buttons,
     goals_kb,
     BOT_MESSAGES,
 )
@@ -69,25 +68,56 @@ class CreateAdvGoalsDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "CreateAdvGoalsDialog"
         self.goals_type = None
+        self.goals_buttons = None
 
     async def loop_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("loop_step %s", CreateAdvGoalsDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
+        if user_data.global_goals == 'relationships':
+            self.goals_buttons = user_data.relationships_buttons
+        elif user_data.global_goals == 'dating':
+            self.goals_buttons = user_data.sex_buttons
+        elif user_data.global_goals == 'walking':
+            self.goals_buttons = user_data.walking_buttons
+        else:
+            raise ValueError
 
-        files = user_data.files_dict
-        file_number = user_data.file_number
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
 
-        return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__, item)
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(goals_kb(self.goals_buttons)),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
 
     async def post_loop_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("post_loop_step %s", CreateAdvGoalsDialog.__name__)
+
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
+
+        result_from_previous_step = step_context.result
+        if thing in some_list:
+            some_list.remove(thing)
+
+        user_data.dating_time = result_from_previous_step
         files = user_data.files_dict
         length = len(files) - 1
 

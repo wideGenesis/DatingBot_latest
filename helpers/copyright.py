@@ -10,8 +10,8 @@ LANG_CHOICE = {
 }
 
 SEX_CHOICE = {
-    0: "👱🏻‍♂️ Чоловік",
-    1: "👩🏼‍🦱 Жінка",
+    'man': "👱🏻‍♂️ Чоловік",
+    'woman': "👩🏼‍🦱 Жінка",
 }
 
 # LOOKING_GENDER_CHOICE = {
@@ -42,7 +42,8 @@ BOT_MESSAGES = {
     "date_place": "Місце для зустрічей: ",
     "date_time": "У мене є час для зустрічей: ",
     "date_day": "Я можу зустрітися у: ",
-    "adv_text": "Текст оголошення:: ",
+    "adv_text": "Текст оголошення: ",
+    "money_support": "фінансова підтримка",
 
     "phone_request": "🤖 ➡️ ❌ Підтвердьте, що ви людина за допомогою телефонного номера, натиснувши кнопку нижче ⬇️",
     "phone_error": "Підтвердіть свою особу, натиснувши кнопку Підтвердити на клавіатурі нижче",
@@ -152,10 +153,10 @@ CHOOSE_SEX_KB = {
             "inline_keyboard": [
                 [
                     {
-                        "text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:0"
+                        "text": "👱🏻‍♂️ Чоловік", "callback_data": "KEY_CALLBACK:man"
                     },
                     {
-                        "text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:1"
+                        "text": "👩🏼‍🦱 Жінка", "callback_data": "KEY_CALLBACK:woman"
                     },
                 ],
             ]
@@ -184,6 +185,47 @@ UPLOAD_FILE_KB = {
     },
 }
 
+MAIN_MENU_KB = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['main_menu']}",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "📝 Створити оголошення",
+                        "callback_data": "KEY_CALLBACK:create_adv",
+                    }
+                ],
+                [
+                    {
+                        "text": "🔥 Опубліковані оголошення",
+                        "callback_data": "KEY_CALLBACK:review_adv",
+                    }
+                ],
+                [
+                    {
+                        "text": "🗣 Розмови",
+                        "callback_data": "KEY_CALLBACK:conversations",
+                    }
+                ],
+                [
+                    {
+                        "text": "📂 Профіль",
+                        "callback_data": "KEY_CALLBACK:my_profile",
+                    }
+                ],
+                [
+                    {
+                        "text": "📸 Мої файли",
+                        "callback_data": "KEY_CALLBACK:files",
+                    }
+                ],
+            ]
+        },
+    },
+}
+
 LOOKING_FOR_KB = {
     "method": "sendPhoto",
     "parameters": {
@@ -197,7 +239,7 @@ LOOKING_FOR_KB = {
                 [{"text": "👱🏻‍♂️ Чоловіки", "callback_data": "KEY_CALLBACK:man"}],
                 [{"text": "👩🏼‍🦱 Жінки", "callback_data": "KEY_CALLBACK:woman"}],
                 [{"text": "🧔‍♂️ 👩‍🦰 Чоловіки та Жінки", "callback_data": "KEY_CALLBACK:both"}],
-                [{"text": "🎭 Компанія (розваги, спілкування)", "callback_data": "KEY_CALLBACK:fun"}],
+                [{"text": "🎭 Компанія (розваги, спілкування)", "callback_data": "KEY_CALLBACK:friendship"}],
             ]
         },
     },
@@ -260,6 +302,29 @@ DATING_DAY = {
     },
 }
 
+MONEY_SUPPORT = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['money_support']}",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🟢 Так",
+                        "callback_data": "KEY_CALLBACK:money_yes",
+                    }
+                ],
+                [
+                    {
+                        "text": "🔴 Нi",
+                        "callback_data": "KEY_CALLBACK:money_no",
+                    }
+                ],
+            ]
+        },
+    },
+}
+
 ADV_TEXT = {
     "method": "sendMessage",
     "parameters": {
@@ -275,47 +340,6 @@ PREFER_AGE_KB = {
         "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
                  f"{image_rotation('friends')[3]}.jpg",
         "reply_markup": {"force_reply": True},
-    },
-}
-
-MAIN_MENU_KB = {
-    "method": "sendMessage",
-    "parameters": {
-        "text": f"{BOT_MESSAGES['main_menu']}",
-        "reply_markup": {
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "📝 Створити оголошення",
-                        "callback_data": "KEY_CALLBACK:create_adv",
-                    }
-                ],
-                [
-                    {
-                        "text": "🔥 Опубліковані оголошення",
-                        "callback_data": "KEY_CALLBACK:review_adv",
-                    }
-                ],
-                [
-                    {
-                        "text": "🗣 Розмови",
-                        "callback_data": "KEY_CALLBACK:conversations",
-                    }
-                ],
-                [
-                    {
-                        "text": "📂 Профіль",
-                        "callback_data": "KEY_CALLBACK:my_profile",
-                    }
-                ],
-                [
-                    {
-                        "text": "📸 Мої файли",
-                        "callback_data": "KEY_CALLBACK:files",
-                    }
-                ],
-            ]
-        },
     },
 }
 
@@ -376,7 +400,7 @@ GLOBAL_GOALS_KB = {
             "inline_keyboard": [
                 [{"text": "🥰 Сім'я та відносини", "callback_data": "KEY_CALLBACK:relationships"}],
                 [{"text": "😏 Побачення, секс без зобов'язань", "callback_data": "KEY_CALLBACK:dating"}],
-                [{"text": "🤗 Зустрічі, прогулянки, спілкування", "callback_data": "KEY_CALLBACK:walking"}],
+                [{"text": "🤗 Зустрічі, прогулянки, спілкування", "callback_data": "KEY_CALLBACK:friendship"}],
             ]
         },
     },
@@ -446,12 +470,11 @@ CREATE_AREA_KB = {
     },
 }
 
-
 sex_buttons = [
     [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:4"}],
     [{"text": "Оральный секс (делают мне)", "callback_data": "KEY_CALLBACK:5"}],
     [{"text": "Оральный секс (делаю я)", "callback_data": "KEY_CALLBACK:6"}],
-    [{"text": "Секс (Классический гетеро)", "callback_data": "KEY_CALLBACK:7"}],
+    [{"text": "Секс (Классический)", "callback_data": "KEY_CALLBACK:7"}],
     [{"text": "Анальный секс (я)", "callback_data": "KEY_CALLBACK:8"}],
     [{"text": "Анальный секс (меня)", "callback_data": "KEY_CALLBACK:9"}],
     [{"text": "Анилингус (делают мне)", "callback_data": "KEY_CALLBACK:10"}],
@@ -466,16 +489,30 @@ sex_buttons = [
     ],
 ]
 
+relationships_buttons = [
+    [{"text": "Створення родини", "callback_data": "KEY_CALLBACK:31"}],
+    [{"text": "Народження дітей", "callback_data": "KEY_CALLBACK:32"}],
+    [{"text": "Спільне проживання", "callback_data": "KEY_CALLBACK:33"}],
+    [{"text": "Серйозні стосунки", "callback_data": "KEY_CALLBACK:34"}],
+    [
+        {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
+    ],
+]
 
-def goals_kb(buttons: list, call_back):
-    n = 0
+walking_buttons = [
+    [{"text": "Спільні походи у кіно", "callback_data": "KEY_CALLBACK:51"}],
+    [{"text": "Спільний відпочинок", "callback_data": "KEY_CALLBACK:52"}],
+    [{"text": "Заняття спортом", "callback_data": "KEY_CALLBACK:53"}],
+    [{"text": "Спілкування", "callback_data": "KEY_CALLBACK:54"}],
+    [{"text": "Прогулянки", "callback_data": "KEY_CALLBACK:55"}],
+    [{"text": "Дружба", "callback_data": "KEY_CALLBACK:56"}],
+    [
+        {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
+    ],
+]
 
-    if call_back is not None:
-        for item in buttons:
-            if item["callback_data"] == call_back:
-                item.pop(n)
-                n += 1
 
+def goals_kb(buttons: list):
     return {
         "method": "sendMessage",
         "parameters": {

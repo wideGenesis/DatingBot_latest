@@ -51,7 +51,7 @@ class Customer(ormar.Model):
     conversation_reference: bytes = ormar.LargeBinary(max_length=10000)
     member_id: int = ormar.BigInteger(unique=True)
     lang: Optional[str] = ormar.String(max_length=10, choices=list(LangEnum))
-    self_sex: Optional[int] = ormar.Integer(choices=list(SelfSexEnum), nullable=True)
+    self_sex: Optional[str] = ormar.String(max_length=10, choices=list(SelfSexEnum))
     age: Optional[int] = ormar.Integer(nullable=True)
     is_active: bool = ormar.Boolean(nullable=True, default=True)
 
@@ -187,29 +187,29 @@ class UserMediaFile(ormar.Model):
     customer: Customer = ormar.ForeignKey(Customer)
 
 
-class Conversation(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "conversations"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    user_one_id: Customer = ormar.ForeignKey(Customer, related_name='user_one_id')
-    user_two_id: Customer = ormar.ForeignKey(Customer, related_name='user_two_id')
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
-
-
-class Message(ormar.Model):
-    class Meta(ForOrmarMeta):
-        tablename: str = "messages"
-
-    id: int = ormar.BigInteger(primary_key=True)
-    message_text: str = ormar.String(max_length=1000, nullable=False)
-    sender_id: Customer = ormar.ForeignKey(Customer, related_name='sender_id')
-    conversation: Conversation = ormar.ForeignKey(Conversation, related_name='conversation')
-    created_at: datetime.datetime = ormar.DateTime(
-        default=datetime.datetime.now, nullable=False
-    )
+# class Conversation(ormar.Model):
+#     class Meta(ForOrmarMeta):
+#         tablename: str = "conversations"
+#
+#     id: int = ormar.BigInteger(primary_key=True)
+#     user_one_id: Customer = ormar.ForeignKey(Customer, related_name='user_one_id')
+#     user_two_id: Customer = ormar.ForeignKey(Customer, related_name='user_two_id')
+#     created_at: datetime.datetime = ormar.DateTime(
+#         default=datetime.datetime.now, nullable=False
+#     )
+#
+#
+# class Message(ormar.Model):
+#     class Meta(ForOrmarMeta):
+#         tablename: str = "messages"
+#
+#     id: int = ormar.BigInteger(primary_key=True)
+#     message_text: str = ormar.String(max_length=1000, nullable=False)
+#     sender_id: Customer = ormar.ForeignKey(Customer, related_name='sender_id')
+#     conversation: Conversation = ormar.ForeignKey(Conversation, related_name='conversation')
+#     created_at: datetime.datetime = ormar.DateTime(
+#         default=datetime.datetime.now, nullable=False
+#     )
 
 
 class Commercial(ormar.Model):

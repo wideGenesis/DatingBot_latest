@@ -3,7 +3,12 @@ import random
 
 from asyncpg.exceptions import UniqueViolationError
 from faker import Faker
-from core.tables.models import Customer, Area, Advertisement, Conversation, Message
+from core.tables.models import (
+    Customer,
+    Area,
+    Advertisement,
+    # Conversation, Message
+)
 
 # fake = Faker('ua_UA')
 fake = Faker('en_US')
@@ -14,9 +19,9 @@ async def db_fill_customer(qty):
         member_id = random.randint(0000000000, 1111111111)
         profile = fake.profile()
         if profile['sex'] == 'M':
-            sex = 0
+            sex = 'man'
         else:
-            sex = 1
+            sex = 'woman'
 
         # ############ Area ############
 
@@ -141,33 +146,33 @@ async def db_fill_customer(qty):
         except UniqueViolationError:
             continue
 
-        #  ############ Conversation ############
-
-        conv_obj = Conversation(
-            user_one_id=customer.id,
-            user_two_id=customer.id - 1,
-            created_at=datetime.datetime.utcnow(),
-        )
-
-        if i != 1:
-            try:
-                conv = await conv_obj.save()
-            except UniqueViolationError:
-
-                continue
-        else:
-            conv = 0
-        #  ############ Message ############
-
-        if i != 1:
-            msg_obj = Message(
-                message_text=fake.paragraph(nb_sentences=1),
-                sender_id=customer.id,
-                conversation=conv.id,
-                created_at=datetime.datetime.utcnow(),
-            )
-            try:
-                msg = await msg_obj.save()
-            except UniqueViolationError:
-                continue
+        # #  ############ Conversation ############
+        #
+        # conv_obj = Conversation(
+        #     user_one_id=customer.id,
+        #     user_two_id=customer.id - 1,
+        #     created_at=datetime.datetime.utcnow(),
+        # )
+        #
+        # if i != 1:
+        #     try:
+        #         conv = await conv_obj.save()
+        #     except UniqueViolationError:
+        #
+        #         continue
+        # else:
+        #     conv = 0
+        # #  ############ Message ############
+        #
+        # if i != 1:
+        #     msg_obj = Message(
+        #         message_text=fake.paragraph(nb_sentences=1),
+        #         sender_id=customer.id,
+        #         conversation=conv.id,
+        #         created_at=datetime.datetime.utcnow(),
+        #     )
+        #     try:
+        #         msg = await msg_obj.save()
+        #     except UniqueViolationError:
+        #         continue
         print('>>> iteration #', i)

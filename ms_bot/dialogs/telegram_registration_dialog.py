@@ -269,8 +269,8 @@ class TelegramRegistrationDialog(ComponentDialog):
             "KEY_CALLBACK:ru",
             "KEY_CALLBACK:0",
             "KEY_CALLBACK:1",
-            "KEY_CALLBACK:Man",
-            "KEY_CALLBACK:Woman",
+            "KEY_CALLBACK:man",
+            "KEY_CALLBACK:woman",
         ]:
             condition = True
         else:
@@ -287,7 +287,7 @@ class TelegramRegistrationDialog(ComponentDialog):
             conversation_reference=user_data.conversation_reference,
             member_id=int(user_data.member_id),
             lang=user_data.lang,
-            self_sex=int(user_data.self_sex),
+            self_sex=user_data.self_sex,
             age=int(user_data.age),
             is_active=int(user_data.is_active),
         )
@@ -301,7 +301,7 @@ class TelegramRegistrationDialog(ComponentDialog):
                 conversation_reference=user_data.conversation_reference,
                 member_id=int(user_data.member_id),
                 lang=user_data.lang,
-                self_sex=int(user_data.self_sex),
+                self_sex=user_data.self_sex,
                 age=int(user_data.age),
                 is_active=int(user_data.is_active),
             )

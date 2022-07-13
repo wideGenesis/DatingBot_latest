@@ -58,7 +58,7 @@ class CustomerProfile:  # TODO match to db model
             dating_time=None,
             dating_day=None,
             adv_text=None,
-            goals=None,
+            goals_list=None,
             phone_is_hidden=None,
             tg_nickname_is_hidden=None,
             email_is_hidden=None,
@@ -80,6 +80,9 @@ class CustomerProfile:  # TODO match to db model
             authorised=None,
             otp=None,
             temp=None,
+            sex_buttons=None,
+            relationships_buttons=None,
+            walking_buttons=None,
     ):
         self.pk = pk
         self.nickname = nickname
@@ -128,7 +131,7 @@ class CustomerProfile:  # TODO match to db model
         self.dating_time = dating_time
         self.dating_day = dating_day
         self.adv_text = adv_text
-        self.goals = goals
+        self.goals_list: list = goals_list
         self.phone_is_hidden = phone_is_hidden
         self.tg_nickname_is_hidden = tg_nickname_is_hidden
         self.email_is_hidden = email_is_hidden
@@ -144,4 +147,6 @@ class CustomerProfile:  # TODO match to db model
         self.authorised = authorised
         self.otp = otp
         self.temp = temp
-       
+        self.sex_buttons: list = sex_buttons
+        self.relationships_buttons: list = relationships_buttons
+        self.walking_buttons: list = walking_buttons

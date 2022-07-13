@@ -23,8 +23,8 @@ class LangEnum(Enum):
 
 
 class SelfSexEnum(Enum):
-    man = 0
-    woman = 1
+    man = 'man'
+    woman = 'woman'
 
 
 class HasPlaceEnum(Enum):

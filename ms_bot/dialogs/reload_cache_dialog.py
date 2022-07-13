@@ -10,6 +10,7 @@ from botbuilder.dialogs import (
 )
 
 from helpers.azure_storage import rm_user_blobs
+from helpers.copyright import sex_buttons, relationships_buttons, walking_buttons
 from ms_bot.dialogs.telegram_registration_dialog import TelegramRegistrationDialog
 from settings.logger import CustomLogger
 from ms_bot.bots_models.models import CustomerProfile
@@ -90,7 +91,7 @@ class ReloadCacheDialog(ComponentDialog):
             self.customer_instance = customer
 
         except Exception:
-            logger.warning("USER (%s) DOESN'T EXIST IN DB", member_id)
+            logger.exception("USER (%s) DOESN'T EXIST IN DB", member_id)
             self.customer_exists = None
 
         if self.customer_exists is None:
@@ -187,6 +188,9 @@ async def _reload_cache(user_data, customer_instance, user_files, turn_context: 
     user_data.updated_at = customer_instance.updated_at
 
     user_data.files_dict = user_files
+    user_data.sex_buttons = sex_buttons
+    user_data.relationships_buttons = relationships_buttons
+    user_data.walking_buttons = walking_buttons
     user_data.adv_list = customer_instance.adv_list
     user_data.authorised = True
 

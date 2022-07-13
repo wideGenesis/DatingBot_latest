@@ -26,6 +26,7 @@ from sqlalchemy.exc import IntegrityError
 from core.tables.models import Area, Customer
 from helpers.constants import remove_last_message
 from ms_bot.dialogs.adv_create_text_dialog import GetAdvTextDialog
+from ms_bot.dialogs.dating.adv_create_dating_dialog import CreateDatingAdvDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
@@ -65,6 +66,7 @@ class CreateAdvDialog(ComponentDialog):
         )
         self.add_dialog(CreateAdvGoalsDialog(user_state, CreateAdvGoalsDialog.__name__))
         self.add_dialog(GetAdvTextDialog(user_state, GetAdvTextDialog.__name__))
+        self.add_dialog(CreateDatingAdvDialog(user_state, CreateDatingAdvDialog.__name__))
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(
             TextPrompt(TextPrompt.__name__, CreateAdvDialog.answer_prompt_validator)
@@ -77,20 +79,15 @@ class CreateAdvDialog(ComponentDialog):
             WaterfallDialog(
                 "CreateAdvDialog",
                 [
-                    self.who_for_whom,
                     self.global_goals,
-                    self.prefer_age_step,
-                    self.has_place,
-                    self.dating_time,
-                    self.dating_day,
-                    self.adv_text,
-                    self.goals,
+                    self.who_for_whom,
+                    self.processing_step,
                     self.phone_is_hidden,
                     self.tg_nickname_is_hidden,
                     self.email_is_hidden,
-                    self.money_support,
+                    self.adv_text,
 
-                    # self.money_support,
+
                     self.area_step,
                     # self.parse_area_choice_step,
                     # self.member_step,
@@ -107,30 +104,6 @@ class CreateAdvDialog(ComponentDialog):
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "CreateAdvDialog"
 
-    async def who_for_whom(
-            self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        logger.debug("who_for_whom %s", CreateAdvDialog.__name__)
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-
-        try:
-            await rm_tg_message(step_context.context, chat_id, message_id)
-        except ErrorResponseException:
-            logger.warning("Bad Request: message to delete not found")
-            pass
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(LOOKING_FOR_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
-            ),
-        )
-
     async def global_goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("global_goals %s", CreateAdvDialog.__name__)
 
@@ -140,13 +113,6 @@ class CreateAdvDialog(ComponentDialog):
             logger.warning('callback_query')
         except Exception:
             logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = step_context.result
-        user_data.prefer_age = result_from_previous_step
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -161,32 +127,18 @@ class CreateAdvDialog(ComponentDialog):
             ),
         )
 
-    async def prefer_age_step(
+    async def who_for_whom(
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug("prefer_age_step %s", CreateAdvDialog.__name__)
-        await remove_last_message(step_context, True)
+        logger.debug("who_for_whom %s", CreateAdvDialog.__name__)
+        # chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
+        # message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
 
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = step_context.result
-        user_data.who_for_whom = result_from_previous_step
-
-        return await step_context.prompt(
-            NumberPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(PREFER_AGE_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
-            ),
-        )
-
-    async def has_place(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("has_place %s", CreateAdvDialog.__name__)
+        # try:
+        #     await rm_tg_message(step_context.context, chat_id, message_id)
+        # except ErrorResponseException:
+        #     logger.warning("Bad Request: message to delete not found")
+        #     pass
 
         try:
             await remove_last_message(step_context, True)
@@ -199,24 +151,24 @@ class CreateAdvDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
 
-        result_from_previous_step = step_context.result
-        user_data.prefer_age = result_from_previous_step
+        result_from_previous_step = str(step_context.result).split(":")
+        user_data.global_goals = result_from_previous_step[1]
 
         return await step_context.prompt(
             TextPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(HAS_PLACE_KB),
+                    channel_data=json.dumps(LOOKING_FOR_KB),
                     type=ActivityTypes.message,
                 ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
+                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
             ),
         )
 
-    async def dating_time(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("dating_time %s", CreateAdvDialog.__name__)
+    async def processing_step(
+            self, step_context: WaterfallStepContext
+    ) -> DialogTurnResult:
+        logger.debug("processing_step %s", CreateAdvDialog.__name__)
 
         try:
             await remove_last_message(step_context, True)
@@ -225,96 +177,28 @@ class CreateAdvDialog(ComponentDialog):
         except Exception:
             logger.exception('Something went wrong!')
 
+        member_id = int(step_context.context.activity.from_property.id)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
+        for_whom = str(step_context.result).split(":")
+        for_whom = for_whom[1]
 
-        result_from_previous_step = step_context.result
-        user_data.has_place = result_from_previous_step
+        customer = await Customer.objects.get_or_none(member_id=member_id)
+        if customer is None:
+            raise ValueError
+        who: str = str(customer.self_sex)
 
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
+        user_data.who_for_whom = f'{who}:{for_whom}'
 
-    async def dating_day(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("dating_day %s", CreateAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
+        if user_data.global_goals == 'relationships':
+            return await step_context.replace_dialog(CreateAdvDialog.__name__)
 
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
+        if user_data.global_goals == 'dating':
+            return await step_context.begin_dialog(CreateDatingAdvDialog.__name__)
 
-        result_from_previous_step = step_context.result
-        user_data.dating_time = result_from_previous_step
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_DAY),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def adv_text(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("adv_text %s", CreateAdvDialog.__name__)
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = step_context.result
-        user_data.dating_day = result_from_previous_step
-
-        return await step_context.begin_dialog(GetAdvTextDialog.__name__)
-
-    async def goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("goals %s", CreateAdvDialog.__name__)
-
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = step_context.result
-        user_data.adv_text = result_from_previous_step
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
+        if user_data.global_goals == 'friendship':
+            return await step_context.replace_dialog(CreateAdvDialog.__name__)
 
     async def phone_is_hidden(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("phone_is_hidden %s", CreateAdvDialog.__name__)
@@ -382,27 +266,10 @@ class CreateAdvDialog(ComponentDialog):
             ),
         )
 
-    async def money_support(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("money_support %s", CreateAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
+    async def adv_text(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("adv_text %s", CreateDatingAdvDialog.__name__)
 
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
+        return await step_context.begin_dialog(GetAdvTextDialog.__name__)
 
     async def goals_routing(
             self, step_context: WaterfallStepContext
