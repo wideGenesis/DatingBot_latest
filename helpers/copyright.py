@@ -14,30 +14,13 @@ SEX_CHOICE = {
     1: "👩🏼‍🦱 Жінка",
 }
 
-LOOKING_GENDER_CHOICE = {
-    0: "👱🏻‍♂️ Чоловіків",
-    1: "👩🏼‍🦱 Жінок",
-    2: "👱🏻‍♂️ 👩🏼‍🦱 Чоловіків та Жінок",
-    3: "👫 👱🏻‍♂️ 👩🏼‍🦱 Компанію",
-    # 3: "👫 Пару МЖ",
-    # 4: "👬 Пару ММ",
-    # 5: "👭 Пару ЖЖ",
-    # 6: "☯️ Інші гендерні ідентичності",
-}
+# LOOKING_GENDER_CHOICE = {
+#     0: "👱🏻‍♂️ Чоловіків",
+#     1: "👩🏼‍🦱 Жінок",
+#     2: "👱🏻‍♂️ 👩🏼‍🦱 Чоловіків та Жінок",
+#     3: "👫 👱🏻‍♂️ 👩🏼‍🦱 Компанію",
+# }
 
-LOOKING_FOR_CHOICE = {
-    # 0: "🥰 Відносини, сім'я",
-    0: "😏 Секс без зобов'язань",
-    1: "🤗 Спілкування, пошук друзів",
-    # 3: "😉 Усе по трохи",
-}
-
-TIER_CHOICE = {
-    0: "free",
-    1: "basic",
-    2: "advanced",
-    3: "premium",
-}
 
 PHOTO_TYPE_CHOICE = {
     0: "Доступно",
@@ -57,7 +40,10 @@ BOT_MESSAGES = {
     "prefer_age_reprompt": "Фактичний вік має бути в діапазоні 18 - 69",
     "looking_for": "Мене цікавлять: ",
     "date_place": "Місце для зустрічей: ",
-    "date_time": "У мене є час для зустрічей:: ",
+    "date_time": "У мене є час для зустрічей: ",
+    "date_day": "Я можу зустрітися у: ",
+    "adv_text": "Текст оголошення:: ",
+
     "phone_request": "🤖 ➡️ ❌ Підтвердьте, що ви людина за допомогою телефонного номера, натиснувши кнопку нижче ⬇️",
     "phone_error": "Підтвердіть свою особу, натиснувши кнопку Підтвердити на клавіатурі нижче",
     "phone_verified": "🙊 Ваш номер телефону не буде доступний іншим користувачам \n  \nДякуємо!",
@@ -237,11 +223,10 @@ HAS_PLACE_KB = {
     },
 }
 
-
 DATING_TIME = {
     "method": "sendPhoto",
     "parameters": {
-        "caption": f"{BOT_MESSAGES['date_place']}",
+        "caption": f"{BOT_MESSAGES['date_time']}",
         "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
                  f"{image_rotation('friends')[3]}.jpg",
         "protect_content": True,
@@ -254,6 +239,32 @@ DATING_TIME = {
                 [{"text": "🌔 Вночі", "callback_data": "KEY_CALLBACK:night"}],
             ]
         },
+    },
+}
+
+DATING_DAY = {
+    "method": "sendPhoto",
+    "parameters": {
+        "caption": f"{BOT_MESSAGES['date_day']}",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[5]}.jpg",
+        "protect_content": True,
+        "disable_notification": True,
+        "reply_markup": {
+            "inline_keyboard": [
+                [{"text": "💚 будь-який день", "callback_data": "KEY_CALLBACK:any"}],
+                [{"text": "💛 сьогодні", "callback_data": "KEY_CALLBACK:today"}],
+                [{"text": "💜 у вихідні", "callback_data": "KEY_CALLBACK:weekend"}],
+            ]
+        },
+    },
+}
+
+ADV_TEXT = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['adv_text']}",
+
     },
 }
 
@@ -273,7 +284,7 @@ MAIN_MENU_KB = {
         "text": f"{BOT_MESSAGES['main_menu']}",
         "reply_markup": {
             "inline_keyboard": [
-[
+                [
                     {
                         "text": "📝 Створити оголошення",
                         "callback_data": "KEY_CALLBACK:create_adv",
@@ -353,6 +364,24 @@ USER_FILES_KB = {
     },
 }
 
+GLOBAL_GOALS_KB = {
+    "method": "sendPhoto",
+    "parameters": {
+        "caption": f"{BOT_MESSAGES['looking_for']}",
+        "photo": f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/"
+                 f"{image_rotation('friends')[10]}.jpg",
+        "protect_content": True,
+        "disable_notification": True,
+        "reply_markup": {
+            "inline_keyboard": [
+                [{"text": "🥰 Сім'я та відносини", "callback_data": "KEY_CALLBACK:relationships"}],
+                [{"text": "😏 Побачення, секс без зобов'язань", "callback_data": "KEY_CALLBACK:dating"}],
+                [{"text": "🤗 Зустрічі, прогулянки, спілкування", "callback_data": "KEY_CALLBACK:walking"}],
+            ]
+        },
+    },
+}
+
 REQUEST_GEO = {
     "method": "sendMessage",
     "parameters": {
@@ -393,63 +422,6 @@ def send_file_kb(member_id: str, file: str, privacy_type: int) -> dict:
     }
 
 
-# SEND_MEDIA_KB = {
-#     "method": "sendMessage",
-#     "parameters": {
-#         "protect_content": True,
-#         "parse_mode": "MarkdownV2",
-#         "text": "Зробіть вибір:",
-#         "reply_markup": {
-#             "inline_keyboard": [
-#                 [
-#                     {
-#                         "text": "🔐 Відкрити (Приховати)",
-#                         "callback_data": "KEY_CALLBACK:file_open_hidden",
-#                     }
-#                 ],
-#                 [{"text": " файл", "callback_data": "KEY_CALLBACK:file_rm"}],
-#                 [{"text": "➡️ Далі", "callback_data": "KEY_CALLBACK:next"}],
-#             ]
-#         },
-#     },
-# }
-
-# SEND_ADV_KB = {
-#     "method": "sendMessage",
-#     "parameters": {
-#         "text": "Зробіть вибір:",
-#         "reply_markup": {
-#             "inline_keyboard": [
-#                 [
-#                     {
-#                         "text": "📬 Вхідні повідомлення",
-#                         "callback_data": "KEY_CALLBACK:income_adv",
-#                     }
-#                 ],
-#                 [
-#                     {
-#                         "text": "📭 Опубліковані оголошення",
-#                         "callback_data": "KEY_CALLBACK:review_adv",
-#                     }
-#                 ],
-#                 [
-#                     {
-#                         "text": "📝 Створити оголошення",
-#                         "callback_data": "KEY_CALLBACK:create_adv",
-#                     }
-#                 ],
-#                 [
-#                     {
-#                         "text": "🗑 Видалити оголошення",
-#                         "callback_data": "KEY_CALLBACK:adv_rm",
-#                     }
-#                 ],
-#                 [{"text": "↩️️ Назад", "callback_data": "KEY_CALLBACK:back"}],
-#             ]
-#         },
-#     },
-# }
-
 CREATE_AREA_KB = {
     "method": "sendMessage",
     "parameters": {
@@ -474,23 +446,6 @@ CREATE_AREA_KB = {
     },
 }
 
-relationships_buttons = [
-    [{"text": "🏡 Сім'я", "callback_data": "KEY_CALLBACK:family"}],
-    [{"text": "🥰 Відносини", "callback_data": "KEY_CALLBACK:relationships"}],
-    [{"text": "❤️ Зустрічі, побачення", "callback_data": "KEY_CALLBACK:dating"}],
-    [{"text": "🧸 Народження дітей", "callback_data": "KEY_CALLBACK:children"}],
-    [
-        {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
-    ],
-]
-
-friends_buttons = [
-    [{"text": "❤️ Зустрічі, побачення", "callback_data": "KEY_CALLBACK:dating"}],
-    [{"text": "🤗 Прогулянки, спілкування", "callback_data": "KEY_CALLBACK:talking"}],
-    [
-        {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
-    ],
-]
 
 sex_buttons = [
     [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:4"}],
@@ -506,16 +461,6 @@ sex_buttons = [
     [{"text": "Эскорт (предлагаю)", "callback_data": "KEY_CALLBACK:17"}],
     [{"text": "Эскорт (ищу)", "callback_data": "KEY_CALLBACK:16"}],
     [{"text": "Фетиши, ролевые игры и другое", "callback_data": "KEY_CALLBACK:12"}],
-    [
-        {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
-    ],
-]
-
-all_in_one_buttons = [
-    [{"text": "🥰 відносини", "callback_data": "KEY_CALLBACK:relationships"}],
-    [{"text": "❤️ Зустрічі, побачення", "callback_data": "KEY_CALLBACK:dating"}],
-    [{"text": "🤗 Прогулянки, спілкування", "callback_data": "KEY_CALLBACK:talking"}],
-    [{"text": "😏 Регулярный секс", "callback_data": "KEY_CALLBACK:"}],
     [
         {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
     ],

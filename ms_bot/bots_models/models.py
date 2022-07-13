@@ -52,6 +52,7 @@ class CustomerProfile:  # TODO match to db model
             adv_dict=None,
             adv_pk=None,
             who_for_whom=None,
+            global_goals=None,
             prefer_age=None,
             has_place=None,
             dating_time=None,
@@ -121,6 +122,7 @@ class CustomerProfile:  # TODO match to db model
         self.adv_dict = adv_dict
         self.adv_pk = adv_pk
         self.who_for_whom = who_for_whom
+        self.global_goals = global_goals
         self.prefer_age = prefer_age
         self.has_place = has_place
         self.dating_time = dating_time

@@ -22,10 +22,7 @@ import json
 from settings.logger import CustomLogger
 from helpers.copyright import (
     LOOKING_FOR_KB,
-    all_in_one_buttons,
     sex_buttons,
-    relationships_buttons,
-    friends_buttons,
     goals_kb,
     BOT_MESSAGES,
 )
@@ -58,23 +55,12 @@ class CreateAdvGoalsDialog(ComponentDialog):
             )
         )
         self.add_dialog(
-            NumberPrompt(
-                NumberPrompt.__name__, CreateAdvGoalsDialog.age_prompt_validator
-            )
-        )
-
-        self.add_dialog(
             WaterfallDialog(
                 "CreateAdvGoalsDialog",
                 [
-                    self.looking_for_step,
-                    self.goals_type_step,
-                    # self.member_step,
-                    # self.request_phone_step,
-                    # self.request_location_step,
-                    # self.save_new_customer,
-                    # self.upload_media_step,
-                    # self.back_to_parent
+                    self.loop_step,
+                    self.post_loop_step,
+
                 ],
             )
         )
@@ -84,123 +70,34 @@ class CreateAdvGoalsDialog(ComponentDialog):
         self.initial_dialog_id = "CreateAdvGoalsDialog"
         self.goals_type = None
 
-    # area_id
-    # text
-    # has_place
-    # dating_time
-    # dating_day
-    # file_attachment_1
-    # file_attachment_2
-    # goals_1 - goals_8
-
-    async def looking_for_step(
-        self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        logger.debug("looking_for_step %s", CreateAdvGoalsDialog.__name__)
-
-        chat_id = (
-            f"{step_context.context.activity.channel_data['message']['chat']['id']}"
-        )
-        message_id = (
-            f"{step_context.context.activity.channel_data['message']['message_id']}"
-        )
-        await rm_tg_message(step_context.context, chat_id, message_id)
-
-        try:
-            message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
-            await rm_tg_message(step_context.context, chat_id, message_id_1)
-        except Exception:
-            logger.debug("Customer drop reply and make direct answer")
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-        result_from_previous_step = str(step_context.context.activity.text)
-        result_from_previous_step = result_from_previous_step.strip()
-        result_from_previous_step = result_from_previous_step.split("-")
-        _result_from_previous_step = (
-            str(result_from_previous_step[0]).strip()
-            + str(result_from_previous_step[1]).strip()
-        )
-        result_from_previous_step = _result_from_previous_step.strip()
-
-        user_data.prefer_age = result_from_previous_step
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(LOOKING_FOR_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
-            ),
-        )
-
-    async def goals_type_step(
-        self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        logger.debug("goals_type_step %s", CreateAdvGoalsDialog.__name__)
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
-
+    async def loop_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("loop_step %s", CreateAdvGoalsDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
 
-        result_from_previous_step = str(step_context.result).split(":")
-        self.goals_type = result_from_previous_step[1]
-        user_data.temp = result_from_previous_step[1]
+        files = user_data.files_dict
+        file_number = user_data.file_number
 
-        if self.goals_type == "relationships":
-            buttons = relationships_buttons
-        elif self.goals_type == "sex_fun":
-            buttons = sex_buttons
-        elif self.goals_type == "talking_friends":
-            buttons = friends_buttons
-        elif self.goals_type == "all_in_one":
-            buttons = all_in_one_buttons
-        else:
-            return await step_context.cancel_all_dialogs(True)
+        return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__, item)
 
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(goals_kb(buttons, None)),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
-            ),
-        )
-
-    async def back_to_parent(
+    async def post_loop_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        logger.debug(f"back_to_main from %s", CreateAdvGoalsDialog.__name__)
-
+        logger.debug("post_loop_step %s", CreateAdvGoalsDialog.__name__)
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        return await step_context.end_dialog(user_data)
+        files = user_data.files_dict
+        length = len(files) - 1
 
-    @staticmethod
-    async def age_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
-        _value = prompt_context.context.activity.text
-        _value = _value.strip()
-        _value = _value.split("-")
+        if user_data.file_number < length:
+            user_data.file_number += 1
+            return await step_context.replace_dialog(CreateAdvGoalsDialog.__name__)
 
-        if len(_value) == 2:
-            condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
-
-        elif len(_value) == 1:
-            condition = 18 <= int(_value[0]) <= 69
-        else:
-            condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
-
-        return prompt_context.recognized.succeeded and condition
+        if user_data.file_number >= length:
+            user_data.file_number = 0
+            return await step_context.end_dialog('need_replace_parent')
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
@@ -208,34 +105,7 @@ class CreateAdvGoalsDialog(ComponentDialog):
 
         if _value in [
             "KEY_CALLBACK:profile_region",
-            "KEY_CALLBACK:find_region",
-            "KEY_CALLBACK:Man",
-            "KEY_CALLBACK:Woman",
-            "KEY_CALLBACK:Both",
-            "KEY_CALLBACK:Other to Other",
-            "KEY_CALLBACK:relationships",
-            "KEY_CALLBACK:sex_fun",
-            "KEY_CALLBACK:talking_friends",
-            "KEY_CALLBACK:all_in_one",
-            "KEY_CALLBACK:4",
-            "KEY_CALLBACK5",
-            "KEY_CALLBACK:6",
-            "KEY_CALLBACK:7",
-            "KEY_CALLBACK:8",
-            "KEY_CALLBACK:9",
-            "KEY_CALLBACK:10",
-            "KEY_CALLBACK:11",
-            "KEY_CALLBACK:12",
-            "KEY_CALLBACK:13",
-            "KEY_CALLBACK:14",
-            "KEY_CALLBACK:15",
-            "KEY_CALLBACK:16",
-            "KEY_CALLBACK:17",
-            "KEY_CALLBACK:ready"
-            "KEY_CALLBACK:family"
-            "KEY_CALLBACK:relationships"
-            "KEY_CALLBACK:dating"
-            "KEY_CALLBACK:children",
+
         ]:
             condition = True
         else:
@@ -243,25 +113,3 @@ class CreateAdvGoalsDialog(ComponentDialog):
         # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
 
         return prompt_context.recognized.succeeded and condition
-
-    # @classmethod
-    # async def _profanity_filter(cls, text: str) -> str:
-    #     pf = ProfanityFilter(languages=['ru', 'en'])
-    #     # pf.extra_profane_word_dictionaries = {'en': {'chocolate', 'orange'}}
-    #
-    #     return pf.censor(text)
-
-    # @staticmethod
-    # async def yield_goals_kb(
-    #         step_context: WaterfallStepContext, user_data: CustomerProfile, step=None
-    # ) -> DialogTurnResult:
-    #
-    #     return await step_context.prompt(
-    #         TextPrompt.__name__, PromptOptions(
-    #             prompt=Activity(
-    #                 channel_data=json.dumps(SEND_MEDIA_KB),
-    #                 type=ActivityTypes.message,
-    #             ),
-    #             retry_prompt=MessageFactory.text('Зробіть вибір, натиснувши на відповідну кнопку вище'),
-    #         )
-    #     )

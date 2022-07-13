@@ -25,12 +25,16 @@ from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer
 from helpers.constants import remove_last_message
+from ms_bot.dialogs.adv_create_text_dialog import GetAdvTextDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
     PREFER_AGE_KB,
     CREATE_AREA_KB,
-    LOOKING_FOR_KB, HAS_PLACE_KB, DATING_TIME,
+    LOOKING_FOR_KB,
+    HAS_PLACE_KB,
+    DATING_TIME,
+    DATING_DAY, GLOBAL_GOALS_KB,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -60,6 +64,7 @@ class CreateAdvDialog(ComponentDialog):
             RequestLocationDialog(user_state, RequestLocationDialog.__name__)
         )
         self.add_dialog(CreateAdvGoalsDialog(user_state, CreateAdvGoalsDialog.__name__))
+        self.add_dialog(GetAdvTextDialog(user_state, GetAdvTextDialog.__name__))
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(
             TextPrompt(TextPrompt.__name__, CreateAdvDialog.answer_prompt_validator)
@@ -73,11 +78,20 @@ class CreateAdvDialog(ComponentDialog):
                 "CreateAdvDialog",
                 [
                     self.who_for_whom,
+                    self.global_goals,
                     self.prefer_age_step,
                     self.has_place,
                     self.dating_time,
-                    # self.goals_routing,
-                    # self.area_step,
+                    self.dating_day,
+                    self.adv_text,
+                    self.goals,
+                    self.phone_is_hidden,
+                    self.tg_nickname_is_hidden,
+                    self.email_is_hidden,
+                    self.money_support,
+
+                    # self.money_support,
+                    self.area_step,
                     # self.parse_area_choice_step,
                     # self.member_step,
                     # self.request_phone_step,
@@ -117,24 +131,40 @@ class CreateAdvDialog(ComponentDialog):
             ),
         )
 
+    async def global_goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("global_goals %s", CreateAdvDialog.__name__)
+
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.prefer_age = result_from_previous_step
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(GLOBAL_GOALS_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
     async def prefer_age_step(
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("prefer_age_step %s", CreateAdvDialog.__name__)
-
-        # chat_id = (
-        #     f"{step_context.context.activity.channel_data['message']['chat']['id']}"
-        # )
-        # message_id = (
-        #     f"{step_context.context.activity.channel_data['message']['message_id']}"
-        # )
-        # await rm_tg_message(step_context.context, chat_id, message_id)
-
-        # try:
-        #     message_id_1 = f"{step_context.context.activity.channel_data['message']['reply_to_message']['message_id']}"
-        #     await rm_tg_message(step_context.context, chat_id, message_id_1)
-        # except Exception:
-        #     logger.debug("Customer drop reply and make direct answer")
         await remove_last_message(step_context, True)
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(
@@ -142,7 +172,7 @@ class CreateAdvDialog(ComponentDialog):
         )
 
         result_from_previous_step = step_context.result
-        user_data.age = result_from_previous_step
+        user_data.who_for_whom = result_from_previous_step
 
         return await step_context.prompt(
             NumberPrompt.__name__,
@@ -157,12 +187,20 @@ class CreateAdvDialog(ComponentDialog):
 
     async def has_place(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("has_place %s", CreateAdvDialog.__name__)
+
         try:
             await remove_last_message(step_context, True)
         except KeyError:
             logger.warning('callback_query')
         except Exception:
             logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.prefer_age = result_from_previous_step
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -179,6 +217,173 @@ class CreateAdvDialog(ComponentDialog):
 
     async def dating_time(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("dating_time %s", CreateAdvDialog.__name__)
+
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.has_place = result_from_previous_step
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def dating_day(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("dating_day %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.dating_time = result_from_previous_step
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_DAY),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def adv_text(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("adv_text %s", CreateAdvDialog.__name__)
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.dating_day = result_from_previous_step
+
+        return await step_context.begin_dialog(GetAdvTextDialog.__name__)
+
+    async def goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("goals %s", CreateAdvDialog.__name__)
+
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+
+        result_from_previous_step = step_context.result
+        user_data.adv_text = result_from_previous_step
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def phone_is_hidden(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("phone_is_hidden %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def tg_nickname_is_hidden(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("tg_nickname_is_hidden %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def email_is_hidden(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("email_is_hidden %s", CreateAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(DATING_TIME),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Make your choice by clicking on the appropriate button above"
+                ),
+            ),
+        )
+
+    async def money_support(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("money_support %s", CreateAdvDialog.__name__)
         try:
             await remove_last_message(step_context, True)
         except KeyError:
@@ -344,6 +549,9 @@ class CreateAdvDialog(ComponentDialog):
             "KEY_CALLBACK:woman",
             "KEY_CALLBACK:both",
             "KEY_CALLBACK:fun",
+            "KEY_CALLBACK:relationships",
+            "KEY_CALLBACK:dating",
+            "KEY_CALLBACK:walking",
             "KEY_CALLBACK:mine",
             "KEY_CALLBACK:sometimes",
             "KEY_CALLBACK:yours",
@@ -353,6 +561,9 @@ class CreateAdvDialog(ComponentDialog):
             "KEY_CALLBACK:day",
             "KEY_CALLBACK:evening",
             "KEY_CALLBACK:night",
+            "KEY_CALLBACK:any",
+            "KEY_CALLBACK:today",
+            "KEY_CALLBACK:weekend",
         ]:
             condition = True
         else:
