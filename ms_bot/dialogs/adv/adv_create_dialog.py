@@ -25,8 +25,9 @@ from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer
 from helpers.constants import remove_last_message
-from ms_bot.dialogs.adv_create_text_dialog import GetAdvTextDialog
-from ms_bot.dialogs.dating.adv_create_dating_dialog import CreateDatingAdvDialog
+from ms_bot.dialogs.adv.adv_create_goals_dialog import CreateAdvGoalsDialog
+from ms_bot.dialogs.adv.adv_create_text_dialog import GetAdvTextDialog
+from ms_bot.dialogs.adv.dating.adv_create_dating_dialog import CreateDatingAdvDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
@@ -39,7 +40,6 @@ from helpers.copyright import (
 )
 
 from ms_bot.bots_models.models import CustomerProfile
-from ms_bot.dialogs.adv_create_goals_dialog import CreateAdvGoalsDialog
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -131,14 +131,6 @@ class CreateAdvDialog(ComponentDialog):
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("who_for_whom %s", CreateAdvDialog.__name__)
-        # chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        # message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-
-        # try:
-        #     await rm_tg_message(step_context.context, chat_id, message_id)
-        # except ErrorResponseException:
-        #     logger.warning("Bad Request: message to delete not found")
-        #     pass
 
         try:
             await remove_last_message(step_context, True)

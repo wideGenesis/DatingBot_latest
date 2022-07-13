@@ -25,20 +25,18 @@ from sqlalchemy.exc import IntegrityError
 
 from core.tables.models import Area, Customer
 from helpers.constants import remove_last_message
-from ms_bot.dialogs.adv_create_text_dialog import GetAdvTextDialog
+from ms_bot.dialogs.adv.adv_create_goals_dialog import CreateAdvGoalsDialog
+from ms_bot.dialogs.adv.adv_create_text_dialog import GetAdvTextDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
     PREFER_AGE_KB,
-    CREATE_AREA_KB,
-    LOOKING_FOR_KB,
     HAS_PLACE_KB,
     DATING_TIME,
     DATING_DAY, GLOBAL_GOALS_KB, MONEY_SUPPORT,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
-from ms_bot.dialogs.adv_create_goals_dialog import CreateAdvGoalsDialog
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
@@ -230,8 +228,6 @@ class CreateDatingAdvDialog(ComponentDialog):
                 ),
             ),
         )
-
-
 
     async def goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("goals %s", CreateDatingAdvDialog.__name__)
