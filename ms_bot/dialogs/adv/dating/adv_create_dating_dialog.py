@@ -1,6 +1,3 @@
-import datetime
-import pickle
-
 from asyncpg import UniqueViolationError
 from botbuilder.core import (
     MessageFactory,
@@ -18,12 +15,11 @@ from botbuilder.dialogs import (
 )
 
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
-from botbuilder.schema import Activity, ActivityTypes, ErrorResponseException
+from botbuilder.schema import Activity, ActivityTypes
 import json
 
-from sqlalchemy.exc import IntegrityError
 
-from core.tables.models import Area, Customer
+from core.tables.models import Area
 from helpers.constants import remove_last_message
 from ms_bot.dialogs.adv.adv_create_goals_dialog import CreateAdvGoalsDialog
 from ms_bot.dialogs.adv.adv_create_text_dialog import GetAdvTextDialog
@@ -33,13 +29,14 @@ from helpers.copyright import (
     PREFER_AGE_KB,
     HAS_PLACE_KB,
     DATING_TIME,
-    DATING_DAY, GLOBAL_GOALS_KB, MONEY_SUPPORT,
+    DATING_DAY,
+    MONEY_SUPPORT,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
-from ms_bot.bot_helpers.telegram_helper import rm_tg_message
+
 
 logger = CustomLogger.get_logger("bot")
 
@@ -242,9 +239,12 @@ class CreateDatingAdvDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.money_support = result_from_previous_step[1]
+        money_support = str(step_context.result).split(":")
+        money_support = money_support[1]
+        if money_support == 'money_yes':
+            user_data.money_support = True
+        else:
+            user_data.money_support = False
 
         return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__)
 

@@ -519,43 +519,43 @@ def send_file_kb(member_id: str, file: str, privacy_type: int) -> dict:
     }
 
 
-CREATE_AREA_KB = {
-    "method": "sendMessage",
-    "parameters": {
-        "text": "Вкажіть регіон пошуку (можна використовувати регіон, вказаний при "
-                "реєстрації з профілю або вказати інший регіон)",
-        "reply_markup": {
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "📂 Регіон з профілю",
-                        "callback_data": "KEY_CALLBACK:profile_region",
-                    }
-                ],
-                [
-                    {
-                        "text": "🔍 Вказати інший регіон",
-                        "callback_data": "KEY_CALLBACK:find_region",
-                    }
-                ],
-            ]
-        },
-    },
-}
+# CREATE_AREA_KB = {
+#     "method": "sendMessage",
+#     "parameters": {
+#         "text": "Вкажіть регіон пошуку (можна використовувати регіон, вказаний при "
+#                 "реєстрації з профілю або вказати інший регіон)",
+#         "reply_markup": {
+#             "inline_keyboard": [
+#                 [
+#                     {
+#                         "text": "📂 Регіон з профілю",
+#                         "callback_data": "KEY_CALLBACK:profile_region",
+#                     }
+#                 ],
+#                 [
+#                     {
+#                         "text": "🔍 Вказати інший регіон",
+#                         "callback_data": "KEY_CALLBACK:find_region",
+#                     }
+#                 ],
+#             ]
+#         },
+#     },
+# }
 
 sex_buttons = [
     [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:petting"}],
     [{"text": "Оральный секс (делают мне)", "callback_data": "KEY_CALLBACK:oral_to_me"}],
     [{"text": "Оральный секс (делаю я)", "callback_data": "KEY_CALLBACK:oral_to_you"}],
     [{"text": "Секс (Классический)", "callback_data": "KEY_CALLBACK:hetero_fuck"}],
-    [{"text": "Анальный секс (я)", "callback_data": "KEY_CALLBACK:anal_to_you"}],
-    [{"text": "Анальный секс (меня)", "callback_data": "KEY_CALLBACK:anal_to_me"}],
+    [{"text": "Анальный секс (я сверху)", "callback_data": "KEY_CALLBACK:anal_top"}],
+    [{"text": "Анальный секс (я снизу)", "callback_data": "KEY_CALLBACK:anal_bottom"}],
     [{"text": "Анилингус (делают мне)", "callback_data": "KEY_CALLBACK:rim_to_me"}],
     [{"text": "Анилингус (делаю я)", "callback_data": "KEY_CALLBACK:rim_to_you"}],
     [{"text": "Массаж (делают мне)", "callback_data": "KEY_CALLBACK:massage_to_me"}],
     [{"text": "Массаж (делаю я)", "callback_data": "KEY_CALLBACK:massage_to_you"}],
     [{"text": "Эскорт (предлагаю)", "callback_data": "KEY_CALLBACK:for_pay_offer"}],
-    [{"text": "Эскорт (ищу)", "callback_data": "KEY_CALLBACK:for_pay_looking"}],
+    [{"text": "Эскорт (ищу)", "callback_data": "KEY_CALLBACK:for_pay_bid"}],
     [{"text": "Фетиши, ролевые игры и другое", "callback_data": "KEY_CALLBACK:fetishes"}],
     [{"text": "Вiрт", "callback_data": "KEY_CALLBACK:virt"}],
     [

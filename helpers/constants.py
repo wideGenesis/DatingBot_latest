@@ -5,14 +5,14 @@ from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 
 
 class WhoForWhomEnum(Enum):
-    man_to_woman = "man_to_woman"
-    woman_to_man = "woman_to_man"
-    any_to_both = "any_to_both"
-    man_to_man = "man_to_man"
-    woman_to_woman = "woman_to_woman"
-    company = "company"
-    doesnt_matter = "doesnt_matter"
-    other_to_other = "other_to_other"
+    man_to_woman = "man:woman"
+    woman_to_man = "woman:man"
+    man_to_both = "man:both"
+    woman_to_both = "woman:both"
+    man_to_man = "man:man"
+    woman_to_woman = "woman:woman"
+    man_friendship = "man:friendship"
+    woman_friendship = "woman:friendship"
 
 
 class LangEnum(Enum):

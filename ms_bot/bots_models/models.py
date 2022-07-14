@@ -65,6 +65,8 @@ class CustomerProfile:  # TODO match to db model
             money_support=None,
             is_published=None,
             valid_until_date=None,
+            gps_coordinates_for_adv=None,
+            area=None,
             redis_channel=None,
             adv_created_at=None,
             adv_updated_at=None,
@@ -140,6 +142,8 @@ class CustomerProfile:  # TODO match to db model
         self.money_support = money_support
         self.is_published = is_published
         self.valid_until_date = valid_until_date
+        self.gps_coordinates_for_adv = gps_coordinates_for_adv
+        self.area = area
         self.redis_channel = redis_channel
         self.adv_created_at = adv_created_at
         self.adv_updated_at = adv_updated_at

@@ -85,11 +85,10 @@ class RequestLocationDialog(ComponentDialog):
         lat = result_from_previous_step.get("latitude")
         long = result_from_previous_step.get("longitude")
         _loc = f"{lat}:{long}"
-        user_data.location = _loc
-        user_data.is_active = 1
+        user_data.gps_coordinates_for_adv = _loc
 
         area = await reverse_geocode(_loc)
-        user_data.area_id = f"{area[2]}:{area[1]}:{area[0]}".lower()
+        user_data.area = f"{area[2]}:{area[1]}:{area[0]}".lower()
 
         chat_id = (
             f"{step_context.context.activity.channel_data['message']['chat']['id']}"

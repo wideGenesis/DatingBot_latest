@@ -113,12 +113,10 @@ class CreateAdvGoalsDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
 
-        result_from_previous_step = str(step_context.result).split(':')
-        result_from_previous_step = result_from_previous_step[1]
+        result_from_previous_step = step_context.result
         sex_buttons = user_data.sex_buttons
-
         for item in sex_buttons:
-            if item[0]['callback_data'] == 'ready':
+            if item[0]['callback_data'] == 'KEY_CALLBACK:ready':
                 return await step_context.end_dialog()
 
             if item[0]['callback_data'] == result_from_previous_step:
@@ -143,14 +141,14 @@ class CreateAdvGoalsDialog(ComponentDialog):
             "KEY_CALLBACK:oral_to_me",
             "KEY_CALLBACK:oral_to_you",
             "KEY_CALLBACK:hetero_fuck",
-            "KEY_CALLBACK:anal_to_you",
-            "KEY_CALLBACK:anal_to_me",
+            "KEY_CALLBACK:anal_top",
+            "KEY_CALLBACK:anal_bottom",
             "KEY_CALLBACK:rim_to_me",
             "KEY_CALLBACK:rim_to_you",
             "KEY_CALLBACK:massage_to_me",
             "KEY_CALLBACK:massage_to_you",
             "KEY_CALLBACK:for_pay_offer",
-            "KEY_CALLBACK:for_pay_looking",
+            "KEY_CALLBACK:for_pay_bid",
             "KEY_CALLBACK:fetishes",
             "KEY_CALLBACK:virt",
             "KEY_CALLBACK:ready",

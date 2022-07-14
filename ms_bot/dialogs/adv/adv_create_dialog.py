@@ -21,22 +21,19 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes, ErrorResponseException
 import json
 
-from sqlalchemy.exc import IntegrityError
 
-from core.tables.models import Area, Customer
-from helpers.constants import remove_last_message
+from core.tables.models import Customer, Advertisement, Area
+from helpers.constants import remove_last_message, WhoForWhomEnum
 from ms_bot.dialogs.adv.adv_create_goals_dialog import CreateAdvGoalsDialog
 from ms_bot.dialogs.adv.adv_create_text_dialog import GetAdvTextDialog
 from ms_bot.dialogs.adv.dating.adv_create_dating_dialog import CreateDatingAdvDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
-    PREFER_AGE_KB,
-    CREATE_AREA_KB,
     LOOKING_FOR_KB,
-    HAS_PLACE_KB,
-    DATING_TIME,
-    DATING_DAY, GLOBAL_GOALS_KB, PHONE_IS_HIDDEN,
+    GLOBAL_GOALS_KB,
+    PHONE_IS_HIDDEN,
+    TG_IS_HIDDEN,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -84,16 +81,14 @@ class CreateAdvDialog(ComponentDialog):
                     self.processing_step,
                     self.phone_is_hidden,
                     self.tg_nickname_is_hidden,
-                    self.email_is_hidden,
                     self.adv_text,
 
 
-                    self.area_step,
+                    # self.area_step,
                     # self.parse_area_choice_step,
-                    # self.member_step,
-                    # self.request_phone_step,
-                    # self.request_location_step,
-                    # self.save_new_customer,
+                    self.member_step,
+                    self.request_location_step,
+                    self.save_adv,
                     # self.upload_media_step,
                     # self.back_to_parent
                 ],
@@ -237,29 +232,7 @@ class CreateAdvDialog(ComponentDialog):
             TextPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def email_is_hidden(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("email_is_hidden %s", CreateAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
+                    channel_data=json.dumps(TG_IS_HIDDEN),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
@@ -271,59 +244,30 @@ class CreateAdvDialog(ComponentDialog):
     async def adv_text(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("adv_text %s", CreateDatingAdvDialog.__name__)
 
-        return await step_context.begin_dialog(GetAdvTextDialog.__name__)
-
-    async def goals_routing(
-            self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        logger.debug("goals_routing %s", CreateAdvDialog.__name__)
-        return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__)
-
-    async def area_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("area_step %s", CreateAdvDialog.__name__)
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(CREATE_AREA_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(BOT_MESSAGES["reprompt"]),
-            ),
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
         )
-
-    async def parse_area_choice_step(
-            self, step_context: WaterfallStepContext
-    ) -> DialogTurnResult:
-        logger.debug("parse_area_choice_step %s", CreateAdvDialog.__name__)
-
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
-
-        result_from_previous_step = str(step_context.result).split(":")
-        result_from_previous_step = result_from_previous_step[1]
-
-        if result_from_previous_step == "profile_region":
-            return await step_context.next([])
-        elif result_from_previous_step == "find_region":
-            return await step_context.begin_dialog(RequestLocationDialog.__name__)
+        phone_is_hidden = str(step_context.result).split(":")
+        phone_is_hidden = phone_is_hidden[1]
+        if phone_is_hidden == 'tg_yes':
+            user_data.tg_nickname_is_hidden = False
         else:
-            return await step_context.replace_dialog(CreateAdvDialog.__name__)
+            user_data.tg_nickname_is_hidden = True
+        return await step_context.begin_dialog(GetAdvTextDialog.__name__)
 
     async def member_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("member_step %s", CreateAdvDialog.__name__)
-        chat_id = f"{step_context.context.activity.channel_data['callback_query']['message']['chat']['id']}"
-        message_id = f"{step_context.context.activity.channel_data['callback_query']['message']['message_id']}"
-        await rm_tg_message(step_context.context, chat_id, message_id)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
 
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-
-        result_from_previous_step = str(step_context.result).split(":")
-
         member_id = int(step_context.context.activity.from_property.id)
         conversation_reference = pickle.dumps(
             step_context.context.get_conversation_reference(
@@ -331,13 +275,10 @@ class CreateAdvDialog(ComponentDialog):
             )
         )
 
-        user_data.looking_for = result_from_previous_step[1]
         user_data.member_id = member_id
         user_data.conversation_reference = conversation_reference
         user_data.updated_at = datetime.datetime.utcnow()
         user_data.last_seen = user_data.updated_at
-        user_data.channel_id = 0
-        user_data.premium_tier = 0
 
         return await step_context.next([])
 
@@ -347,7 +288,7 @@ class CreateAdvDialog(ComponentDialog):
         logger.debug("request_location_step %s", RequestLocationDialog.__name__)
         return await step_context.begin_dialog(RequestLocationDialog.__name__)
 
-    async def save_new_customer(
+    async def save_adv(
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         logger.debug("save_new_customer %s", CreateAdvDialog.__name__)
@@ -357,9 +298,7 @@ class CreateAdvDialog(ComponentDialog):
         )
 
         try:
-            area = await self._save_area(
-                user_data,
-            )
+            area = await self._save_area(user_data)
             logger.info("_save_area for %s was successful", user_data.member_id)
         except Exception:
             logger.exception("_save_area for %s was Unsuccessful", user_data.member_id)
@@ -367,13 +306,13 @@ class CreateAdvDialog(ComponentDialog):
             return await step_context.replace_dialog(CreateAdvDialog.__name__)
 
         try:
-            await self._save_customer(user_data, area)
+            await self._save_adv(user_data, area)
             logger.info(
-                "save_customer_to_db for %s was successful", user_data.member_id
+                "_save_adv for %s was successful", user_data.member_id
             )
         except Exception:
             logger.exception(
-                "save_customer_to_db for %s was unsuccessful", user_data.member_id
+                "_save_adv for %s was unsuccessful", user_data.member_id
             )
             await step_context.context.send_activity("exceptions_occurs")
             return await step_context.replace_dialog(CreateAdvDialog.__name__)
@@ -403,7 +342,6 @@ class CreateAdvDialog(ComponentDialog):
             condition = 18 <= int(_value[0]) <= 69
         else:
             condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
 
         return prompt_context.recognized.succeeded and condition
 
@@ -417,7 +355,7 @@ class CreateAdvDialog(ComponentDialog):
             "KEY_CALLBACK:man",
             "KEY_CALLBACK:woman",
             "KEY_CALLBACK:both",
-            "KEY_CALLBACK:fun",
+            "KEY_CALLBACK:friendship",
             "KEY_CALLBACK:relationships",
             "KEY_CALLBACK:dating",
             "KEY_CALLBACK:walking",
@@ -433,97 +371,102 @@ class CreateAdvDialog(ComponentDialog):
             "KEY_CALLBACK:any",
             "KEY_CALLBACK:today",
             "KEY_CALLBACK:weekend",
+            "KEY_CALLBACK:phone_yes",
+            "KEY_CALLBACK:phone_no",
+            "KEY_CALLBACK:tg_yes",
+            "KEY_CALLBACK:tg_no",
         ]:
             condition = True
         else:
             condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
 
         return prompt_context.recognized.succeeded and condition
 
     @classmethod
     async def _save_area(cls, user_data):
-        area = await Area(area=user_data.area_id)
+        channel = f'{user_data.area}/{user_data.who_for_whom}'
+        tmp_area = user_data.area.split(':')
+        country, state, city = tmp_area
+
+        _area = Area(
+            area=user_data.area,
+            city=city,
+            state=state,
+            country=country,
+            gps_coordinates_for_adv=user_data.gps_coordinates_for_adv,
+            redis_channel=channel
+        )
         try:
-            area.save()
-            return area
+            await _area.save()
+            logger.debug('UniqueViolationError %s', _area)
+            return _area
 
         except UniqueViolationError:
-            area = await Area.objects.get(area=user_data.area_id)
-            return area
+            _area = await Area.objects.get_or_none(redis_channel=channel)
+            logger.debug('UniqueViolationError %s', _area)
+            return _area
 
         except Exception:
-            logger.exception("Save area to db error %s", user_data.area_id)
+            logger.exception("Save area to db error %s", user_data.area)
 
         return
 
     @classmethod
-    async def _save_customer(cls, user_data, area):
-        customer = Customer(
-            nickname=user_data.nickname,
-            lang=int(user_data.lang),
-            gender=int(user_data.gender),
-            looking_gender=int(user_data.looking_gender),
-            age=int(user_data.age),
+    async def _save_adv(cls, user_data, area):
+        customer = await Customer.objects.get_or_none(member_id=user_data.member_id)
+        tmp_goals = []
+        goals_sorted = ''
+
+        for item in user_data.goals_list:
+            goal = item.split(':')
+            tmp_goals.append(goal[1])
+        tmp_goals.sort()
+        for g in tmp_goals:
+            goals_sorted += g + ' '
+
+        advertisement = Advertisement(
+            who_for_whom=user_data.who_for_whom,
             prefer_age=int(user_data.prefer_age),
-            looking_for=int(user_data.looking_for),
-            location=user_data.location,
-            phone=int(user_data.phone),
-            conversation_reference=user_data.conversation_reference,
-            member_id=user_data.member_id,
-            channel_id=0,
-            last_seen=datetime.datetime.now(),
-            area_id=area,
-            premium_tier=PremiumTier.objects.get(pk=1),
+            has_place=user_data.has_place,
+            dating_time=user_data.dating_time,
+            dating_day=user_data.dating_day,
+            adv_text=user_data.adv_text,
+            goals=goals_sorted,
+            phone_is_hidden=user_data.phone_is_hidden,
+            tg_nickname_is_hidden=user_data.tg_nickname_is_hidden,
+            email_is_hidden=user_data.email_is_hidden,
+            money_support=user_data.money_support,
+            is_published=True,
+            redis_channel=area.id,
+            customer=customer.id,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow(),
         )
 
         try:
-            await customer.save()
+            await advertisement.save()
 
-        except IntegrityError:
-            Customer.objects.filter(member_id=user_data.member_id).update(
-                nickname=user_data.nickname,
-                lang=int(user_data.lang),
-                gender=int(user_data.gender),
-                looking_gender=int(user_data.looking_gender),
-                age=int(user_data.age),
+        except UniqueViolationError:
+            await Advertisement.objects.filter(
+                member_id=user_data.member_id).update(
+                who_for_whom=user_data.who_for_whom,
                 prefer_age=int(user_data.prefer_age),
-                looking_for=int(user_data.looking_for),
-                # photo_main=user_data.photo_main,
-                location=user_data.location,
-                phone=int(user_data.phone),
-                conversation_reference=user_data.conversation_reference,
-                member_id=user_data.member_id,
-                channel_id=0,
-                last_seen=datetime.datetime.now(),
-                area_id=area,
-                premium_tier=PremiumTier.objects.get(pk=1),
+                has_place=user_data.has_place,
+                dating_time=user_data.dating_time,
+                dating_day=user_data.dating_day,
+                adv_text=user_data.adv_text,
+                goals=user_data.goals_list,
+                phone_is_hidden=user_data.phone_is_hidden,
+                tg_nickname_is_hidden=user_data.tg_nickname_is_hidden,
+                email_is_hidden=user_data.email_is_hidden,
+                money_support=user_data.money_support,
+                is_published=True,
+                redis_channel=user_data.redis_channel,
+                customer=customer.id,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow()
             )
         except Exception:
             logger.exception("Save customer to db error %s", user_data.member_id)
 
         return
-
-    # @classmethod
-    # async def _profanity_filter(cls, text: str) -> str:
-    #     pf = ProfanityFilter(languages=['ru', 'en'])
-    #     # pf.extra_profane_word_dictionaries = {'en': {'chocolate', 'orange'}}
-    #
-    #     return pf.censor(text)
-
-    @classmethod
-    async def _who_for_whom(cls, gender: str, looking_gender: str) -> int:
-        if gender == "Man" and looking_gender == "Woman":
-            return 0
-        elif gender == "Woman" and looking_gender == "Man":
-            return 1
-        elif looking_gender == "Both":
-            return 2
-        elif gender == "Man" and looking_gender == "Man":
-            return 3
-        elif gender == "Woman" and looking_gender == "Woman":
-            return 4
-        elif looking_gender == "Other":
-            return 5
-        else:
-            return None

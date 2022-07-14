@@ -19,8 +19,8 @@ class Area(ormar.Model):
         tablename: str = "areas"
 
     id: int = ormar.BigInteger(primary_key=True)
-    area: Optional[str] = ormar.String(max_length=200, nullable=True, unique=True)
-    area_en: Optional[str] = ormar.String(max_length=200, nullable=True, unique=True)
+    area: Optional[str] = ormar.String(max_length=200, nullable=True, unique=False)
+    area_en: Optional[str] = ormar.String(max_length=200, nullable=True, unique=False)
 
     city: Optional[str] = ormar.String(max_length=30, nullable=True)
     city_en: Optional[str] = ormar.String(max_length=30, nullable=True)
@@ -138,7 +138,7 @@ class Advertisement(ormar.Model):
 
     phone_is_hidden: bool = ormar.Boolean(nullable=False)
     tg_nickname_is_hidden: bool = ormar.Boolean(nullable=False)
-    email_is_hidden: bool = ormar.Boolean(nullable=False)
+    email_is_hidden: Optional[bool] = ormar.Boolean(nullable=True)
 
     money_support: bool = ormar.Boolean(nullable=False)
     is_published: bool = ormar.Boolean(nullable=False)

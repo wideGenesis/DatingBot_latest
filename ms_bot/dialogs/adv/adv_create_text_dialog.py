@@ -18,6 +18,7 @@ from botbuilder.schema import Activity, ActivityTypes
 import json
 
 from helpers.constants import remove_last_message
+from ms_bot.bots_models import CustomerProfile
 from settings.logger import CustomLogger
 from helpers.copyright import (
 ADV_TEXT,
@@ -48,6 +49,7 @@ class GetAdvTextDialog(ComponentDialog):
                 "GetAdvTextDialog",
                 [
                     self.adv_text,
+                    self.save_text,
                 ],
             )
         )
@@ -77,3 +79,12 @@ class GetAdvTextDialog(ComponentDialog):
                 ),
             ),
         )
+
+    async def save_text(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("save_text %s", GetAdvTextDialog.__name__)
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+        user_data.adv_text = str(step_context.result)
+        return await step_context.end_dialog()

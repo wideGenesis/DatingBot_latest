@@ -294,7 +294,8 @@ class TelegramRegistrationDialog(ComponentDialog):
         try:
             await customer.save()
         except UniqueViolationError:
-            await Customer.objects.filter(member_id=int(user_data.member_id)).update(
+            await Customer.objects.filter(
+                member_id=int(user_data.member_id)).update(
                 nickname=user_data.nickname,
                 phone=int(user_data.phone),
                 premium_tier=PremiumTierEnum.free.value,
