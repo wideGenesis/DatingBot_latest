@@ -17,12 +17,12 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
-from ms_bot.dialogs.adv_create_dialog import CreateAdvDialog
+from ms_bot.dialogs.adv.adv_create_dialog import CreateAdvDialog
+from ms_bot.dialogs.file_mgmt.my_file_dialog import MyFileDialog
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
 from ms_bot.dialogs.reload_cache_dialog import ReloadCacheDialog
 
-from ms_bot.dialogs.my_file_dialog import MyFileDialog
 from ms_bot.dialogs.my_profile_dialog import MyProfileDialog
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message

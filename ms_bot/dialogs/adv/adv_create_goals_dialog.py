@@ -113,33 +113,51 @@ class CreateAdvGoalsDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
 
-        result_from_previous_step = step_context.result
-        if thing in some_list:
-            some_list.remove(thing)
+        result_from_previous_step = str(step_context.result).split(':')
+        result_from_previous_step = result_from_previous_step[1]
+        sex_buttons = user_data.sex_buttons
 
-        user_data.dating_time = result_from_previous_step
-        files = user_data.files_dict
-        length = len(files) - 1
+        for item in sex_buttons:
+            if item[0]['callback_data'] == 'ready':
+                return await step_context.end_dialog()
 
-        if user_data.file_number < length:
-            user_data.file_number += 1
-            return await step_context.replace_dialog(CreateAdvGoalsDialog.__name__)
+            if item[0]['callback_data'] == result_from_previous_step:
+                index = sex_buttons.index(item)
+                sex_buttons.pop(index)
+                user_data.sex_buttons = sex_buttons
 
-        if user_data.file_number >= length:
-            user_data.file_number = 0
-            return await step_context.end_dialog('need_replace_parent')
+                if user_data.goals_list is None:
+                    user_data.goals_list = [result_from_previous_step]
+
+                else:
+                    user_data.goals_list.append(result_from_previous_step)
+
+                return await step_context.replace_dialog(CreateAdvGoalsDialog.__name__)
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
         _value = prompt_context.context.activity.text
 
         if _value in [
-            "KEY_CALLBACK:profile_region",
+            "KEY_CALLBACK:petting",
+            "KEY_CALLBACK:oral_to_me",
+            "KEY_CALLBACK:oral_to_you",
+            "KEY_CALLBACK:hetero_fuck",
+            "KEY_CALLBACK:anal_to_you",
+            "KEY_CALLBACK:anal_to_me",
+            "KEY_CALLBACK:rim_to_me",
+            "KEY_CALLBACK:rim_to_you",
+            "KEY_CALLBACK:massage_to_me",
+            "KEY_CALLBACK:massage_to_you",
+            "KEY_CALLBACK:for_pay_offer",
+            "KEY_CALLBACK:for_pay_looking",
+            "KEY_CALLBACK:fetishes",
+            "KEY_CALLBACK:virt",
+            "KEY_CALLBACK:ready",
 
         ]:
             condition = True
         else:
             condition = False
-        # await prompt_context.context.delete_activity(prompt_context.context.activity.id)
 
         return prompt_context.recognized.succeeded and condition

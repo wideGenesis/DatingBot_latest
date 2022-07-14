@@ -125,7 +125,7 @@ class CreateDatingAdvDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
 
-        result_from_previous_step = str(step_context.result).replace('-', '').replace(' ', '')
+        result_from_previous_step = str(step_context.context.activity.text).replace('-', '').replace(' ', '')
         user_data.prefer_age = result_from_previous_step
 
         return await step_context.prompt(

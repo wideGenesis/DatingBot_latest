@@ -13,11 +13,10 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import TextPrompt, ChoicePrompt
 
 from ms_bot.bots_models.models import CustomerProfile
-from ms_bot.dialogs.file_management_dialog import FileManagementDialog
-
+from ms_bot.dialogs.file_mgmt.file_management_dialog import FileManagementDialog
+from ms_bot.dialogs.file_mgmt.upload_dialog import UploadDialog
 from settings.logger import CustomLogger
 from helpers.copyright import BOT_MESSAGES
-from ms_bot.dialogs.upload_dialog import UploadDialog
 
 
 logger = CustomLogger.get_logger("bot")

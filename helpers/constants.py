@@ -67,6 +67,7 @@ class AdvGoalEnum(Enum):
     massage_for_you = "massage_for_you"
     escorting_for_me = "escorting_for_me"
     escorting_for_you = "escorting_for_you"
+    virt = "virt"
 
 
 class PremiumTierEnum(Enum):

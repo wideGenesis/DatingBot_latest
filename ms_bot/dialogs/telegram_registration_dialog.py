@@ -22,13 +22,13 @@ import json
 
 from helpers.constants import remove_last_message, remove_last_dropped_message, PremiumTierEnum
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
+from ms_bot.dialogs.file_mgmt.upload_dialog import UploadDialog
 from settings.logger import CustomLogger
 from helpers.copyright import CHOOSE_LANG, CHOOSE_SEX_KB, MY_AGE_KB, BOT_MESSAGES
 
 from ms_bot.bots_models.models import CustomerProfile
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from ms_bot.dialogs.phone_dialog import RequestPhoneDialog
-from ms_bot.dialogs.upload_dialog import UploadDialog
 from core.tables.models import Customer
 
 logger = CustomLogger.get_logger("bot")

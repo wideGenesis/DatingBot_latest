@@ -44,6 +44,10 @@ BOT_MESSAGES = {
     "date_day": "Я можу зустрітися у: ",
     "adv_text": "Текст оголошення: ",
     "money_support": "фінансова підтримка",
+    "phone_is_hidden": "Опублікувати ваш телефон?",
+    "email_is_hidden": "Опублікувати ваш email?",
+    "tg_is_hidden": "Опублікувати ваш telegram?",
+
 
     "phone_request": "🤖 ➡️ ❌ Підтвердьте, що ви людина за допомогою телефонного номера, натиснувши кнопку нижче ⬇️",
     "phone_error": "Підтвердіть свою особу, натиснувши кнопку Підтвердити на клавіатурі нижче",
@@ -343,6 +347,75 @@ PREFER_AGE_KB = {
     },
 }
 
+PHONE_IS_HIDDEN = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['phone_is_hidden']}",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🟢 Так",
+                        "callback_data": "KEY_CALLBACK:phone_yes",
+                    }
+                ],
+                [
+                    {
+                        "text": "🔴 Нi",
+                        "callback_data": "KEY_CALLBACK:phone_no",
+                    }
+                ],
+            ]
+        },
+    },
+}
+
+EMAIL_IS_HIDDEN = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['email_is_hidden']}",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🟢 Так",
+                        "callback_data": "KEY_CALLBACK:email_yes",
+                    }
+                ],
+                [
+                    {
+                        "text": "🔴 Нi",
+                        "callback_data": "KEY_CALLBACK:email_no",
+                    }
+                ],
+            ]
+        },
+    },
+}
+
+TG_IS_HIDDEN = {
+    "method": "sendMessage",
+    "parameters": {
+        "text": f"{BOT_MESSAGES['tg_is_hidden']}",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "🟢 Так",
+                        "callback_data": "KEY_CALLBACK:tg_yes",
+                    }
+                ],
+                [
+                    {
+                        "text": "🔴 Нi",
+                        "callback_data": "KEY_CALLBACK:tg_no",
+                    }
+                ],
+            ]
+        },
+    },
+}
+
 
 def profile_kb(message: str) -> dict:
     return {
@@ -471,19 +544,20 @@ CREATE_AREA_KB = {
 }
 
 sex_buttons = [
-    [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:4"}],
-    [{"text": "Оральный секс (делают мне)", "callback_data": "KEY_CALLBACK:5"}],
-    [{"text": "Оральный секс (делаю я)", "callback_data": "KEY_CALLBACK:6"}],
-    [{"text": "Секс (Классический)", "callback_data": "KEY_CALLBACK:7"}],
-    [{"text": "Анальный секс (я)", "callback_data": "KEY_CALLBACK:8"}],
-    [{"text": "Анальный секс (меня)", "callback_data": "KEY_CALLBACK:9"}],
-    [{"text": "Анилингус (делают мне)", "callback_data": "KEY_CALLBACK:10"}],
-    [{"text": "Анилингус (делаю я)", "callback_data": "KEY_CALLBACK:11"}],
-    [{"text": "Массаж (делают мне)", "callback_data": "KEY_CALLBACK:14"}],
-    [{"text": "Массаж (делаю я)", "callback_data": "KEY_CALLBACK:15"}],
-    [{"text": "Эскорт (предлагаю)", "callback_data": "KEY_CALLBACK:17"}],
-    [{"text": "Эскорт (ищу)", "callback_data": "KEY_CALLBACK:16"}],
-    [{"text": "Фетиши, ролевые игры и другое", "callback_data": "KEY_CALLBACK:12"}],
+    [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:petting"}],
+    [{"text": "Оральный секс (делают мне)", "callback_data": "KEY_CALLBACK:oral_to_me"}],
+    [{"text": "Оральный секс (делаю я)", "callback_data": "KEY_CALLBACK:oral_to_you"}],
+    [{"text": "Секс (Классический)", "callback_data": "KEY_CALLBACK:hetero_fuck"}],
+    [{"text": "Анальный секс (я)", "callback_data": "KEY_CALLBACK:anal_to_you"}],
+    [{"text": "Анальный секс (меня)", "callback_data": "KEY_CALLBACK:anal_to_me"}],
+    [{"text": "Анилингус (делают мне)", "callback_data": "KEY_CALLBACK:rim_to_me"}],
+    [{"text": "Анилингус (делаю я)", "callback_data": "KEY_CALLBACK:rim_to_you"}],
+    [{"text": "Массаж (делают мне)", "callback_data": "KEY_CALLBACK:massage_to_me"}],
+    [{"text": "Массаж (делаю я)", "callback_data": "KEY_CALLBACK:massage_to_you"}],
+    [{"text": "Эскорт (предлагаю)", "callback_data": "KEY_CALLBACK:for_pay_offer"}],
+    [{"text": "Эскорт (ищу)", "callback_data": "KEY_CALLBACK:for_pay_looking"}],
+    [{"text": "Фетиши, ролевые игры и другое", "callback_data": "KEY_CALLBACK:fetishes"}],
+    [{"text": "Вiрт", "callback_data": "KEY_CALLBACK:virt"}],
     [
         {"text": "✅ Всі цілі додані", "callback_data": "KEY_CALLBACK:ready"},
     ],

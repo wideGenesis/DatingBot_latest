@@ -17,10 +17,11 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
+from ms_bot.dialogs.file_mgmt.file_loop_dialog import FileLoopDialog
+from ms_bot.dialogs.file_mgmt.upload_dialog import UploadDialog
 from settings.logger import CustomLogger
 from helpers.copyright import USER_FILES_KB, BOT_MESSAGES
-from ms_bot.dialogs.file_loop_dialog import FileLoopDialog
-from ms_bot.dialogs.upload_dialog import UploadDialog
+
 
 from ms_bot.bot_helpers.telegram_helper import rm_tg_message
 

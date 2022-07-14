@@ -31,7 +31,7 @@ class CustomerProfile:  # TODO match to db model
             adv_list=None,  # For adv iter
             created_at=None,
             updated_at=None,
-            
+
             is_staff=None,
             is_superuser=None,
             post_header=None,
@@ -47,7 +47,7 @@ class CustomerProfile:  # TODO match to db model
             likes=None,
             instagram_link=None,
             tiktok_link=None,
-            
+
             # Adv
             adv_dict=None,
             adv_pk=None,
@@ -68,14 +68,14 @@ class CustomerProfile:  # TODO match to db model
             redis_channel=None,
             adv_created_at=None,
             adv_updated_at=None,
-            
+
             # Ban
             ban_list=None,
-            
+
             # Files
             files_dict=None,
             file_number=0,
-            
+
             # Other
             authorised=None,
             otp=None,
@@ -84,6 +84,8 @@ class CustomerProfile:  # TODO match to db model
             relationships_buttons=None,
             walking_buttons=None,
     ):
+        if goals_list is None:
+            goals_list = list()
         self.pk = pk
         self.nickname = nickname
         self.phone = phone
@@ -131,7 +133,7 @@ class CustomerProfile:  # TODO match to db model
         self.dating_time = dating_time
         self.dating_day = dating_day
         self.adv_text = adv_text
-        self.goals_list: list = goals_list
+        self.goals_list = goals_list
         self.phone_is_hidden = phone_is_hidden
         self.tg_nickname_is_hidden = tg_nickname_is_hidden
         self.email_is_hidden = email_is_hidden

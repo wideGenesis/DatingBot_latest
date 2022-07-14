@@ -36,7 +36,7 @@ from helpers.copyright import (
     LOOKING_FOR_KB,
     HAS_PLACE_KB,
     DATING_TIME,
-    DATING_DAY, GLOBAL_GOALS_KB,
+    DATING_DAY, GLOBAL_GOALS_KB, PHONE_IS_HIDDEN,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -205,7 +205,7 @@ class CreateAdvDialog(ComponentDialog):
             TextPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
+                    channel_data=json.dumps(PHONE_IS_HIDDEN),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(
@@ -222,6 +222,16 @@ class CreateAdvDialog(ComponentDialog):
             logger.warning('callback_query')
         except Exception:
             logger.exception('Something went wrong!')
+
+        user_data: CustomerProfile = await self.user_profile_accessor.get(
+            step_context.context, CustomerProfile
+        )
+        phone_is_hidden = str(step_context.result).split(":")
+        phone_is_hidden = phone_is_hidden[1]
+        if phone_is_hidden == 'phone_yes':
+            user_data.phone_is_hidden = False
+        else:
+            user_data.phone_is_hidden = True
 
         return await step_context.prompt(
             TextPrompt.__name__,
