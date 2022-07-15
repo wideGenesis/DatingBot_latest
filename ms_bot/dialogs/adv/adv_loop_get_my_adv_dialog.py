@@ -67,6 +67,7 @@ class GetMyAdvLoopDialog(ComponentDialog):
         self.initial_dialog_id = "GetMyAdvLoopDialog"
         self.advs = None
         self.adv_number = None
+        self.adv_id = None
 
     async def get_first_adv_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("get_first_adv_step %s", GetMyAdvLoopDialog.__name__)
@@ -87,10 +88,15 @@ class GetMyAdvLoopDialog(ComponentDialog):
             'redis_channel'
         ).order_by(
             Advertisement.created_at.desc()).all()
+        if len(my_advs) == 0:
+            await step_context.context.send_activity(BOT_MESSAGES['no_adv'])
+            return await step_context.end_dialog()
+
         self.advs = my_advs[:2]
         self.adv_number = 0
-
-        text = await self.text_formatter(self.advs[self.adv_number])
+        adv = self.advs[self.adv_number]
+        self.adv_id = adv.id
+        text = await self.text_formatter(adv)
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -114,19 +120,16 @@ class GetMyAdvLoopDialog(ComponentDialog):
         except Exception:
             logger.exception('Something went wrong!')
 
-        member_id = int(step_context.context.activity.from_property.id)
+        found_choice = str(step_context.result).split(':')
+        found_choice = found_choice[1]
 
-        if len(self.advs) < 2:
-            return await step_context.end_dialog()
-
-        elif step_context.result == 'adv_rm':
-            customer = await Customer.objects.get_or_none(member_id=member_id)
-            await Advertisement.objects.filter(member_id=customer.id).update(is_published=False)
-
-        elif step_context.result == 'adv_next':
+        if found_choice == 'adv_rm':
+            await Advertisement.objects.filter(id=self.adv_id).update(is_published=False)
+            return await step_context.next("continue")
+        elif found_choice == 'adv_next':
             return await step_context.next("continue")
 
-        elif step_context.result == 'menu':
+        elif found_choice == 'menu':
             return await step_context.end_dialog()
 
         else:
@@ -140,10 +143,21 @@ class GetMyAdvLoopDialog(ComponentDialog):
             logger.warning('callback_query')
         except Exception:
             logger.exception('Something went wrong!')
+        if len(self.advs) == 0:
+            await step_context.context.send_activity(BOT_MESSAGES['no_adv'])
+            return await step_context.end_dialog()
 
         self.adv_number = 1
+        try:
+            adv = self.advs[self.adv_number]
+        except IndexError:
+            adv = None
+        if adv is None:
+            await step_context.context.send_activity(BOT_MESSAGES['no_adv'])
+            return await step_context.end_dialog()
 
-        text = await self.text_formatter(self.advs[self.adv_number])
+        self.adv_id = adv.id
+        text = await self.text_formatter(adv)
 
         return await step_context.prompt(
             TextPrompt.__name__,
@@ -167,16 +181,17 @@ class GetMyAdvLoopDialog(ComponentDialog):
         except Exception:
             logger.exception('Something went wrong!')
 
-        member_id = int(step_context.context.activity.from_property.id)
+        found_choice = str(step_context.result).split(':')
+        found_choice = found_choice[1]
 
-        if step_context.result == 'adv_rm':
-            customer = await Customer.objects.get_or_none(member_id=member_id)
-            await Advertisement.objects.filter(member_id=customer.id).update(is_published=False)
+        if found_choice == 'adv_rm':
+            await Advertisement.objects.filter(id=self.adv_id).update(is_published=False)
+            return await step_context.next("continue")
 
-        elif step_context.result == 'adv_next':
+        elif found_choice == 'adv_next':
             return await step_context.end_dialog()
 
-        elif step_context.result == 'menu':
+        elif found_choice == 'menu':
             return await step_context.end_dialog()
 
         else:

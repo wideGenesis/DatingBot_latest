@@ -101,17 +101,17 @@ class MenuDialog(ComponentDialog):
 
         if found_choice == "KEY_CALLBACK:search_adv":
             await step_context.context.send_activity('Not implemented')
-            return await step_context.replace_dialog(MenuDialog.__name__)
+            return
 
         elif found_choice == "KEY_CALLBACK:create_adv":
             return await step_context.begin_dialog(CreateAdvDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:review_adv":
-            return await step_context.replace_dialog(GetMyAdvLoopDialog.__name__)
+            return await step_context.begin_dialog(GetMyAdvLoopDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:conversations":
             await step_context.context.send_activity('Not implemented')
-            return await step_context.replace_dialog(MenuDialog.__name__)
+            return
 
         elif found_choice == "KEY_CALLBACK:my_profile":
             return await step_context.begin_dialog(MyProfileDialog.__name__)
