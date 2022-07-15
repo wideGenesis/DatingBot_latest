@@ -546,30 +546,28 @@ def send_my_adv_kb(adv_text: str):
     }
 
 
-# CREATE_AREA_KB = {
-#     "method": "sendMessage",
-#     "parameters": {
-#         "text": "Вкажіть регіон пошуку (можна використовувати регіон, вказаний при "
-#                 "реєстрації з профілю або вказати інший регіон)",
-#         "reply_markup": {
-#             "inline_keyboard": [
-#                 [
-#                     {
-#                         "text": "📂 Регіон з профілю",
-#                         "callback_data": "KEY_CALLBACK:profile_region",
-#                     }
-#                 ],
-#                 [
-#                     {
-#                         "text": "🔍 Вказати інший регіон",
-#                         "callback_data": "KEY_CALLBACK:find_region",
-#                     }
-#                 ],
-#             ]
-#         },
-#     },
-# }
+def send_one_adv_kb(member_id: str, file: str, adv_text) -> dict:
 
+    file = f"https://{AZURE_STORAGE_CONF.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/media/{member_id}/{file}"
+    return {
+        "method": "sendPhoto",
+        "parameters": {
+            "caption": f"{adv_text}",
+            "photo": file,
+            "protect_content": True,
+            "disable_notification": True,
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {"text": "⛔", "callback_data": "KEY_CALLBACK:ban_user"},
+                        {"text": "✍", "callback_data": "KEY_CALLBACK:reply"},
+                        {"text": "➡", "callback_data": "KEY_CALLBACK:next"},
+                    ],
+                    [{"text": "↩️ меню", "callback_data": "KEY_CALLBACK:menu"}],
+                ]
+            },
+        },
+    }
 sex_buttons = [
     [{"text": "Петтинг, мастурбация", "callback_data": "KEY_CALLBACK:petting"}],
     [{"text": "Оральный секс (делают мне)", "callback_data": "KEY_CALLBACK:oral_to_me"}],

@@ -18,7 +18,6 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes
 import json
 
-
 from core.tables.models import Area, Advertisement
 from helpers.constants import remove_last_message
 from settings.logger import CustomLogger
@@ -28,11 +27,10 @@ from helpers.copyright import (
     HAS_PLACE_KB,
     DATING_TIME,
     DATING_DAY,
-    MONEY_SUPPORT,
+    MONEY_SUPPORT, LOOKING_FOR_KB,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
-
 
 logger = CustomLogger.get_logger("bot")
 
@@ -63,9 +61,9 @@ class ListAdvDialog(ComponentDialog):
                 "ListAdvDialog",
                 [
 
-                    self.prefer_age_step,
-                    self.has_place,
-                    self.dating_time,
+                    self.get_who_for_whom_step,
+                    self.get_prefer_age_step,
+                    self.get_has_place_step,
                     self.dating_day,
                     self.money_support,
                     self.goals,
@@ -77,6 +75,66 @@ class ListAdvDialog(ComponentDialog):
         TextPrompt.telemetry_client = self.telemetry_client
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "ListAdvDialog"
+
+    async def get_who_for_whom_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("get_who_for_whom_step %s", ListAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            NumberPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(LOOKING_FOR_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['reprompt']}"),
+            ),
+        )
+
+    async def get_prefer_age_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("get_prefer_age_step %s", ListAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            NumberPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(PREFER_AGE_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
+            ),
+        )
+
+    async def get_has_place_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("get_has_place_step %s", ListAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        return await step_context.prompt(
+            NumberPrompt.__name__,
+            PromptOptions(
+                prompt=Activity(
+                    channel_data=json.dumps(HAS_PLACE_KB),
+                    type=ActivityTypes.message,
+                ),
+                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['reprompt']}"),
+            ),
+        )
 
     async def list_all_adv_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("prefer_age_step %s", ListAdvDialog.__name__)
@@ -102,146 +160,6 @@ class ListAdvDialog(ComponentDialog):
                 retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
             ),
         )
-
-    async def has_place(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("has_place %s", ListAdvDialog.__name__)
-
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = str(step_context.context.activity.text).replace('-', '').replace(' ', '')
-        user_data.prefer_age = result_from_previous_step
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(HAS_PLACE_KB),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def dating_time(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("dating_time %s", ListAdvDialog.__name__)
-
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.has_place = result_from_previous_step[1]
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_TIME),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def dating_day(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("dating_day %s", ListAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.dating_time = result_from_previous_step[1]
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(DATING_DAY),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def money_support(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("money_support %s", ListAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.dating_day = result_from_previous_step[1]
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(MONEY_SUPPORT),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
-
-    async def goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("goals %s", ListAdvDialog.__name__)
-
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-        money_support = str(step_context.result).split(":")
-        money_support = money_support[1]
-        if money_support == 'money_yes':
-            user_data.money_support = True
-        else:
-            user_data.money_support = False
-
-        return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__)
 
     @staticmethod
     async def age_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
@@ -291,19 +209,3 @@ class ListAdvDialog(ComponentDialog):
             condition = False
 
         return prompt_context.recognized.succeeded and condition
-
-    @classmethod
-    async def _save_area(cls, user_data):
-        area = await Area(area=user_data.area_id)
-        try:
-            area.save()
-            return area
-
-        except UniqueViolationError:
-            area = await Area.objects.get(area=user_data.area_id)
-            return area
-
-        except Exception:
-            logger.exception("Save area to db error %s", user_data.area_id)
-
-        return
