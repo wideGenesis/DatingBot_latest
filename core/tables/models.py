@@ -140,7 +140,6 @@ class Advertisement(ormar.Model):
     tg_nickname_is_hidden: bool = ormar.Boolean(nullable=False)
     email_is_hidden: Optional[bool] = ormar.Boolean(nullable=True)
 
-    money_support: bool = ormar.Boolean(nullable=False)
     is_published: bool = ormar.Boolean(nullable=False)
     valid_until_date: datetime.datetime = ormar.DateTime(
         default=(datetime.datetime.now() + datetime.timedelta(days=7)), nullable=False

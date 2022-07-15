@@ -18,6 +18,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
 from ms_bot.dialogs.adv.adv_create_dialog import CreateAdvDialog
+from ms_bot.dialogs.adv.adv_loop_get_my_adv_dialog import GetMyAdvLoopDialog
 from ms_bot.dialogs.file_mgmt.my_file_dialog import MyFileDialog
 from settings.logger import CustomLogger
 from helpers.copyright import MAIN_MENU_KB, BOT_MESSAGES
@@ -49,6 +50,7 @@ class MenuDialog(ComponentDialog):
         self.add_dialog(MyFileDialog(user_state, MyFileDialog.__name__))
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
         self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
+        self.add_dialog(GetMyAdvLoopDialog(user_state, GetMyAdvLoopDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -97,12 +99,15 @@ class MenuDialog(ComponentDialog):
 
         found_choice = step_context.result
 
-        if found_choice == "KEY_CALLBACK:create_adv":
+        if found_choice == "KEY_CALLBACK:search_adv":
+            await step_context.context.send_activity('Not implemented')
+            return await step_context.replace_dialog(MenuDialog.__name__)
+
+        elif found_choice == "KEY_CALLBACK:create_adv":
             return await step_context.begin_dialog(CreateAdvDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:review_adv":
-            await step_context.context.send_activity('Not implemented')
-            return await step_context.replace_dialog(MenuDialog.__name__)
+            return await step_context.replace_dialog(GetMyAdvLoopDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:conversations":
             await step_context.context.send_activity('Not implemented')
@@ -133,6 +138,7 @@ class MenuDialog(ComponentDialog):
         _value = prompt_context.context.activity.text
 
         if _value in [
+            "KEY_CALLBACK:search_adv",
             "KEY_CALLBACK:create_adv",
             "KEY_CALLBACK:review_adv",
             "KEY_CALLBACK:conversations",

@@ -77,7 +77,7 @@ class CreateDatingAdvDialog(ComponentDialog):
                     self.has_place,
                     self.dating_time,
                     self.dating_day,
-                    self.money_support,
+                    # self.open_photos,
                     self.goals,
 
                 ],
@@ -197,34 +197,34 @@ class CreateDatingAdvDialog(ComponentDialog):
             ),
         )
 
-    async def money_support(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        logger.debug("money_support %s", CreateDatingAdvDialog.__name__)
-        try:
-            await remove_last_message(step_context, True)
-        except KeyError:
-            logger.warning('callback_query')
-        except Exception:
-            logger.exception('Something went wrong!')
-
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
-
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.dating_day = result_from_previous_step[1]
-
-        return await step_context.prompt(
-            TextPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(MONEY_SUPPORT),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(
-                    "Make your choice by clicking on the appropriate button above"
-                ),
-            ),
-        )
+    # async def open_photos(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    #     logger.debug("money_support %s", CreateDatingAdvDialog.__name__)
+    #     try:
+    #         await remove_last_message(step_context, True)
+    #     except KeyError:
+    #         logger.warning('callback_query')
+    #     except Exception:
+    #         logger.exception('Something went wrong!')
+    #
+    #     user_data: CustomerProfile = await self.user_profile_accessor.get(
+    #         step_context.context, CustomerProfile
+    #     )
+    #
+    #     result_from_previous_step = str(step_context.result).split(":")
+    #     user_data.dating_day = result_from_previous_step[1]
+    #
+    #     return await step_context.prompt(
+    #         TextPrompt.__name__,
+    #         PromptOptions(
+    #             prompt=Activity(
+    #                 channel_data=json.dumps(MONEY_SUPPORT),
+    #                 type=ActivityTypes.message,
+    #             ),
+    #             retry_prompt=MessageFactory.text(
+    #                 "Make your choice by clicking on the appropriate button above"
+    #             ),
+    #         ),
+    #     )
 
     async def goals(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("goals %s", CreateDatingAdvDialog.__name__)
@@ -239,12 +239,8 @@ class CreateDatingAdvDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        money_support = str(step_context.result).split(":")
-        money_support = money_support[1]
-        if money_support == 'money_yes':
-            user_data.money_support = True
-        else:
-            user_data.money_support = False
+        result_from_previous_step = str(step_context.result).split(":")
+        user_data.dating_day = result_from_previous_step[1]
 
         return await step_context.begin_dialog(CreateAdvGoalsDialog.__name__)
 

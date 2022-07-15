@@ -69,9 +69,6 @@ class FileManagementDialog(ComponentDialog):
         logger.debug("show_file_step %s", FileManagementDialog.__name__)
         member_id = str(step_context.context.activity.from_property.id)
         self.file: dict = step_context.options
-        user_data: CustomerProfile = await self.user_profile_accessor.get(
-            step_context.context, CustomerProfile
-        )
 
         if self.file['is_archived']:
             return await step_context.end_dialog('loop_next')
