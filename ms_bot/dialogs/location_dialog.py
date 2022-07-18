@@ -145,7 +145,7 @@ class RequestLocationDialog(ComponentDialog):
 
         await step_context.context.send_activities(_activities)
 
-        return await step_context.end_dialog()
+        return await step_context.end_dialog(area)
 
     @staticmethod
     async def answer_prompt_validator(prompt_context: PromptValidatorContext) -> bool:

@@ -7,7 +7,7 @@ from settings.conf import DatabaseConfig
 
 DB = DatabaseConfig()
 
-DB_URL: str = f"{DB.DB_DRIVER}://{DB.DB_USER}:{DB.DB_PASSWORD}@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
+DB_URL: str = f"{DB.DB_DRIVER}://{DB.DB_USER}:{DB.DB_PASSWORD}@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}?ssl=True"
 DB_URL_STR: str = (
     f"{DB.DB_DRIVER}://{DB.DB_USER}:*****@{DB.DB_HOST}:{DB.DB_PORT}/{DB.DB_NAME}"
 )
@@ -17,7 +17,7 @@ DATABASE = Database(DB_URL)
 if DB.DB_DRIVER == "postgresql+asyncpg":
     print("ASYNC", DB_URL_STR)
     ENGINE = create_async_engine(DB_URL, future=True, echo=True)
-    SESSION = sessionmaker(bind=ENGINE, expire_on_commit=False, class_=AsyncSession)
+    SESSION = sessionmaker(bind=ENGINE, expire_on_commit=False, class_=AsyncSession, ssl=True)
 
 if DB.DB_DRIVER == "postgresql":
     print("SYNC", DB_URL_STR)

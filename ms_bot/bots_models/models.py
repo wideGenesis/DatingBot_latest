@@ -85,6 +85,10 @@ class CustomerProfile:  # TODO match to db model
             sex_buttons=None,
             relationships_buttons=None,
             walking_buttons=None,
+            # search
+            get_prefer_sex=None,
+            get_prefer_age=None,
+            get_location=None,
     ):
         if goals_list is None:
             goals_list = list()
@@ -156,3 +160,6 @@ class CustomerProfile:  # TODO match to db model
         self.sex_buttons: list = sex_buttons
         self.relationships_buttons: list = relationships_buttons
         self.walking_buttons: list = walking_buttons
+        self.get_prefer_sex = get_prefer_sex
+        self.get_prefer_age = get_prefer_age
+        self.get_location = get_location
