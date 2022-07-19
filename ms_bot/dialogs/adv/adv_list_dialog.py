@@ -20,17 +20,14 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import Activity, ActivityTypes
 import json
 
-from core.tables.models import Area, Advertisement
+from core.tables.models import Area, Advertisement, Customer
 from helpers.constants import remove_last_message
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
     BOT_MESSAGES,
     PREFER_AGE_KB,
-    HAS_PLACE_KB,
-    DATING_TIME,
-    DATING_DAY,
-    MONEY_SUPPORT, LOOKING_FOR_KB,
+    LOOKING_FOR_KB,
 )
 
 from ms_bot.bots_models.models import CustomerProfile
@@ -66,14 +63,11 @@ class ListAdvDialog(ComponentDialog):
             WaterfallDialog(
                 "ListAdvDialog",
                 [
-
+                    self.is_customer_publish_adv_step,
                     self.get_who_for_whom_step,
                     self.get_prefer_age_step,
-                    self.get_has_place_step,
-                    self.dating_day,
-                    self.money_support,
-                    self.goals,
-
+                    self.get_location_step,
+                    self.get_list_of_adv_step,
                 ],
             )
         )
@@ -81,6 +75,24 @@ class ListAdvDialog(ComponentDialog):
         TextPrompt.telemetry_client = self.telemetry_client
         ChoicePrompt.telemetry_client = self.telemetry_client
         self.initial_dialog_id = "ListAdvDialog"
+
+    async def is_customer_publish_adv_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        logger.debug("is_customer_publish_adv_step %s", ListAdvDialog.__name__)
+        try:
+            await remove_last_message(step_context, True)
+        except KeyError:
+            logger.warning('callback_query')
+        except Exception:
+            logger.exception('Something went wrong!')
+
+        member_id = int(step_context.context.activity.from_property.id)
+        # result = await Advertisement.objects.select_related("customer").all()
+        result = await Advertisement.objects.select_related("customer").filter(customer__member_id=member_id).all()
+        if len(result) == 0:
+            await step_context.context.send_activity(BOT_MESSAGES['adv_needed'])
+            return await step_context.end_dialog()
+        else:
+            return await step_context.next([])
 
     async def get_who_for_whom_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         logger.debug("get_who_for_whom_step %s", ListAdvDialog.__name__)
@@ -92,7 +104,7 @@ class ListAdvDialog(ComponentDialog):
             logger.exception('Something went wrong!')
 
         return await step_context.prompt(
-            NumberPrompt.__name__,
+            TextPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
                     channel_data=json.dumps(LOOKING_FOR_KB),
@@ -115,8 +127,7 @@ class ListAdvDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
         result_from_previous_step = str(step_context.result).split(":")
-        user_data.get_who_for_whom = result_from_previous_step[1]
-
+        user_data.search_who_for_whom = result_from_previous_step[1]
 
         return await step_context.prompt(
             NumberPrompt.__name__,
@@ -141,8 +152,9 @@ class ListAdvDialog(ComponentDialog):
         user_data: CustomerProfile = await self.user_profile_accessor.get(
             step_context.context, CustomerProfile
         )
-        result_from_previous_step = str(step_context.result).split(":")
-        user_data.get_prefer_sex = result_from_previous_step[1]
+
+        result_from_previous_step = str(step_context.context.activity.text).replace('-', '').replace(' ', '')
+        user_data.search_prefer_age = result_from_previous_step
 
         return await step_context.begin_dialog(RequestLocationDialog.__name__)
 
@@ -160,11 +172,11 @@ class ListAdvDialog(ComponentDialog):
         )
         result_from_previous_step = step_context.result
         self_sex = user_data.self_sex
-        get_prefer_sex = user_data.get_prefer_age
+        search_prefer_age = user_data.search_prefer_age
 
-        redis_channel = f'{result_from_previous_step}/{self_sex}:{get_prefer_sex}'
+        redis_channel = f'{result_from_previous_step}/{self_sex}:{search_prefer_age}'
 
-        filtered_advs = Advertisement.objects.filter(
+        filtered_adv_s = Advertisement.objects.filter(
             channel=redis_channel).filter(
             is_published=True).filter(
             valid_until_date__lte=datetime.datetime.now()
@@ -174,7 +186,7 @@ class ListAdvDialog(ComponentDialog):
             NumberPrompt.__name__,
             PromptOptions(
                 prompt=Activity(
-                    channel_data=json.dumps(filtered_advs),
+                    channel_data=json.dumps(filtered_adv_s),
                     type=ActivityTypes.message,
                 ),
                 retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
@@ -187,12 +199,17 @@ class ListAdvDialog(ComponentDialog):
         _value = _value.strip()
         _value = _value.split("-")
 
-        if len(_value) == 2:
-            condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
+        try:
+            int(_value[0]) or int(_value[1])
+            if len(_value) == 2:
+                condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
 
-        elif len(_value) == 1:
-            condition = 18 <= int(_value[0]) <= 69
-        else:
+            elif len(_value) == 1:
+                condition = 18 <= int(_value[0]) <= 69
+            else:
+                condition = False
+
+        except ValueError:
             condition = False
 
         return prompt_context.recognized.succeeded and condition

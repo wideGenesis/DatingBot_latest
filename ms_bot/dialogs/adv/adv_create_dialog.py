@@ -83,9 +83,6 @@ class CreateAdvDialog(ComponentDialog):
                     self.tg_nickname_is_hidden,
                     self.adv_text,
 
-
-                    # self.area_step,
-                    # self.parse_area_choice_step,
                     self.member_step,
                     self.request_location_step,
                     self.save_adv,
@@ -335,12 +332,17 @@ class CreateAdvDialog(ComponentDialog):
         _value = _value.strip()
         _value = _value.split("-")
 
-        if len(_value) == 2:
-            condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
+        try:
+            int(_value[0]) or int(_value[1])
+            if len(_value) == 2:
+                condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
 
-        elif len(_value) == 1:
-            condition = 18 <= int(_value[0]) <= 69
-        else:
+            elif len(_value) == 1:
+                condition = 18 <= int(_value[0]) <= 69
+            else:
+                condition = False
+
+        except ValueError:
             condition = False
 
         return prompt_context.recognized.succeeded and condition

@@ -18,6 +18,7 @@ from botbuilder.dialogs.prompts import PromptOptions, TextPrompt, ChoicePrompt
 from botbuilder.schema import ActivityTypes, Activity
 
 from ms_bot.dialogs.adv.adv_create_dialog import CreateAdvDialog
+from ms_bot.dialogs.adv.adv_list_dialog import ListAdvDialog
 from ms_bot.dialogs.adv.adv_loop_get_my_adv_dialog import GetMyAdvLoopDialog
 from ms_bot.dialogs.file_mgmt.my_file_dialog import MyFileDialog
 from settings.logger import CustomLogger
@@ -51,6 +52,7 @@ class MenuDialog(ComponentDialog):
         self.add_dialog(ReloadCacheDialog(user_state, ReloadCacheDialog.__name__))
         self.add_dialog(CreateAdvDialog(user_state, CreateAdvDialog.__name__))
         self.add_dialog(GetMyAdvLoopDialog(user_state, GetMyAdvLoopDialog.__name__))
+        self.add_dialog(ListAdvDialog(user_state, ListAdvDialog.__name__))
 
         self.add_dialog(
             WaterfallDialog(
@@ -100,8 +102,7 @@ class MenuDialog(ComponentDialog):
         found_choice = step_context.result
 
         if found_choice == "KEY_CALLBACK:search_adv":
-            await step_context.context.send_activity('Not implemented')
-            return
+            return await step_context.begin_dialog(ListAdvDialog.__name__)
 
         elif found_choice == "KEY_CALLBACK:create_adv":
             return await step_context.begin_dialog(CreateAdvDialog.__name__)

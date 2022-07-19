@@ -249,13 +249,19 @@ class TelegramRegistrationDialog(ComponentDialog):
         _value = _value.strip()
         _value = _value.split("-")
 
-        if len(_value) == 2:
-            condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
+        try:
+            int(_value[0]) or int(_value[1])
+            if len(_value) == 2:
+                condition = 18 <= int(_value[0]) <= 69 and 18 <= int(_value[1]) <= 69
 
-        elif len(_value) == 1:
-            condition = 18 <= int(_value[0]) <= 69
-        else:
+            elif len(_value) == 1:
+                condition = 18 <= int(_value[0]) <= 69
+            else:
+                condition = False
+
+        except ValueError:
             condition = False
+
         return prompt_context.recognized.succeeded and condition
 
     @staticmethod
