@@ -91,6 +91,7 @@ class CustomerProfile:  # TODO match to db model
             get_location=None,
             search_who_for_whom=None,
             search_prefer_age=None,
+            filtered_adv_s_list=None,
     ):
         if goals_list is None:
             goals_list = list()
@@ -167,3 +168,4 @@ class CustomerProfile:  # TODO match to db model
         self.get_location = get_location
         self.search_who_for_whom = search_who_for_whom
         self.search_prefer_age = search_prefer_age
+        self.filtered_adv_s_list = filtered_adv_s_list

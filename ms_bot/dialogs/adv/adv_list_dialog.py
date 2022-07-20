@@ -22,6 +22,7 @@ import json
 
 from core.tables.models import Area, Advertisement, Customer
 from helpers.constants import remove_last_message
+from ms_bot.dialogs.adv.adv_list_loop_dialog import AdvListLoopDialog
 from ms_bot.dialogs.location_dialog import RequestLocationDialog
 from settings.logger import CustomLogger
 from helpers.copyright import (
@@ -57,6 +58,9 @@ class ListAdvDialog(ComponentDialog):
         )
         self.add_dialog(
             RequestLocationDialog(user_state, RequestLocationDialog.__name__)
+        )
+        self.add_dialog(
+            AdvListLoopDialog(user_state, AdvListLoopDialog.__name__)
         )
 
         self.add_dialog(
@@ -127,7 +131,7 @@ class ListAdvDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
         result_from_previous_step = str(step_context.result).split(":")
-        user_data.search_who_for_whom = result_from_previous_step[1]
+        user_data.search_who_for_whom = f'{user_data.self_sex}:{result_from_previous_step[1]}'
 
         return await step_context.prompt(
             NumberPrompt.__name__,
@@ -171,27 +175,18 @@ class ListAdvDialog(ComponentDialog):
             step_context.context, CustomerProfile
         )
         result_from_previous_step = step_context.result
-        self_sex = user_data.self_sex
-        search_prefer_age = user_data.search_prefer_age
+        area = f'{result_from_previous_step[2]}:{result_from_previous_step[1]}:{result_from_previous_step[0]}'.lower()
+        search_who_for_whom = user_data.search_who_for_whom
+        redis_channel = f'{area}/{search_who_for_whom}'
 
-        redis_channel = f'{result_from_previous_step}/{self_sex}:{search_prefer_age}'
-
-        filtered_adv_s = Advertisement.objects.filter(
-            channel=redis_channel).filter(
+        filtered_adv_s = await Advertisement.objects.select_related(
+            "redis_channel").filter(
+            redis_channel__redis_channel=redis_channel).filter(
             is_published=True).filter(
-            valid_until_date__lte=datetime.datetime.now()
+            valid_until_date__gte=datetime.datetime.now()
         ).all()
-
-        return await step_context.prompt(
-            NumberPrompt.__name__,
-            PromptOptions(
-                prompt=Activity(
-                    channel_data=json.dumps(filtered_adv_s),
-                    type=ActivityTypes.message,
-                ),
-                retry_prompt=MessageFactory.text(f"{BOT_MESSAGES['age_reprompt']}"),
-            ),
-        )
+        user_data.filtered_adv_s_list = filtered_adv_s
+        return await step_context.begin_dialog(AdvListLoopDialog.__name__)
 
     @staticmethod
     async def age_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
